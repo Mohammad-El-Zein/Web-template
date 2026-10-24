@@ -19,10 +19,6 @@ public interface FoodService {
 
     void deleteFood(String id);
 
-    boolean deleteFile(String filename);
-
-    String uploadFile(MultipartFile file);
-
     FoodImageEntity readImage(String id);
 
     FoodResponse updateFood(String id, FoodRequest request, MultipartFile file);

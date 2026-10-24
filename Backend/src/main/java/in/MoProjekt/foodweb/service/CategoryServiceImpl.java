@@ -19,6 +19,7 @@ import in.MoProjekt.foodweb.io.CategoryRequest;
 import in.MoProjekt.foodweb.io.CategoryResponse;
 import in.MoProjekt.foodweb.repository.CategoryRepository;
 import in.MoProjekt.foodweb.repository.FoodRepository;
+import in.MoProjekt.foodweb.storage.ImageStorage;
 import in.MoProjekt.foodweb.util.UrlCheck;
 import lombok.AllArgsConstructor;
 
@@ -34,6 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final FoodRepository foodRepository;
     private final TranslationHelper translationHelper;
+    private final ImageStorage imageStorage;
 
     @Override
     public List<CategoryResponse> readActiveCategories(String lang) {
@@ -72,6 +74,7 @@ public class CategoryServiceImpl implements CategoryService {
         validate(request);
         CategoryEntity category = findById(id);
         String oldGermanName = category.getName() != null ? category.getName().get("de") : null;
+        String oldImageUrl = category.getImageUrl();
 
         // Slug bleibt gleich, damit Links stabil bleiben
         category.setName(translationHelper.completeTranslations(request.getName()));
@@ -80,6 +83,11 @@ public class CategoryServiceImpl implements CategoryService {
             category.setActive(request.getActive());
         }
         CategoryEntity saved = categoryRepository.save(category);
+
+        // Altes Bild löschen, wenn es ersetzt oder entfernt wurde
+        if (oldImageUrl != null && !oldImageUrl.isBlank() && !oldImageUrl.equals(saved.getImageUrl())) {
+            imageStorage.delete(oldImageUrl);
+        }
 
         // Deutschen Namen auch bei den Gerichten aktualisieren (Feld category für ältere Clients)
         String newGermanName = saved.getName().get("de");
@@ -95,12 +103,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(String id) {
-        findById(id);
+        CategoryEntity category = findById(id);
         long foodCount = foodRepository.countByCategoryId(id);
         if (foodCount > 0) {
             throw CategoryException.notEmpty(foodCount);
         }
         categoryRepository.deleteById(id);
+        imageStorage.delete(category.getImageUrl());
     }
 
     @Override

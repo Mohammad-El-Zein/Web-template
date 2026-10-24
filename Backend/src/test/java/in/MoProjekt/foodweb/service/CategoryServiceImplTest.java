@@ -30,6 +30,7 @@ import in.MoProjekt.foodweb.io.CategoryRequest;
 import in.MoProjekt.foodweb.io.CategoryResponse;
 import in.MoProjekt.foodweb.repository.CategoryRepository;
 import in.MoProjekt.foodweb.repository.FoodRepository;
+import in.MoProjekt.foodweb.storage.ImageStorage;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceImplTest {
@@ -37,12 +38,13 @@ class CategoryServiceImplTest {
     @Mock private CategoryRepository categoryRepository;
     @Mock private FoodRepository foodRepository;
     @Mock private OpenAITranslationService translator;
+    @Mock private ImageStorage imageStorage;
 
     private CategoryServiceImpl service;
 
     @BeforeEach
     void setUp() {
-        service = new CategoryServiceImpl(categoryRepository, foodRepository, new TranslationHelper(translator));
+        service = new CategoryServiceImpl(categoryRepository, foodRepository, new TranslationHelper(translator), imageStorage);
     }
 
     private CategoryEntity category(String id, String de, String en, String ar, int sortOrder, boolean active) {
@@ -171,6 +173,29 @@ class CategoryServiceImplTest {
         verify(categoryRepository).deleteById("c1");
         when(categoryRepository.findById("x")).thenReturn(Optional.empty());
         assertThrows(ResponseStatusException.class, () -> service.deleteCategory("x"));
+    }
+
+    @Test
+    void oldCategoryImageIsDeletedWhenReplacedOrCategoryDeleted() {
+        CategoryEntity pizza = category("c1", "Pizza", "Pizza", "بيتزا", 0, true);
+        pizza.setImageUrl("https://img.example.com/flavorhaus/categories/alt.jpg");
+        when(categoryRepository.findById("c1")).thenReturn(Optional.of(pizza));
+        when(categoryRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        // Gleiches Bild -> nichts löschen
+        CategoryRequest same = request("Pizza", "Pizza", "بيتزا");
+        same.setImageUrl("https://img.example.com/flavorhaus/categories/alt.jpg");
+        service.updateCategory("c1", same);
+        verify(imageStorage, never()).delete(any());
+
+        CategoryRequest changed = request("Pizza", "Pizza", "بيتزا");
+        changed.setImageUrl("https://img.example.com/flavorhaus/categories/neu.jpg");
+        service.updateCategory("c1", changed);
+        verify(imageStorage).delete("https://img.example.com/flavorhaus/categories/alt.jpg");
+
+        when(foodRepository.countByCategoryId("c1")).thenReturn(0L);
+        service.deleteCategory("c1");
+        verify(imageStorage).delete("https://img.example.com/flavorhaus/categories/neu.jpg");
     }
 
     @Test

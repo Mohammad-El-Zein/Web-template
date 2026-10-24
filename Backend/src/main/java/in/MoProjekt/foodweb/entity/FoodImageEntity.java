@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-// Bild eines Gerichts, direkt in MongoDB gespeichert (Ersatz, wenn S3 nicht verfügbar ist)
+// Bild direkt in MongoDB gespeichert (wenn R2 nicht eingerichtet oder nicht erreichbar ist), siehe MongoImageStorage
 @Data
 @Builder
 @AllArgsConstructor

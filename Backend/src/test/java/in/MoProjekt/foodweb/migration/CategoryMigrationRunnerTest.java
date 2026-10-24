@@ -25,6 +25,7 @@ import in.MoProjekt.foodweb.repository.FoodRepository;
 import in.MoProjekt.foodweb.service.CategoryServiceImpl;
 import in.MoProjekt.foodweb.service.OpenAITranslationService;
 import in.MoProjekt.foodweb.service.TranslationHelper;
+import in.MoProjekt.foodweb.storage.ImageStorage;
 
 // Simuliert MongoDB mit einer Liste, damit ein zweiter Lauf den Stand des ersten sieht
 @ExtendWith(MockitoExtension.class)
@@ -33,13 +34,15 @@ class CategoryMigrationRunnerTest {
     @Mock private CategoryRepository categoryRepository;
     @Mock private FoodRepository foodRepository;
     @Mock private OpenAITranslationService translator;
+    @Mock private ImageStorage imageStorage;
 
     private final List<CategoryEntity> storedCategories = new ArrayList<>();
     private CategoryMigrationRunner runner;
 
     @BeforeEach
     void setUp() {
-        CategoryServiceImpl categoryService = new CategoryServiceImpl(categoryRepository, foodRepository, new TranslationHelper(translator));
+        CategoryServiceImpl categoryService = new CategoryServiceImpl(categoryRepository, foodRepository,
+                new TranslationHelper(translator), imageStorage);
         runner = new CategoryMigrationRunner(categoryRepository, foodRepository, categoryService);
 
         org.mockito.Mockito.lenient().when(categoryRepository.count()).thenAnswer(inv -> (long) storedCategories.size());

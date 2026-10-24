@@ -1,15 +1,12 @@
 package in.MoProjekt.foodweb.service;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
-import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,21 +15,15 @@ import in.MoProjekt.foodweb.entity.FoodEntity;
 import in.MoProjekt.foodweb.entity.FoodImageEntity;
 import in.MoProjekt.foodweb.io.FoodRequest;
 import in.MoProjekt.foodweb.io.FoodResponse;
-import in.MoProjekt.foodweb.repository.FoodImageRepository;
 import in.MoProjekt.foodweb.repository.FoodRepository;
-import software.amazon.awssdk.core.sync.RequestBody;
-
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
-import software.amazon.awssdk.services.s3.model.S3Exception;
+import in.MoProjekt.foodweb.storage.ImageFiles;
+import in.MoProjekt.foodweb.storage.ImageStorage;
+import in.MoProjekt.foodweb.storage.MongoImageStorage;
 
 @Service
 public class FoodServiceImpl implements FoodService {
 
-    @Autowired
-    private S3Client s3Client;
+    private static final String IMAGE_FOLDER = "foods";
 
     @Autowired
     private FoodRepository foodRepository;
@@ -43,54 +34,15 @@ public class FoodServiceImpl implements FoodService {
     @Autowired
     private CategoryService categoryService;
 
+    // Aktiver Speicher (R2 oder MongoDB), siehe ImageStorageConfig
     @Autowired
-    private FoodImageRepository foodImageRepository;
+    private ImageStorage imageStorage;
 
-    @Value("${backend.url}")
-    private String backendUrl;
+    // Für ältere Bilder, die über GET /api/foods/images/{id} ausgeliefert werden
+    @Autowired
+    private MongoImageStorage mongoImageStorage;
 
-    private static final String DB_IMAGE_PATH = "/api/foods/images/";
     private static final String ALL_LANGUAGES = "all";
-    private static final long MAX_DB_IMAGE_SIZE = 5 * 1024 * 1024;
-
-    @Value("${aws.s3.bucketName}")
-    private String bucketName;
-
-    @Override
-    public String uploadFile(MultipartFile file) {
-        // Implementation for file upload
-        String filenameExtension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".")+1);
-        String key = UUID.randomUUID().toString() + "." + filenameExtension;
-        try{
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-            .bucket(bucketName)
-            .key(key)
-            .acl("public-read")
-            .contentType(file.getContentType())
-            .build();
-            PutObjectResponse response;
-            try {
-                response = s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
-            } catch (S3Exception ex) {
-                // Neuere Buckets erlauben keine ACLs mehr -> ohne ACL erneut versuchen
-                if (!"AccessControlListNotSupported".equals(ex.awsErrorDetails().errorCode())) {
-                    throw ex;
-                }
-                response = s3Client.putObject(putObjectRequest.toBuilder().acl((String) null).build(),
-                        RequestBody.fromBytes(file.getBytes()));
-            }
-
-            if(response.sdkHttpResponse().isSuccessful()){
-                return "https://" + bucketName + ".s3.amazonaws.com/" + key;
-        }else{
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Failed to upload the file");
-            }
-        
-        }catch(IOException ex){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"An error occurred while uploading the file");
-            
-        }
-    }
 
     private FoodResponse convertToResponse(FoodEntity entity, Map<String, CategoryEntity> categories){
     return FoodResponse.builder()
@@ -135,41 +87,15 @@ public FoodResponse readFood(String id, String lang) {
 
 
     @Override
-    public boolean deleteFile(String filename) {
-        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-            .bucket(bucketName)
-            .key(filename)
-            .build();
-            s3Client.deleteObject(deleteObjectRequest);
-            return true;
-    }
-
-    @Override
 public void deleteFood(String id) {
 
     // hole deutsche Version, reicht für delete
     FoodResponse response = readFood(id, "de");
 
-    deleteImage(response.getImageUrl());
+    // Fehler beim Löschen des Bildes werden nur geloggt, das Gericht wird trotzdem gelöscht
+    imageStorage.delete(response.getImageUrl());
     foodRepository.deleteById(id);
 }
-
-    private void deleteImage(String imageUrl) {
-        if (imageUrl == null || imageUrl.isBlank()) {
-            return;
-        }
-        String filename = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-        try {
-            if (imageUrl.contains(DB_IMAGE_PATH)) {
-                foodImageRepository.deleteById(filename);
-            } else {
-                deleteFile(filename);
-            }
-        } catch (Exception ex) {
-            // Bild konnte nicht gelöscht werden (z. B. S3 nicht erreichbar) -> Gericht trotzdem löschen
-            System.out.println("Could not delete image " + filename + ": " + ex.getMessage());
-        }
-    }
 
 
     @SuppressWarnings("unchecked")
@@ -203,13 +129,11 @@ private FoodResponse convertToResponse(FoodEntity entity, String lang, Map<Strin
 
     @Override
 public FoodResponse addFood(FoodRequest request, MultipartFile file) {
-    if (file == null || file.isEmpty() || file.getContentType() == null || !file.getContentType().startsWith("image/")) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please upload an image");
-    }
-    // Erst prüfen, dann Bild hochladen (sonst bleiben Bilder ohne Gericht liegen)
+    // Erst alles prüfen, dann Bild hochladen (sonst bleiben Bilder ohne Gericht liegen)
+    ImageFiles.check(file);
     validate(request);
     CategoryEntity category = categoryService.resolveForFood(request.getCategoryId(), request.getCategory());
-    String imageUrl = storeImage(file);
+    String imageUrl = imageStorage.upload(file, IMAGE_FOLDER);
 
     FoodEntity entity = new FoodEntity();
     entity.setName(translationHelper.completeTranslations(request.getName()));
@@ -228,47 +152,27 @@ public FoodResponse addFood(FoodRequest request, MultipartFile file) {
         entity.setCategory(category.getName() != null ? category.getName().get("de") : null);
     }
 
-    // Erst S3 versuchen; klappt das nicht (z. B. AWS-Zugang abgelaufen), Bild in MongoDB speichern
-    private String storeImage(MultipartFile file) {
-        try {
-            return uploadFile(file);
-        } catch (Exception ex) {
-            System.out.println("S3 upload failed, storing image in MongoDB instead: " + ex.getMessage());
-        }
-        if (file.getSize() > MAX_DB_IMAGE_SIZE) {
-            throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE, "Image must be smaller than 5 MB");
-        }
-        try {
-            FoodImageEntity image = foodImageRepository.save(FoodImageEntity.builder()
-                    .contentType(file.getContentType())
-                    .data(file.getBytes())
-                    .build());
-            return backendUrl + DB_IMAGE_PATH + image.getId();
-        } catch (IOException ex) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not read the image");
-        }
-    }
-
     @Override
     public FoodImageEntity readImage(String id) {
-        return foodImageRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found"));
+        return mongoImageStorage.read(id);
     }
 
     @Override
     public FoodResponse updateFood(String id, FoodRequest request, MultipartFile file) {
+        // Bild ist beim Bearbeiten optional
+        boolean newImage = file != null && !file.isEmpty();
+        if (newImage) {
+            ImageFiles.check(file);
+        }
         validate(request);
         FoodEntity entity = foodRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Food not found"));
         CategoryEntity category = categoryService.resolveForFood(request.getCategoryId(), request.getCategory());
 
-        if (file != null && !file.isEmpty()) {
-            if (file.getContentType() == null || !file.getContentType().startsWith("image/")) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please upload an image");
-            }
+        if (newImage) {
             String oldImageUrl = entity.getImageUrl();
-            entity.setImageUrl(storeImage(file));
-            deleteImage(oldImageUrl);
+            entity.setImageUrl(imageStorage.upload(file, IMAGE_FOLDER));
+            imageStorage.delete(oldImageUrl);
         }
         entity.setName(translationHelper.completeTranslations(request.getName()));
         entity.setDescription(translationHelper.completeTranslations(request.getDescription()));

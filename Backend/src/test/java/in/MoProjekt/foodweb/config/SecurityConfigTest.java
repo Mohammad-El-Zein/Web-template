@@ -23,6 +23,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import in.MoProjekt.foodweb.controller.AdminCategoryController;
 import in.MoProjekt.foodweb.controller.AdminController;
+import in.MoProjekt.foodweb.controller.AdminImageController;
+import in.MoProjekt.foodweb.exception.ImageException;
+import in.MoProjekt.foodweb.storage.ImageStorage;
+import org.springframework.mock.web.MockMultipartFile;
 import in.MoProjekt.foodweb.controller.CategoryController;
 import in.MoProjekt.foodweb.exception.CategoryException;
 import in.MoProjekt.foodweb.io.CategoryResponse;
@@ -57,7 +61,7 @@ import in.MoProjekt.foodweb.util.JwtUtil;
 
 @WebMvcTest(controllers = { FoodController.class, AdminOrderController.class, AiController.class, AdminController.class, UserController.class,
         SiteSettingsController.class, AdminSettingsController.class, OrderController.class,
-        CategoryController.class, AdminCategoryController.class })
+        CategoryController.class, AdminCategoryController.class, AdminImageController.class })
 @Import({ SecurityConfig.class, JwtAuthenticationFilter.class, JwtUtil.class, AppUserDetailsService.class, RateLimiter.class })
 @TestPropertySource(properties = {
         "jwt.secret.key=dGVzdFNlY3JldEtleUZvclVuaXRUZXN0c09ubHlOb3RQcm9kdWN0aW9uMTIzNDU2",
@@ -81,6 +85,7 @@ class SecurityConfigTest {
     @MockitoBean private PaymentService paymentService;
     @MockitoBean private OrderRepository orderRepository;
     @MockitoBean private CategoryService categoryService;
+    @MockitoBean private ImageStorage imageStorage;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -283,6 +288,47 @@ class SecurityConfigTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("CATEGORY_INVALID"))
                 .andExpect(jsonPath("$.field").value("name.de"));
+    }
+
+    private final MockMultipartFile image = new MockMultipartFile("file", "logo.png", "image/png",
+            new byte[] { (byte) 0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A });
+
+    @Test
+    void onlyAdminsCanUploadImages() throws Exception {
+        when(imageStorage.upload(any(), eq("site"))).thenReturn("https://img.example.com/flavorhaus/site/a.png");
+        when(imageStorage.upload(any(), eq("categories"))).thenReturn("https://img.example.com/flavorhaus/categories/b.png");
+
+        mvc.perform(multipart("/api/admin/images").file(image)).andExpect(status().isUnauthorized());
+        mvc.perform(multipart("/api/admin/images").file(image).header("Authorization", token("user@test.de")))
+                .andExpect(status().isForbidden());
+        // Ohne folder -> "site"
+        mvc.perform(multipart("/api/admin/images").file(image).header("Authorization", token("admin@test.de")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.url").value("https://img.example.com/flavorhaus/site/a.png"));
+        mvc.perform(multipart("/api/admin/images").file(image).param("folder", "categories")
+                .header("Authorization", token("admin@test.de")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.url").value("https://img.example.com/flavorhaus/categories/b.png"));
+    }
+
+    @Test
+    void invalidImagesReturnJsonError() throws Exception {
+        mvc.perform(multipart("/api/admin/images").file(image).param("folder", "geheim")
+                .header("Authorization", token("admin@test.de")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("IMAGE_INVALID"))
+                .andExpect(jsonPath("$.field").value("folder"));
+        mvc.perform(multipart("/api/admin/images").header("Authorization", token("admin@test.de")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("IMAGE_INVALID"))
+                .andExpect(jsonPath("$.field").value("file"));
+
+        when(imageStorage.upload(any(), any())).thenThrow(ImageException.tooLarge(5L * 1024 * 1024));
+        mvc.perform(multipart("/api/admin/images").file(image).header("Authorization", token("admin@test.de")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("IMAGE_TOO_LARGE"))
+                .andExpect(jsonPath("$.maxBytes").value(5242880));
+        org.mockito.Mockito.verify(imageStorage, org.mockito.Mockito.times(1)).upload(any(), any());
     }
 
     @Test

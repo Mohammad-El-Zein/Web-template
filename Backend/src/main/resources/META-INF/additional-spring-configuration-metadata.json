@@ -1,32 +1,32 @@
 {"properties": [
   {
-    "name": "aws.region",
+    "name": "r2.account-id",
     "type": "java.lang.String",
-    "description": "A description for 'aws.region'"
+    "description": "Cloudflare account ID for R2 (env R2_ACCOUNT_ID)."
   },
   {
-    "name": "aws.secret.key",
+    "name": "r2.access-key-id",
     "type": "java.lang.String",
-    "description": "A description for 'aws.secret.key'"
+    "description": "R2 API token access key ID (env R2_ACCESS_KEY_ID)."
   },
   {
-    "name": "aws.access.key",
+    "name": "r2.secret-access-key",
     "type": "java.lang.String",
-    "description": "A description for 'aws.access.key'"
+    "description": "R2 API token secret access key (env R2_SECRET_ACCESS_KEY)."
   },
   {
-    "name": "aws.s3.bucketName",
+    "name": "r2.bucket",
     "type": "java.lang.String",
-    "description": "A description for 'aws.s3.bucketName'"
+    "description": "R2 bucket shared by all restaurants (env R2_BUCKET)."
   },
   {
-    "name": "aws.s3.bucketName",
+    "name": "r2.public-url",
     "type": "java.lang.String",
-    "description": "A description for 'aws.s3.bucketName'"
+    "description": "Public bucket URL or custom domain, e.g. https://images.example.com (env R2_PUBLIC_URL)."
   },
   {
-    "name": "aws.s3.bucketName",
+    "name": "restaurant.slug",
     "type": "java.lang.String",
-    "description": "A description for 'aws.s3.bucketName'"
+    "description": "Folder of this restaurant inside the bucket, only a-z, 0-9 and '-' (env RESTAURANT_SLUG)."
   }
 ]}

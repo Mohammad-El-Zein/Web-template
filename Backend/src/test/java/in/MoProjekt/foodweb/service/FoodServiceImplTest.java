@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -15,29 +16,27 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
-
 import in.MoProjekt.foodweb.entity.CategoryEntity;
 import in.MoProjekt.foodweb.entity.FoodEntity;
 import in.MoProjekt.foodweb.exception.CategoryException;
-import in.MoProjekt.foodweb.entity.FoodImageEntity;
+import in.MoProjekt.foodweb.exception.ImageException;
 import in.MoProjekt.foodweb.io.FoodRequest;
 import in.MoProjekt.foodweb.io.FoodResponse;
-import in.MoProjekt.foodweb.repository.FoodImageRepository;
 import in.MoProjekt.foodweb.repository.FoodRepository;
-import software.amazon.awssdk.core.exception.SdkClientException;
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import in.MoProjekt.foodweb.storage.ImageStorage;
+import in.MoProjekt.foodweb.storage.MongoImageStorage;
 
 @ExtendWith(MockitoExtension.class)
 class FoodServiceImplTest {
 
-    @Mock private S3Client s3Client;
+    // Kleinste gültige JPEG-Signatur
+    private static final byte[] JPEG = { (byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, 0, 0x10 };
+
     @Mock private FoodRepository foodRepository;
-    @Mock private FoodImageRepository foodImageRepository;
     @Mock private OpenAITranslationService translator;
     @Mock private CategoryService categoryService;
+    @Mock private ImageStorage imageStorage;
+    @Mock private MongoImageStorage mongoImageStorage;
     @InjectMocks private FoodServiceImpl foodService;
 
     private final CategoryEntity pasta = CategoryEntity.builder().id("c2").slug("pasta")
@@ -47,21 +46,16 @@ class FoodServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(foodService, "bucketName", "bucket");
-        ReflectionTestUtils.setField(foodService, "backendUrl", "https://api.example.com");
         // Echte Übersetzungslogik, nur OpenAI ist gemockt
         ReflectionTestUtils.setField(foodService, "translationHelper", new TranslationHelper(translator));
+        // Mockito könnte beide Felder mit demselben Mock füllen (MongoImageStorage ist auch ein ImageStorage)
+        ReflectionTestUtils.setField(foodService, "imageStorage", imageStorage);
+        ReflectionTestUtils.setField(foodService, "mongoImageStorage", mongoImageStorage);
     }
 
     @Test
-    void imageIsStoredInMongoWhenS3Fails() {
-        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
-                .thenThrow(SdkClientException.create("The AWS Access Key Id you provided does not exist"));
-        when(foodImageRepository.save(any())).thenAnswer(inv -> {
-            FoodImageEntity image = inv.getArgument(0);
-            image.setId("img1");
-            return image;
-        });
+    void imageIsUploadedToFoodsFolder() {
+        when(imageStorage.upload(any(), eq("foods"))).thenReturn("https://img.example.com/flavorhaus/foods/a.jpg");
         when(foodRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(translator.translate(anyString(), anyString())).thenReturn("Pasta EN");
         when(categoryService.resolveForFood(null, "Pasta")).thenReturn(pasta);
@@ -71,12 +65,29 @@ class FoodServiceImplTest {
         request.setDescription("Lecker");
         request.setCategory("Pasta");
         request.setPrice(9.5);
-        MockMultipartFile file = new MockMultipartFile("file", "foto.jpg", "image/jpeg", new byte[] { 1, 2, 3 });
+        MockMultipartFile file = new MockMultipartFile("file", "foto.jpg", "image/jpeg", JPEG);
 
         FoodResponse response = foodService.addFood(request, file);
 
-        assertEquals("https://api.example.com/api/foods/images/img1", response.getImageUrl());
-        verify(foodImageRepository).save(any());
+        assertEquals("https://img.example.com/flavorhaus/foods/a.jpg", response.getImageUrl());
+    }
+
+    @Test
+    void newImageReplacesAndDeletesOldOne() {
+        FoodEntity food = FoodEntity.builder().id("f1").imageUrl("https://api.example.com/api/foods/images/old").build();
+        when(foodRepository.findById("f1")).thenReturn(java.util.Optional.of(food));
+        when(foodRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(categoryService.resolveForFood(null, "Pizza")).thenReturn(pizza);
+        when(imageStorage.upload(any(), eq("foods"))).thenReturn("https://img.example.com/flavorhaus/foods/new.jpg");
+
+        FoodRequest request = new FoodRequest();
+        request.setName(java.util.Map.of("de", "Pizza", "en", "Pizza", "ar", "بيتزا"));
+        request.setCategory("Pizza");
+        FoodResponse response = foodService.updateFood("f1", request,
+                new MockMultipartFile("file", "neu.jpg", "image/jpeg", JPEG));
+
+        assertEquals("https://img.example.com/flavorhaus/foods/new.jpg", response.getImageUrl());
+        verify(imageStorage).delete("https://api.example.com/api/foods/images/old");
     }
 
     @Test
@@ -171,17 +182,25 @@ class FoodServiceImplTest {
         FoodRequest request = new FoodRequest();
         request.setName("Linsensuppe");
         request.setCategory("Suppe");
-        MockMultipartFile file = new MockMultipartFile("file", "foto.jpg", "image/jpeg", new byte[] { 1 });
+        MockMultipartFile file = new MockMultipartFile("file", "foto.jpg", "image/jpeg", JPEG);
 
         CategoryException ex = assertThrows(CategoryException.class, () -> foodService.addFood(request, file));
         assertEquals("CATEGORY_INVALID", ex.getCode());
-        org.mockito.Mockito.verifyNoInteractions(s3Client, foodImageRepository, foodRepository);
+        org.mockito.Mockito.verifyNoInteractions(imageStorage, foodRepository);
     }
 
     @Test
     void nonImageUploadIsRejected() {
-        MockMultipartFile file = new MockMultipartFile("file", "x.txt", "text/plain", new byte[] { 1 });
-        assertThrows(ResponseStatusException.class, () -> foodService.addFood(new FoodRequest(), file));
+        MockMultipartFile text = new MockMultipartFile("file", "x.txt", "text/plain", new byte[] { 1 });
+        assertEquals("IMAGE_INVALID", assertThrows(ImageException.class,
+                () -> foodService.addFood(new FoodRequest(), text)).getCode());
+        // Falscher Inhalt trotz image/jpeg-Header
+        MockMultipartFile fake = new MockMultipartFile("file", "x.jpg", "image/jpeg", "<script>".getBytes());
+        assertEquals("IMAGE_INVALID", assertThrows(ImageException.class,
+                () -> foodService.addFood(new FoodRequest(), fake)).getCode());
+        assertEquals("IMAGE_INVALID", assertThrows(ImageException.class,
+                () -> foodService.addFood(new FoodRequest(), null)).getCode());
+        org.mockito.Mockito.verifyNoInteractions(imageStorage);
     }
 
     @Test
@@ -192,7 +211,7 @@ class FoodServiceImplTest {
 
         foodService.deleteFood("f1");
 
-        verify(foodImageRepository).deleteById("img1");
+        verify(imageStorage).delete("https://api.example.com/api/foods/images/img1");
         verify(foodRepository).deleteById("f1");
     }
 }
