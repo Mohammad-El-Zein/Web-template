@@ -5,8 +5,9 @@ import { ALLOWED_IMAGE_TYPES, prepareImage } from '../../utils/imageResize';
 import { apiErrorMessage } from '../../utils/apiErrors';
 
 // Bild auswählen oder hineinziehen; wird vor der Übergabe verkleinert und komprimiert.
-// file = neu gewähltes Bild, currentUrl = bereits gespeichertes Bild, onRemove optional
-const ImageDropzone = ({ file, currentUrl, onChange, onRemove }) => {
+// file = neu gewähltes Bild, currentUrl = bereits gespeichertes Bild, onRemove optional,
+// className z. B. "contain" (Logo, nicht beschneiden) oder "compact" (kleiner)
+const ImageDropzone = ({ file, currentUrl, onChange, onRemove, className = '' }) => {
   const { t } = useTranslation();
   const fileInput = useRef(null);
   const [dragging, setDragging] = useState(false);
@@ -50,7 +51,7 @@ const ImageDropzone = ({ file, currentUrl, onChange, onRemove }) => {
   return (
     <>
       <div
-        className={`dropzone ${dragging ? 'dragging' : ''} ${shown && !processing ? 'has-image' : ''}`}
+        className={`dropzone ${className} ${dragging ? 'dragging' : ''} ${shown && !processing ? 'has-image' : ''}`}
         role="button" tabIndex={0} aria-busy={processing}
         onClick={openPicker}
         onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && openPicker()}

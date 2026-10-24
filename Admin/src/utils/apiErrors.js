@@ -23,5 +23,8 @@ export const apiErrorMessage = (error, t) => {
   return t('errors.saveError', { code: response.status });
 };
 
+// Fehlercode aus der Antwort, z. B. "SETTINGS_INVALID"
+export const apiErrorCode = (error) => error?.response?.data?.code || '';
+
 // Feld aus der Fehlerantwort, z. B. "name.de"
 export const apiErrorField = (error) => error?.response?.data?.field || '';

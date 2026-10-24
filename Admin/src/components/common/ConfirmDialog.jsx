@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const ConfirmDialog = ({ title, text, confirmLabel, busy, onConfirm, onCancel }) => {
+// icon optional, Standard ist der Papierkorb
+const ConfirmDialog = ({ title, text, confirmLabel, busy, onConfirm, onCancel, icon = 'bi-trash3' }) => {
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -13,7 +14,7 @@ const ConfirmDialog = ({ title, text, confirmLabel, busy, onConfirm, onCancel })
   return (
     <div className="modal-x-backdrop" onClick={() => !busy && onCancel()}>
       <div className="modal-x" role="dialog" aria-modal="true" aria-labelledby="confirm-title" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-x-icon"><i className="bi bi-trash3"></i></div>
+        <div className="modal-x-icon"><i className={`bi ${icon}`}></i></div>
         <h3 id="confirm-title">{title}</h3>
         <p>{text}</p>
         <div className="modal-x-actions">

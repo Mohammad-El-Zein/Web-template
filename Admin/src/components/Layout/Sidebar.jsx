@@ -29,6 +29,14 @@ const Sidebar = ({ open, onNavigate }) => {
         {link('/', 'bi-grid-1x2', t('nav.dashboard'), true)}
         {link('/orders', 'bi-receipt', t('nav.orders'))}
 
+        <div className="sidebar-section">{t('nav.websiteSection')}</div>
+        {link('/website/general', 'bi-sliders', t('website.general.title'))}
+        {link('/website/home', 'bi-house', t('website.home.title'))}
+        {link('/website/about', 'bi-info-circle', t('website.about.title'))}
+        {link('/website/contact', 'bi-clock', t('website.contact.title'))}
+        {link('/website/ordering', 'bi-bag', t('website.ordering.title'))}
+        {link('/website/legal', 'bi-file-earmark-text', t('website.legal.title'))}
+
         <div className="sidebar-section">{t('nav.manage')}</div>
         {link('/foods', 'bi-egg-fried', t('nav.foods'), true)}
         {link('/foods/new', 'bi-plus-circle', t('nav.addFood'))}

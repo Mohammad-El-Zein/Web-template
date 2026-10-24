@@ -10,6 +10,13 @@ import Foods from './pages/Foods/Foods';
 import FoodForm from './pages/FoodForm/FoodForm';
 import Categories from './pages/Categories/Categories';
 import CategoryForm from './pages/CategoryForm/CategoryForm';
+import WebsiteLayout from './pages/Website/WebsiteLayout';
+import General from './pages/Website/General';
+import Home from './pages/Website/Home';
+import About from './pages/Website/About';
+import Contact from './pages/Website/Contact';
+import Ordering from './pages/Website/Ordering';
+import Legal from './pages/Website/Legal';
 import Orders from './pages/Orders/Orders';
 import Profile from './pages/Profile/Profile';
 import Login from './pages/Login/Login';
@@ -18,6 +25,9 @@ import { clearToken, getToken } from './services/api';
 import { getProfile } from './services/authService';
 
 const pageTitleKey = (path) => {
+  const websitePage = path.match(/^\/website\/(general|home|about|contact|ordering|legal)/);
+  if (websitePage) return `website.${websitePage[1]}.title`;
+  if (path.startsWith('/website')) return 'nav.websiteSection';
   if (path.startsWith('/foods/new')) return 'form.addTitle';
   if (path.match(/^\/foods\/[^/]+\/edit/)) return 'form.editTitle';
   if (path.startsWith('/foods')) return 'foods.title';
@@ -92,6 +102,16 @@ const App = () => {
               <Route path="/categories/new" element={<CategoryForm />} />
               <Route path="/categories/:id/edit" element={<CategoryForm />} />
               <Route path="/orders" element={<Orders />} />
+              {/* Website-Inhalte: gemeinsamer Zustand im Layout, eine Seite pro Bereich */}
+              <Route path="/website" element={<WebsiteLayout />}>
+                <Route index element={<Navigate to="general" replace />} />
+                <Route path="general" element={<General />} />
+                <Route path="home" element={<Home />} />
+                <Route path="about" element={<About />} />
+                <Route path="contact" element={<Contact />} />
+                <Route path="ordering" element={<Ordering />} />
+                <Route path="legal" element={<Legal />} />
+              </Route>
               <Route path="/profile" element={<Profile />} />
               {/* alte Adressen */}
               <Route path="/add" element={<Navigate to="/foods/new" replace />} />

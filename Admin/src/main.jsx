@@ -5,12 +5,14 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import './index.css'
 import './i18n';
 import App from './App.jsx'
-import { BrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+
+// Data-Router, damit useBlocker (Warnung bei ungespeicherten Änderungen) funktioniert.
+// App behält ihre eigenen <Routes>, daher eine einzige Route für alle Pfade.
+const router = createBrowserRouter([{ path: '*', element: <App /> }]);
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <RouterProvider router={router} />
   </React.StrictMode>
 )
