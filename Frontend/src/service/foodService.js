@@ -1,7 +1,8 @@
 import axios from "axios";
 import i18n from "../i18n"; // <-- wichtig
+import { API_URL as BASE_API_URL } from "../config";
 
-const API_URL = "https://flavorhaus-mo.up.railway.app/api/foods";
+const API_URL = `${BASE_API_URL}/foods`;
 
 export const fetchFoodList = async () => {
   try {

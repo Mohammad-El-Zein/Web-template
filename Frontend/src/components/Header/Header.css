@@ -7,7 +7,7 @@
 }
 .home-header {
   min-height: 650px;
-  background-color: #9a401c;   
+  background-color: var(--primary);   
   position: relative;
   padding: 7rem 1rem 2rem;
   color: #fff;
@@ -63,7 +63,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    background: #eab11e;
+    background: var(--accent-medium);
     color: #fff;
 }
 

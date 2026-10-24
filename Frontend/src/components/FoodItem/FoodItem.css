@@ -327,7 +327,7 @@
 }
 
 .ai-result-label {
-  background: #fff2d9;
+  background: var(--accent-tint);
   padding: 4px 10px;
   border-radius: 8px;
   font-size: 0.85rem;
@@ -343,7 +343,7 @@
 }
 
 @keyframes glowPulse {
-  0%   { box-shadow: 0 0 0 rgba(255, 200, 0, 0); }
-  50%  { box-shadow: 0 0 20px rgba(255, 200, 0, 0.35); }
+  0%   { box-shadow: 0 0 0 rgba(var(--accent-glow-rgb), 0); }
+  50%  { box-shadow: 0 0 20px rgba(var(--accent-glow-rgb), 0.35); }
   100% { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
 }

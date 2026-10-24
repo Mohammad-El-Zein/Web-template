@@ -38,7 +38,8 @@
     "total": "Gesamtbetrag",
     "checkout": "Zur Kasse",
     "categoryLabel": "Kategorie",
-    "quantity": "Anzahl"
+    "quantity": "Anzahl",
+    "minOrderMissing": "Mindestbestellwert {{min}} – es fehlen noch {{missing}}."
   },
   "placeOrder": {
     "title": "Bestellung abschließen",
@@ -247,5 +248,35 @@
     "OUT_FOR_DELIVERY": "Unterwegs",
     "DELIVERED": "Geliefert",
     "CANCELLED": "Storniert"
+  },
+  "orderType": {
+    "label": "Lieferung oder Abholung",
+    "DELIVERY": "Lieferung",
+    "PICKUP": "Abholung",
+    "pickupHint": "Du holst deine Bestellung selbst bei uns ab. Es fallen keine Lieferkosten an."
+  },
+  "orderNotice": {
+    "closed": "Wir haben gerade geschlossen.",
+    "opensToday": "Bestellungen sind heute ab {{time}} Uhr wieder möglich.",
+    "opensTomorrow": "Bestellungen sind morgen ab {{time}} Uhr wieder möglich.",
+    "opensOn": "Bestellungen sind am {{day}} ab {{time}} Uhr wieder möglich.",
+    "noOrderTypes": "Online-Bestellungen sind im Moment leider nicht möglich."
+  },
+  "orderErrors": {
+    "RESTAURANT_CLOSED": "Wir haben gerade geschlossen. Bitte bestelle während unserer Öffnungszeiten.",
+    "MIN_ORDER_NOT_REACHED": "Der Mindestbestellwert von {{amount}} ist noch nicht erreicht.",
+    "DELIVERY_DISABLED": "Lieferung ist im Moment nicht möglich. Bitte wähle Abholung.",
+    "PICKUP_DISABLED": "Abholung ist im Moment nicht möglich. Bitte wähle Lieferung.",
+    "network": "Keine Verbindung zum Server. Bitte versuche es gleich noch einmal.",
+    "generic": "Die Bestellung konnte nicht abgeschickt werden. Bitte versuche es erneut."
+  },
+  "days": {
+    "MONDAY": "Montag",
+    "TUESDAY": "Dienstag",
+    "WEDNESDAY": "Mittwoch",
+    "THURSDAY": "Donnerstag",
+    "FRIDAY": "Freitag",
+    "SATURDAY": "Samstag",
+    "SUNDAY": "Sonntag"
   }
 }

@@ -72,7 +72,8 @@
     "total": "Total amount",
     "checkout": "Checkout",
     "categoryLabel": "Category",
-    "quantity": "Quantity"
+    "quantity": "Quantity",
+    "minOrderMissing": "Minimum order {{min}} – {{missing}} to go."
   },
 
   "placeOrder": {
@@ -269,5 +270,35 @@
     "OUT_FOR_DELIVERY": "Out for delivery",
     "DELIVERED": "Delivered",
     "CANCELLED": "Cancelled"
+  },
+  "orderType": {
+    "label": "Delivery or pickup",
+    "DELIVERY": "Delivery",
+    "PICKUP": "Pickup",
+    "pickupHint": "You pick up your order from us yourself. There is no delivery fee."
+  },
+  "orderNotice": {
+    "closed": "We are closed right now.",
+    "opensToday": "You can order again today from {{time}}.",
+    "opensTomorrow": "You can order again tomorrow from {{time}}.",
+    "opensOn": "You can order again on {{day}} from {{time}}.",
+    "noOrderTypes": "Online ordering is not available at the moment."
+  },
+  "orderErrors": {
+    "RESTAURANT_CLOSED": "We are closed right now. Please order during our opening hours.",
+    "MIN_ORDER_NOT_REACHED": "The minimum order of {{amount}} has not been reached yet.",
+    "DELIVERY_DISABLED": "Delivery is not available at the moment. Please choose pickup.",
+    "PICKUP_DISABLED": "Pickup is not available at the moment. Please choose delivery.",
+    "network": "No connection to the server. Please try again in a moment.",
+    "generic": "Your order could not be sent. Please try again."
+  },
+  "days": {
+    "MONDAY": "Monday",
+    "TUESDAY": "Tuesday",
+    "WEDNESDAY": "Wednesday",
+    "THURSDAY": "Thursday",
+    "FRIDAY": "Friday",
+    "SATURDAY": "Saturday",
+    "SUNDAY": "Sunday"
   }
 }

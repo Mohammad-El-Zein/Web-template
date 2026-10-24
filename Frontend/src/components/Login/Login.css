@@ -14,6 +14,6 @@
 }
 
 .btn-login:hover {
-  color: #ffd37a;
-  border-color: #ffd37a;
+  color: var(--accent-light);
+  border-color: var(--accent-light);
 }

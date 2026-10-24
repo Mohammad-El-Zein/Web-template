@@ -1,0 +1,58 @@
+/* Bootstrap-Farben an die Markenfarben koppeln (wird nach bootstrap.css geladen).
+   Nur "primary" und "warning" sowie Fokus/aktive Zustände, alles andere bleibt Bootstrap. */
+
+.btn-primary {
+  --bs-btn-bg: var(--primary);
+  --bs-btn-border-color: var(--primary);
+  --bs-btn-hover-bg: var(--primary);
+  --bs-btn-hover-border-color: var(--primary);
+  --bs-btn-active-bg: var(--primary);
+  --bs-btn-active-border-color: var(--primary);
+  --bs-btn-disabled-bg: var(--primary);
+  --bs-btn-disabled-border-color: var(--primary);
+  --bs-btn-focus-shadow-rgb: var(--primary-rgb);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--primary);
+  --bs-btn-border-color: var(--primary);
+  --bs-btn-hover-bg: var(--primary);
+  --bs-btn-hover-border-color: var(--primary);
+  --bs-btn-active-bg: var(--primary);
+  --bs-btn-active-border-color: var(--primary);
+  --bs-btn-disabled-color: var(--primary);
+  --bs-btn-disabled-border-color: var(--primary);
+  --bs-btn-focus-shadow-rgb: var(--primary-rgb);
+}
+
+.btn-warning {
+  --bs-btn-bg: var(--accent);
+  --bs-btn-border-color: var(--accent);
+  --bs-btn-hover-bg: var(--accent-dark);
+  --bs-btn-hover-border-color: var(--accent-dark);
+  --bs-btn-active-bg: var(--accent-dark);
+  --bs-btn-active-border-color: var(--accent-dark);
+  --bs-btn-disabled-bg: var(--accent);
+  --bs-btn-disabled-border-color: var(--accent);
+  --bs-btn-focus-shadow-rgb: var(--accent-rgb);
+}
+
+.text-bg-warning {
+  background-color: rgba(var(--accent-rgb), var(--bs-bg-opacity, 1)) !important;
+}
+
+.bg-warning {
+  background-color: rgba(var(--accent-rgb), var(--bs-bg-opacity, 1)) !important;
+}
+
+/* Fokus von Eingabefeldern und aktiver Menüeintrag statt Bootstrap-Blau */
+.form-control:focus,
+.form-select:focus {
+  border-color: rgba(var(--primary-rgb), 0.5);
+  box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), 0.25);
+}
+
+.dropdown-item:active,
+.dropdown-item.active {
+  background-color: var(--primary);
+}

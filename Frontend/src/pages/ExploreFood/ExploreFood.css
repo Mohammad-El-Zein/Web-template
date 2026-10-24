@@ -27,8 +27,8 @@
 }
 
 .explore-select:focus {
-  border-color: #9a401c;
-  box-shadow: 0 0 0 3px rgba(154, 64, 28, 0.2);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.2);
   outline: none;
 }
 
@@ -43,8 +43,8 @@
 }
 
 .explore-search:focus {
-  border-color: #9a401c;
-  box-shadow: 0 0 0 3px rgba(154, 64, 28, 0.2);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.2);
   outline: none;
 }
 

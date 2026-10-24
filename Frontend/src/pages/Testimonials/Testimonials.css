@@ -17,7 +17,7 @@
 
 }
 .t-box .stars {
-    color: #f6ba20;
+    color: var(--accent);
 font-size: 18px;
 }
 .t-box p {
@@ -102,7 +102,7 @@ font-size: 18px;
 
 .newsletter form .s-btn {
     padding: 14px 24px;
-    background-color: #f6ba20;
+    background-color: var(--accent);
     border-radius: 8px;
     font-size: 1rem;
     font-weight: 400;

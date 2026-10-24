@@ -1,9 +1,8 @@
-/* eslint-disable no-unused-vars */
 import React, { useContext, useState, useEffect } from "react";
 import "./Menubar.css";
-import { assets } from "../../assets/assets";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
+import { useSettings } from "../../context/settingsContext";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PersonIcon from "@mui/icons-material/Person";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -14,6 +13,8 @@ import LanguageSwitcher from "../LanguageSwitcher/LanguageSwitcher";
 
 const Menubar = () => {
   const { t } = useTranslation();
+  // Logo und Name aus den Website-Einstellungen
+  const { settings, logo } = useSettings();
 
   const [active, setActive] = useState("home");
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -85,8 +86,8 @@ const Menubar = () => {
       }}
     >
       <img
-        src={assets.logo}
-        alt=""
+        src={logo}
+        alt={settings.restaurantName}
         className="mx-4 logo-img"
         width={120}
         height={90}

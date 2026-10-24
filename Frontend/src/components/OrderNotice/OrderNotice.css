@@ -1,0 +1,23 @@
+/* Hinweis im Warenkorb/Checkout, wenn gerade nicht bestellt werden kann */
+.order-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 1rem;
+  padding: 12px 14px;
+  background: var(--accent-soft);
+  border-inline-start: 4px solid var(--accent);
+  border-radius: 8px;
+  color: #333;
+  font-size: 0.95rem;
+  text-align: start;
+}
+
+.order-notice i {
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.order-notice p {
+  margin: 0;
+}

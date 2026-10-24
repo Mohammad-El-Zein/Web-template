@@ -1,6 +1,7 @@
 import axios from "axios";
+import { API_URL as BASE_API_URL } from "../config";
 
-const API_URL = "https://flavorhaus-mo.up.railway.app/api/cart";
+const API_URL = `${BASE_API_URL}/cart`;
 
 export const addToCart = async (foodId, token) => {
   try {

@@ -1,28 +1,10 @@
 import axios from "axios";
-import React from 'react';
-import { data } from "react-router-dom";
-import { toast } from 'react-toastify';
+import { API_URL } from "../config";
 
-const API_URL = "https://flavorhaus-mo.up.railway.app/api"
-
-export const registerUser= async (data) => {
-     try {
-     const response = await axios.post(API_URL+"/register", data);
-
-     return response
-
-     } catch (error) {
-        throw error;
-        
-     }
+export const registerUser = async (data) => {
+  return axios.post(API_URL + "/register", data);
 }
 
 export const login = async (data) => {
-    try {
-        const response = await axios.post(API_URL+"/login", data);
-        return response;
-    } catch (error) {
-        throw error;
-        
-    }
+  return axios.post(API_URL + "/login", data);
 }

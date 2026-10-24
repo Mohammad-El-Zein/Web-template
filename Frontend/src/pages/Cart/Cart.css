@@ -103,7 +103,7 @@
 }
 
 .btn-checkout {
-  background-color: #f6ba20;
+  background-color: var(--accent);
   border: none;
   padding: 12px;
   font-weight: 600;
@@ -113,7 +113,21 @@
 }
 
 .btn-checkout:hover {
-  background-color: #e3a619;
+  background-color: var(--accent-dark);
+}
+
+/* Mindestbestellwert fehlt oder geschlossen: wie der deaktivierte Bestellen-Knopf im Checkout */
+.btn-checkout.is-blocked:disabled {
+  background-color: #d1d1d1;
+  color: #7a7a7a;
+  cursor: not-allowed;
+}
+
+/* Hinweis auf den Mindestbestellwert unter dem Gesamtbetrag */
+.cart-min-order {
+  margin: -0.75rem 0 1rem;
+  font-size: 0.9rem;
+  color: #555;
 }
 
 .btn-shop {

@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
-import axios from "axios";
+import { getMyOrders } from "../../service/orderService";
 import "./MyOrders.css";
 import { useTranslation } from "react-i18next";
 
@@ -9,19 +9,13 @@ const MyOrders = () => {
   const [data, setData] = useState([]);
   const { t } = useTranslation();
 
-  const fetchOrders = async () => {
-    const response = await axios.get(
-      "https://flavorhaus-mo.up.railway.app/api/orders",
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    setData(response.data);
-  };
+  const fetchOrders = useCallback(async () => {
+    setData(await getMyOrders(token));
+  }, [token]);
 
   useEffect(() => {
     if (token) fetchOrders();
-  }, [token]);
+  }, [token, fetchOrders]);
 
   const formatDate = (str) => {
     const date = new Date(str);

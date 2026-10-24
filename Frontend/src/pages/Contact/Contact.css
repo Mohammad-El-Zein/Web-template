@@ -30,13 +30,13 @@
 }
 
 .custom-input:focus {
-  border-color: #f6ba20;
-  box-shadow: 0 0 0 3px rgba(246, 186, 32, 0.35);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.35);
   background: #fff;
 }
 
 .contact-btn {
-  background-color: #f6ba20;
+  background-color: var(--accent);
   border: none;
   border-radius: 10px;
   font-size: 1.1rem;
@@ -46,7 +46,7 @@
 }
 
 .contact-btn:hover {
-  background-color: #e0a218;
+  background-color: var(--accent-dark-2);
   transform: translateY(-2px);
 }
 

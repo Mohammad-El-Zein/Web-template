@@ -5,7 +5,7 @@
   border-radius: 12px;
   background: #ffffff;
   padding: 4px;
-  box-shadow: 0 0 10px rgba(255, 165, 0, 0.25);
+  box-shadow: 0 0 10px rgba(var(--accent-shadow-rgb), 0.25);
 }
 td:first-child {
   width: 40px;

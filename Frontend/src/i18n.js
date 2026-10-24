@@ -9,6 +9,15 @@ export const LANGUAGES = [
   { code: "ar", label: "العربية", flag: "/flags/ar.svg", dir: "rtl" },
 ];
 
+// Vor dem Start von i18n prüfen, ob schon eine Sprache gespeichert ist (sonst gilt die Standardsprache der Website)
+export const hasSavedLanguage = (() => {
+  try {
+    return !!localStorage.getItem("lang");
+  } catch {
+    return false;
+  }
+})();
+
 // Arabisch wird von rechts nach links angezeigt
 const applyDirection = (lng) => {
   const language = LANGUAGES.find((l) => l.code === lng);

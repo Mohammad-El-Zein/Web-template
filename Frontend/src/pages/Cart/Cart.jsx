@@ -5,6 +5,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { calculateCartTotals } from "../../util/cartUtils";
 import { useTranslation } from "react-i18next";
 import { getFoodImageById, handleFoodImageError } from "../../assets/assets";
+import { useSettings } from "../../context/settingsContext";
+import OrderNotice from "../../components/OrderNotice/OrderNotice";
+import { useOrderAvailability } from "../../components/OrderNotice/useOrderAvailability";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -36,9 +39,18 @@ const Cart = () => {
     return "";
   };
 
-  const { subtotal, shipping, total } = calculateCartTotals(
+  // Liefergebühr und Mindestbestellwert aus den Einstellungen; nur Abholung möglich -> keine Liefergebühr
+  const { settings } = useSettings();
+  const { ordering } = settings;
+  const { blocked } = useOrderAvailability();
+  const { subtotal, shipping, total, minReached, missing } = calculateCartTotals(
     cartItems,
-    quantities
+    quantities,
+    {
+      deliveryFee: ordering.deliveryFee,
+      minOrderAmount: ordering.minOrderAmount,
+      orderType: ordering.deliveryEnabled ? "DELIVERY" : "PICKUP",
+    }
   );
 
   return (
@@ -138,9 +150,21 @@ const Cart = () => {
               <span>{subtotal === 0 ? 0.0 : total.toFixed(2)} €</span>
             </div>
 
+            {cartItems.length > 0 && !minReached && (
+              <p className="cart-min-order">
+                <i className="bi bi-info-circle" aria-hidden="true"></i>{" "}
+                {t("cart.minOrderMissing", {
+                  min: `${ordering.minOrderAmount.toFixed(2)} €`,
+                  missing: `${missing.toFixed(2)} €`,
+                })}
+              </p>
+            )}
+
+            <OrderNotice />
+
             <button
-              className="btn-checkout w-100"
-              disabled={cartItems.length === 0}
+              className={`btn-checkout w-100 ${cartItems.length > 0 && (!minReached || blocked) ? "is-blocked" : ""}`}
+              disabled={cartItems.length === 0 || !minReached || blocked}
               onClick={() => {
                 if (!token) {
                   alert(t("messages.loginRequired"));
