@@ -11,6 +11,8 @@ public class FoodRequest {
     // Texte pro Sprache, z. B. { "de": "...", "en": "...", "ar": "..." }
     private Map<String, String> name = new HashMap<>();
     private Map<String, String> description = new HashMap<>();
+    // categoryId bevorzugt; ältere Clients schicken nur den deutschen Namen oder Slug in category
+    private String categoryId;
     private String category;
     private double price;
 

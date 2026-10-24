@@ -55,6 +55,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/foods/**").permitAll()
                         // Website-Einstellungen lesen darf jeder, ändern nur Admins (/api/admin/settings)
                         .requestMatchers(HttpMethod.GET, "/api/settings").permitAll()
+                        // Kategorien lesen darf jeder, verwalten nur Admins (/api/admin/categories)
+                        .requestMatchers(HttpMethod.GET, "/api/categories", "/api/categories/**").permitAll()
                         // Gerichte anlegen/löschen und Admin-Endpunkte nur für Admins
                         .requestMatchers("/api/foods/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

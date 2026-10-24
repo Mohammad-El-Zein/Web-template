@@ -17,7 +17,8 @@ public class FoodResponse {
 
     private Object name;        // Map or String
     private Object description;
-    private String category;
+    private String category;    // deutscher Name der Kategorie (für ältere Clients)
+    private String categoryId;
 
     private double price;
     private String imageUrl;

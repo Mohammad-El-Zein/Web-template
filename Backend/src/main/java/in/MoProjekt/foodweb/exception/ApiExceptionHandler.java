@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
-    @ExceptionHandler(OrderRejectedException.class)
-    public ResponseEntity<Map<String, Object>> orderRejected(OrderRejectedException ex) {
+    // Bestellungen, Kategorien usw.
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<Map<String, Object>> apiError(ApiException ex) {
         Map<String, Object> body = body(ex.getCode(), ex.getMessage());
         body.putAll(ex.getDetails());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);

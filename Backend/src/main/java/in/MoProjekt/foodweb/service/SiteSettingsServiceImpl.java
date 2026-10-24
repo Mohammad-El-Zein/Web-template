@@ -27,6 +27,7 @@ import in.MoProjekt.foodweb.entity.SiteSettingsEntity.Ordering;
 import in.MoProjekt.foodweb.entity.SiteSettingsEntity.TimeSlot;
 import in.MoProjekt.foodweb.exception.SettingsValidationException;
 import in.MoProjekt.foodweb.repository.SiteSettingsRepository;
+import in.MoProjekt.foodweb.util.UrlCheck;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -39,7 +40,6 @@ public class SiteSettingsServiceImpl implements SiteSettingsService {
     private static final int MAX_SHORT_TEXT = 200;
     private static final int MAX_LONG_TEXT = 5000;
     private static final int MAX_LEGAL_TEXT = 20000;
-    private static final int MAX_URL_LENGTH = 500;
     private static final int MAX_FEATURES = 8;
     private static final int MAX_SLOTS_PER_DAY = 5;
     private static final int MAX_SOCIAL_LINKS = 10;
@@ -275,15 +275,9 @@ public class SiteSettingsServiceImpl implements SiteSettingsService {
         }
     }
 
-    // Nur http(s)-Links oder Pfade der eigenen Seite (verhindert z. B. "javascript:")
     private void url(String field, String url) {
-        if (!notBlank(url)) {
-            return;
-        }
-        maxLength(field, url, MAX_URL_LENGTH);
-        String lower = url.trim().toLowerCase();
-        boolean ownPath = lower.startsWith("/") && !lower.startsWith("//");
-        if (!(lower.startsWith("https://") || lower.startsWith("http://") || ownPath)) {
+        maxLength(field, url, UrlCheck.MAX_URL_LENGTH);
+        if (!UrlCheck.isAllowed(url)) {
             fail(field, "URL must start with http://, https:// or /");
         }
     }

@@ -1,6 +1,8 @@
 package in.MoProjekt.foodweb.config;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -19,7 +21,12 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import in.MoProjekt.foodweb.controller.AdminCategoryController;
 import in.MoProjekt.foodweb.controller.AdminController;
+import in.MoProjekt.foodweb.controller.CategoryController;
+import in.MoProjekt.foodweb.exception.CategoryException;
+import in.MoProjekt.foodweb.io.CategoryResponse;
+import in.MoProjekt.foodweb.service.CategoryService;
 import in.MoProjekt.foodweb.controller.AdminOrderController;
 import in.MoProjekt.foodweb.controller.AdminSettingsController;
 import in.MoProjekt.foodweb.controller.AiController;
@@ -49,7 +56,8 @@ import in.MoProjekt.foodweb.io.ProfileResponse;
 import in.MoProjekt.foodweb.util.JwtUtil;
 
 @WebMvcTest(controllers = { FoodController.class, AdminOrderController.class, AiController.class, AdminController.class, UserController.class,
-        SiteSettingsController.class, AdminSettingsController.class, OrderController.class })
+        SiteSettingsController.class, AdminSettingsController.class, OrderController.class,
+        CategoryController.class, AdminCategoryController.class })
 @Import({ SecurityConfig.class, JwtAuthenticationFilter.class, JwtUtil.class, AppUserDetailsService.class, RateLimiter.class })
 @TestPropertySource(properties = {
         "jwt.secret.key=dGVzdFNlY3JldEtleUZvclVuaXRUZXN0c09ubHlOb3RQcm9kdWN0aW9uMTIzNDU2",
@@ -72,6 +80,7 @@ class SecurityConfigTest {
     @MockitoBean private SiteSettingsService siteSettingsService;
     @MockitoBean private PaymentService paymentService;
     @MockitoBean private OrderRepository orderRepository;
+    @MockitoBean private CategoryService categoryService;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -206,6 +215,74 @@ class SecurityConfigTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("RESTAURANT_CLOSED"))
                 .andExpect(jsonPath("$.minOrderAmount").doesNotExist());
+    }
+
+    @Test
+    void categoriesAreReadableByEveryone() throws Exception {
+        when(categoryService.readActiveCategories("ar")).thenReturn(List.of(CategoryResponse.builder()
+                .id("c7").slug("getraenke").name(java.util.Map.of("ar", "مشروبات")).sortOrder(6).active(true).build()));
+        mvc.perform(get("/api/categories").param("lang", "ar"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].slug").value("getraenke"))
+                .andExpect(jsonPath("$[0].name.ar").value("مشروبات"));
+        mvc.perform(get("/api/categories").header("Authorization", "Bearer kaputt")).andExpect(status().isOk());
+        // Schreiben über den öffentlichen Pfad ist nicht erlaubt
+        mvc.perform(post("/api/categories").contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void onlyAdminsCanManageCategories() throws Exception {
+        String body = "{\"name\":{\"de\":\"Suppen\"}}";
+        when(categoryService.readAllCategories()).thenReturn(List.of());
+        when(categoryService.addCategory(any())).thenReturn(CategoryResponse.builder().id("c8").slug("suppen").build());
+        when(categoryService.updateCategory(eq("c8"), any())).thenReturn(CategoryResponse.builder().id("c8").build());
+        when(categoryService.reorder(any())).thenReturn(List.of());
+
+        mvc.perform(get("/api/admin/categories")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/admin/categories").header("Authorization", token("user@test.de"))).andExpect(status().isForbidden());
+        mvc.perform(get("/api/admin/categories").header("Authorization", token("admin@test.de"))).andExpect(status().isOk());
+
+        mvc.perform(post("/api/admin/categories").contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isUnauthorized());
+        mvc.perform(post("/api/admin/categories").header("Authorization", token("user@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isForbidden());
+        mvc.perform(post("/api/admin/categories").header("Authorization", token("admin@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.slug").value("suppen"));
+
+        mvc.perform(put("/api/admin/categories/c8").header("Authorization", token("user@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isForbidden());
+        mvc.perform(put("/api/admin/categories/c8").header("Authorization", token("admin@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isOk());
+
+        mvc.perform(put("/api/admin/categories/order").contentType(MediaType.APPLICATION_JSON).content("[\"c8\"]"))
+                .andExpect(status().isUnauthorized());
+        mvc.perform(put("/api/admin/categories/order").header("Authorization", token("admin@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content("[\"c8\",\"c1\"]")).andExpect(status().isOk());
+        verify(categoryService).reorder(List.of("c8", "c1"));
+
+        mvc.perform(delete("/api/admin/categories/c8")).andExpect(status().isUnauthorized());
+        mvc.perform(delete("/api/admin/categories/c8").header("Authorization", token("user@test.de"))).andExpect(status().isForbidden());
+        mvc.perform(delete("/api/admin/categories/c8").header("Authorization", token("admin@test.de"))).andExpect(status().isNoContent());
+    }
+
+    @Test
+    void categoryErrorsReturnJson() throws Exception {
+        org.mockito.Mockito.doThrow(CategoryException.notEmpty(3)).when(categoryService).deleteCategory("c1");
+        mvc.perform(delete("/api/admin/categories/c1").header("Authorization", token("admin@test.de")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("CATEGORY_NOT_EMPTY"))
+                .andExpect(jsonPath("$.foodCount").value(3))
+                .andExpect(jsonPath("$.message").value("Category still has 3 foods"));
+
+        when(categoryService.addCategory(any())).thenThrow(CategoryException.invalid("name.de", "German name is required"));
+        mvc.perform(post("/api/admin/categories").header("Authorization", token("admin@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content("{\"name\":{\"en\":\"Soups\"}}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("CATEGORY_INVALID"))
+                .andExpect(jsonPath("$.field").value("name.de"));
     }
 
     @Test

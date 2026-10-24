@@ -22,7 +22,9 @@ public class FoodEntity {
     private Object name;        
     private Object description; 
 
-    private String category; 
+    // Verweis auf die Kategorie; category enthält zusätzlich deren deutschen Namen (für ältere Clients und Bestellungen)
+    private String categoryId;
+    private String category;
 
     private double price;
     private String imageUrl;

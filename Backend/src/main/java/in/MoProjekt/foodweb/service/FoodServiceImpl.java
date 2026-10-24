@@ -4,10 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import in.MoProjekt.foodweb.entity.CategoryEntity;
 import in.MoProjekt.foodweb.entity.FoodEntity;
 import in.MoProjekt.foodweb.entity.FoodImageEntity;
 import in.MoProjekt.foodweb.io.FoodRequest;
@@ -40,7 +38,10 @@ public class FoodServiceImpl implements FoodService {
     private FoodRepository foodRepository;
 
     @Autowired
-    private OpenAITranslationService translator;
+    private TranslationHelper translationHelper;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Autowired
     private FoodImageRepository foodImageRepository;
@@ -91,23 +92,35 @@ public class FoodServiceImpl implements FoodService {
         }
     }
 
-    private FoodResponse convertToResponse(FoodEntity entity){
+    private FoodResponse convertToResponse(FoodEntity entity, Map<String, CategoryEntity> categories){
     return FoodResponse.builder()
             .id(entity.getId())
             .name(entity.getName())               // komplette Map
             .description(entity.getDescription()) // komplette Map
             .price(entity.getPrice())
-            .category(entity.getCategory())
+            .category(categoryName(entity, categories))
+            .categoryId(entity.getCategoryId())
             .imageUrl(entity.getImageUrl())
             .build();
 }
 
+    // Aktueller deutscher Name der Kategorie, sonst der gespeicherte Text
+    private String categoryName(FoodEntity entity, Map<String, CategoryEntity> categories) {
+        CategoryEntity category = entity.getCategoryId() != null ? categories.get(entity.getCategoryId()) : null;
+        if (category != null && category.getName() != null && category.getName().get("de") != null) {
+            return category.getName().get("de");
+        }
+        return entity.getCategory();
+    }
+
 
     @Override
 public List<FoodResponse> readFoods(String lang) {
+    // Kategorien einmal laden statt pro Gericht
+    Map<String, CategoryEntity> categories = categoryService.categoriesById();
     // lang=all liefert alle Sprachen (für das Admin-Panel)
     return foodRepository.findAll().stream()
-            .map(food -> ALL_LANGUAGES.equals(lang) ? convertToResponse(food) : convertToResponse(food, lang))
+            .map(food -> ALL_LANGUAGES.equals(lang) ? convertToResponse(food, categories) : convertToResponse(food, lang, categories))
             .collect(Collectors.toList());
 }
 
@@ -116,7 +129,8 @@ public List<FoodResponse> readFoods(String lang) {
 public FoodResponse readFood(String id, String lang) {
     FoodEntity entity = foodRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Food not found"));
-    return ALL_LANGUAGES.equals(lang) ? convertToResponse(entity) : convertToResponse(entity, lang);
+    Map<String, CategoryEntity> categories = categoryService.categoriesById();
+    return ALL_LANGUAGES.equals(lang) ? convertToResponse(entity, categories) : convertToResponse(entity, lang, categories);
 }
 
 
@@ -158,18 +172,6 @@ public void deleteFood(String id) {
     }
 
 
-   
-    // Gewünschte Sprache, sonst Englisch, sonst Deutsch
-    private String textFor(Map<String, String> texts, String lang) {
-        for (String candidate : List.of(lang, "en", "de")) {
-            String text = texts.get(candidate);
-            if (text != null && !text.isBlank()) {
-                return text;
-            }
-        }
-        return "";
-    }
-
     @SuppressWarnings("unchecked")
 private Map<String, String> cast(Object obj) {
     if (obj instanceof Map<?, ?> map) {
@@ -178,20 +180,21 @@ private Map<String, String> cast(Object obj) {
     return Map.of();
 }
 
-private FoodResponse convertToResponse(FoodEntity entity, String lang) {
+private FoodResponse convertToResponse(FoodEntity entity, String lang, Map<String, CategoryEntity> categories) {
 
     Map<String, String> nameMap = cast(entity.getName());
     Map<String, String> descMap = cast(entity.getDescription());
 
-    String name = textFor(nameMap, lang);
-    String desc = textFor(descMap, lang);
+    String name = TranslationHelper.textFor(nameMap, lang);
+    String desc = TranslationHelper.textFor(descMap, lang);
 
     return FoodResponse.builder()
         .id(entity.getId())
         .name(Map.of(lang, name))
         .description(Map.of(lang, desc))
         .price(entity.getPrice())
-        .category(entity.getCategory())
+        .category(categoryName(entity, categories))
+        .categoryId(entity.getCategoryId())
         .imageUrl(entity.getImageUrl())
         .build();
 }
@@ -203,21 +206,27 @@ public FoodResponse addFood(FoodRequest request, MultipartFile file) {
     if (file == null || file.isEmpty() || file.getContentType() == null || !file.getContentType().startsWith("image/")) {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please upload an image");
     }
+    // Erst prüfen, dann Bild hochladen (sonst bleiben Bilder ohne Gericht liegen)
+    validate(request);
+    CategoryEntity category = categoryService.resolveForFood(request.getCategoryId(), request.getCategory());
     String imageUrl = storeImage(file);
 
-    validate(request);
-
     FoodEntity entity = new FoodEntity();
-    entity.setName(completeTranslations(request.getName()));
-    entity.setDescription(completeTranslations(request.getDescription()));
-    entity.setCategory(request.getCategory());
+    entity.setName(translationHelper.completeTranslations(request.getName()));
+    entity.setDescription(translationHelper.completeTranslations(request.getDescription()));
+    setCategory(entity, category);
     entity.setPrice(request.getPrice());
     entity.setImageUrl(imageUrl);
 
     FoodEntity saved = foodRepository.save(entity);
 
-    return convertToResponse(saved, "de");
+    return convertToResponse(saved, "de", Map.of(category.getId(), category));
 }
+
+    private void setCategory(FoodEntity entity, CategoryEntity category) {
+        entity.setCategoryId(category.getId());
+        entity.setCategory(category.getName() != null ? category.getName().get("de") : null);
+    }
 
     // Erst S3 versuchen; klappt das nicht (z. B. AWS-Zugang abgelaufen), Bild in MongoDB speichern
     private String storeImage(MultipartFile file) {
@@ -251,6 +260,7 @@ public FoodResponse addFood(FoodRequest request, MultipartFile file) {
         validate(request);
         FoodEntity entity = foodRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Food not found"));
+        CategoryEntity category = categoryService.resolveForFood(request.getCategoryId(), request.getCategory());
 
         if (file != null && !file.isEmpty()) {
             if (file.getContentType() == null || !file.getContentType().startsWith("image/")) {
@@ -260,17 +270,17 @@ public FoodResponse addFood(FoodRequest request, MultipartFile file) {
             entity.setImageUrl(storeImage(file));
             deleteImage(oldImageUrl);
         }
-        entity.setName(completeTranslations(request.getName()));
-        entity.setDescription(completeTranslations(request.getDescription()));
-        entity.setCategory(request.getCategory());
+        entity.setName(translationHelper.completeTranslations(request.getName()));
+        entity.setDescription(translationHelper.completeTranslations(request.getDescription()));
+        setCategory(entity, category);
         entity.setPrice(request.getPrice());
 
-        return convertToResponse(foodRepository.save(entity));
+        return convertToResponse(foodRepository.save(entity), Map.of(category.getId(), category));
     }
 
     @Override
     public Map<String, String> translate(String germanText) {
-        return completeTranslations(Map.of("de", germanText));
+        return translationHelper.completeTranslations(Map.of("de", germanText));
     }
 
     private void validate(FoodRequest request) {
@@ -281,36 +291,6 @@ public FoodResponse addFood(FoodRequest request, MultipartFile file) {
         if (request.getPrice() < 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Price must not be negative");
         }
-    }
-
-    // Leere Sprachen per KI aus dem Deutschen übersetzen (falls OpenAI nicht erreichbar: leer lassen)
-    private Map<String, String> completeTranslations(Map<String, String> texts) {
-        Map<String, String> result = new HashMap<>();
-        texts.forEach((lang, text) -> {
-            if (OpenAITranslationService.LANGUAGES.containsKey(lang) && text != null && !text.isBlank()) {
-                result.put(lang, text.trim());
-            }
-        });
-        String de = result.getOrDefault("de", "");
-        if (de.isEmpty()) {
-            return result;
-        }
-        for (Map.Entry<String, String> language : OpenAITranslationService.LANGUAGES.entrySet()) {
-            if (result.containsKey(language.getKey())) {
-                continue;
-            }
-            try {
-                // höchstens 20 Sekunden auf OpenAI warten, sonst ohne Übersetzung speichern
-                String translated = CompletableFuture.supplyAsync(() -> translator.translate(de, language.getValue()))
-                        .get(20, TimeUnit.SECONDS);
-                if (translated != null && !translated.isBlank()) {
-                    result.put(language.getKey(), translated.trim());
-                }
-            } catch (Exception ex) {
-                System.out.println("Translation to " + language.getValue() + " failed: " + ex.getMessage());
-            }
-        }
-        return result;
     }
 
 

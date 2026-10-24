@@ -17,7 +17,9 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import in.MoProjekt.foodweb.entity.CategoryEntity;
 import in.MoProjekt.foodweb.entity.FoodEntity;
+import in.MoProjekt.foodweb.exception.CategoryException;
 import in.MoProjekt.foodweb.entity.FoodImageEntity;
 import in.MoProjekt.foodweb.io.FoodRequest;
 import in.MoProjekt.foodweb.io.FoodResponse;
@@ -35,12 +37,20 @@ class FoodServiceImplTest {
     @Mock private FoodRepository foodRepository;
     @Mock private FoodImageRepository foodImageRepository;
     @Mock private OpenAITranslationService translator;
+    @Mock private CategoryService categoryService;
     @InjectMocks private FoodServiceImpl foodService;
+
+    private final CategoryEntity pasta = CategoryEntity.builder().id("c2").slug("pasta")
+            .name(java.util.Map.of("de", "Pasta", "en", "Pasta", "ar", "معكرونة")).build();
+    private final CategoryEntity pizza = CategoryEntity.builder().id("c1").slug("pizza")
+            .name(java.util.Map.of("de", "Pizza", "en", "Pizza", "ar", "بيتزا")).build();
 
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(foodService, "bucketName", "bucket");
         ReflectionTestUtils.setField(foodService, "backendUrl", "https://api.example.com");
+        // Echte Übersetzungslogik, nur OpenAI ist gemockt
+        ReflectionTestUtils.setField(foodService, "translationHelper", new TranslationHelper(translator));
     }
 
     @Test
@@ -54,6 +64,7 @@ class FoodServiceImplTest {
         });
         when(foodRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(translator.translate(anyString(), anyString())).thenReturn("Pasta EN");
+        when(categoryService.resolveForFood(null, "Pasta")).thenReturn(pasta);
 
         FoodRequest request = new FoodRequest();
         request.setName("Pasta");
@@ -89,6 +100,7 @@ class FoodServiceImplTest {
         when(foodRepository.findById("f1")).thenReturn(java.util.Optional.of(food));
         when(foodRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(translator.translate("Lecker", "English")).thenReturn("Tasty");
+        when(categoryService.resolveForFood(null, "Pizza")).thenReturn(pizza);
 
         FoodRequest request = new FoodRequest();
         request.setName(java.util.Map.of("de", "Pizza", "en", "Pizza", "ar", "بيتزا"));
@@ -111,6 +123,59 @@ class FoodServiceImplTest {
         FoodRequest multi = mapper.readValue("{\"name\":{\"de\":\"Pizza\",\"ar\":\"بيتزا\"}}", FoodRequest.class);
         assertEquals(java.util.Map.of("de", "Pizza"), legacy.getName());
         assertEquals("بيتزا", multi.getName().get("ar"));
+    }
+
+    @Test
+    void oldCategoryStringIsMappedToCategoryId() throws Exception {
+        // Altes Admin-Panel schickt nur den deutschen Namen
+        FoodRequest request = new com.fasterxml.jackson.databind.ObjectMapper().readValue(
+                "{\"name\":\"Cola\",\"category\":\"Getränke\",\"price\":2.5}", FoodRequest.class);
+        CategoryEntity drinks = CategoryEntity.builder().id("c7").slug("getraenke")
+                .name(java.util.Map.of("de", "Getränke", "en", "Drinks", "ar", "مشروبات")).build();
+        FoodEntity food = FoodEntity.builder().id("f1").category("Getränke").build();
+        when(foodRepository.findById("f1")).thenReturn(java.util.Optional.of(food));
+        when(foodRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(categoryService.resolveForFood(null, "Getränke")).thenReturn(drinks);
+
+        FoodResponse response = foodService.updateFood("f1", request, null);
+
+        assertEquals("c7", food.getCategoryId());
+        assertEquals("Getränke", food.getCategory());
+        assertEquals("c7", response.getCategoryId());
+        assertEquals("Getränke", response.getCategory());
+    }
+
+    @Test
+    void responseUsesCurrentGermanCategoryNameAndKeepsOldString() {
+        // f1 verweist auf eine umbenannte Kategorie, f2 ist noch nicht migriert
+        FoodEntity renamed = FoodEntity.builder().id("f1").categoryId("c7").category("Getränke")
+                .name(java.util.Map.of("de", "Cola")).description(java.util.Map.of()).build();
+        FoodEntity legacy = FoodEntity.builder().id("f2").category("Pizza")
+                .name(java.util.Map.of("de", "Margherita")).description(java.util.Map.of()).build();
+        when(foodRepository.findAll()).thenReturn(java.util.List.of(renamed, legacy));
+        when(categoryService.categoriesById()).thenReturn(java.util.Map.of("c7", CategoryEntity.builder().id("c7")
+                .name(java.util.Map.of("de", "Getränke & Säfte")).build()));
+
+        java.util.List<FoodResponse> foods = foodService.readFoods("en");
+
+        assertEquals("Getränke & Säfte", foods.get(0).getCategory());
+        assertEquals("c7", foods.get(0).getCategoryId());
+        assertEquals("Pizza", foods.get(1).getCategory());
+        assertEquals(null, foods.get(1).getCategoryId());
+    }
+
+    @Test
+    void unknownCategoryIsRejectedBeforeImageUpload() {
+        when(categoryService.resolveForFood(null, "Suppe"))
+                .thenThrow(CategoryException.invalid("category", "Unknown category: Suppe"));
+        FoodRequest request = new FoodRequest();
+        request.setName("Linsensuppe");
+        request.setCategory("Suppe");
+        MockMultipartFile file = new MockMultipartFile("file", "foto.jpg", "image/jpeg", new byte[] { 1 });
+
+        CategoryException ex = assertThrows(CategoryException.class, () -> foodService.addFood(request, file));
+        assertEquals("CATEGORY_INVALID", ex.getCode());
+        org.mockito.Mockito.verifyNoInteractions(s3Client, foodImageRepository, foodRepository);
     }
 
     @Test
