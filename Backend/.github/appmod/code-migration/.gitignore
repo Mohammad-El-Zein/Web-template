@@ -1,0 +1,13 @@
+# Java / Spring Boot
+target/
+
+# JDK niemals mit pushen!
+src/main/resources/openJdk-25/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
