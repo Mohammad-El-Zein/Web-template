@@ -1,10 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { addFood, getFood, translateText, updateFood } from '../../services/foodService';
-import { LANGUAGES } from '../../i18n';
-import { CATEGORIES, MAX_IMAGE_SIZE } from '../../constants';
+import { getCategories } from '../../services/categoryService';
+import { LANGUAGES, localizedText } from '../../i18n';
+import { apiErrorField, apiErrorMessage } from '../../utils/apiErrors';
+import LangTabs from '../../components/common/LangTabs';
+import TranslateBar from '../../components/common/TranslateBar';
+import ImageDropzone from '../../components/common/ImageDropzone';
 
 const emptyTexts = () => ({ de: '', en: '', ar: '' });
 
@@ -20,29 +24,44 @@ const FoodForm = () => {
   const { id } = useParams();
   const isEdit = Boolean(id);
   const navigate = useNavigate();
-  const fileInput = useRef(null);
 
   const [activeLang, setActiveLang] = useState('de');
   const [name, setName] = useState(emptyTexts());
   const [description, setDescription] = useState(emptyTexts());
-  const [category, setCategory] = useState('Pizza');
+  const [categories, setCategories] = useState([]);
+  const [categoryId, setCategoryId] = useState('');
+  // Alter Kategorie-Text, falls das Gericht noch keiner Kategorie zugeordnet ist
+  const [legacyCategory, setLegacyCategory] = useState('');
   const [price, setPrice] = useState('');
   const [image, setImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState('');
-  const [dragging, setDragging] = useState(false);
-  const [loading, setLoading] = useState(isEdit);
+  const [imageUrl, setImageUrl] = useState('');
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [translating, setTranslating] = useState(false);
 
   useEffect(() => {
-    if (!isEdit) return;
-    getFood(id)
-      .then((food) => {
+    const loadCategories = getCategories().catch(() => {
+      toast.error(t('categories.loadError'));
+      return [];
+    });
+    Promise.all([loadCategories, isEdit ? getFood(id) : null])
+      .then(([categoryList, food]) => {
+        setCategories(categoryList);
+        if (!food) {
+          // Neues Gericht: erste aktive Kategorie vorauswählen
+          setCategoryId((categoryList.find((c) => c.active) || categoryList[0])?.id || '');
+          return;
+        }
         setName(toTexts(food.name));
         setDescription(toTexts(food.description));
-        setCategory(food.category || 'Pizza');
         setPrice(food.price ?? '');
-        setImagePreview(food.imageUrl || '');
+        setImageUrl(food.imageUrl || '');
+        if (categoryList.some((c) => c.id === food.categoryId)) {
+          setCategoryId(food.categoryId);
+        } else {
+          setCategoryId('');
+          setLegacyCategory(food.category || '');
+        }
       })
       .catch(() => {
         toast.error(t('form.loadError'));
@@ -50,33 +69,6 @@ const FoodForm = () => {
       })
       .finally(() => setLoading(false));
   }, [id, isEdit, navigate, t]);
-
-  // Vorschau-URL wieder freigeben
-  useEffect(() => {
-    if (!image) return undefined;
-    const url = URL.createObjectURL(image);
-    setImagePreview(url);
-    return () => URL.revokeObjectURL(url);
-  }, [image]);
-
-  const pickImage = (file) => {
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      toast.error(t('form.invalidImage'));
-      return;
-    }
-    if (file.size > MAX_IMAGE_SIZE) {
-      toast.error(t('form.imageTooLarge'));
-      return;
-    }
-    setImage(file);
-  };
-
-  const onDrop = (event) => {
-    event.preventDefault();
-    setDragging(false);
-    pickImage(event.dataTransfer.files[0]);
-  };
 
   const translateFromGerman = async () => {
     if (!name.de.trim() || !description.de.trim()) {
@@ -105,12 +97,17 @@ const FoodForm = () => {
       setActiveLang('de');
       return;
     }
+    if (!categoryId) {
+      toast.error(t('form.categoryRequired'));
+      return;
+    }
     if (!isEdit && !image) {
       toast.error(t('form.imageRequired'));
       return;
     }
     setSaving(true);
-    const foodData = { name, description, category, price: Number(price) };
+    // Bild ist bereits verkleinert (ImageDropzone) und geht wie bisher mit dem Gericht an /api/foods
+    const foodData = { name, description, categoryId, price: Number(price) };
     try {
       if (isEdit) {
         await updateFood(id, foodData, image);
@@ -121,10 +118,9 @@ const FoodForm = () => {
       }
       navigate('/foods');
     } catch (error) {
-      const status = error.response?.status;
-      if (status === 413) toast.error(t('form.imageTooLarge'));
-      else if (status === 400) toast.error(t('form.invalidImage'));
-      else toast.error(status ? t('form.saveError', { code: status }) : t('form.noResponse'));
+      toast.error(apiErrorMessage(error, t));
+      // Kategorie wurde inzwischen gelöscht -> neu auswählen lassen
+      if (apiErrorField(error) === 'categoryId') setCategoryId('');
     } finally {
       setSaving(false);
     }
@@ -136,6 +132,7 @@ const FoodForm = () => {
 
   const current = LANGUAGES.find((l) => l.code === activeLang);
   const fieldDir = current.dir || 'ltr';
+  const filled = Object.fromEntries(LANGUAGES.map((l) => [l.code, !!name[l.code].trim()]));
 
   return (
     <form onSubmit={onSubmit}>
@@ -150,16 +147,7 @@ const FoodForm = () => {
         <section className="card-x">
           <div className="card-x-header"><h2>{t('form.detailsTitle')}</h2></div>
           <div className="card-x-body">
-            <div className="lang-tabs" role="tablist">
-              {LANGUAGES.map((lang) => (
-                <button key={lang.code} type="button" role="tab" aria-selected={activeLang === lang.code}
-                  className={`lang-tab ${activeLang === lang.code ? 'active' : ''}`} onClick={() => setActiveLang(lang.code)}>
-                  <img src={lang.flag} alt="" />
-                  <span>{t(`languages.${lang.code}`)}</span>
-                  <span className={`dot ${name[lang.code].trim() ? 'filled' : ''}`} aria-hidden="true"></span>
-                </button>
-              ))}
-            </div>
+            <LangTabs active={activeLang} onChange={setActiveLang} filled={filled} />
 
             <div className="mb-3">
               <label htmlFor="food-name" className="form-label">
@@ -179,15 +167,7 @@ const FoodForm = () => {
                 value={description[activeLang]} onChange={(e) => setDescription({ ...description, [activeLang]: e.target.value })} />
             </div>
 
-            <div className="translate-bar">
-              <p><i className="bi bi-info-circle"></i> {t('form.autoTranslateHint')}</p>
-              <button type="button" className="btn btn-soft" onClick={translateFromGerman} disabled={translating}>
-                {translating
-                  ? <span className="spinner-border spinner-inline" aria-hidden="true"></span>
-                  : <i className="bi bi-stars"></i>}
-                {translating ? t('form.translating') : t('form.translate')}
-              </button>
-            </div>
+            <TranslateBar onTranslate={translateFromGerman} busy={translating} />
           </div>
         </section>
 
@@ -195,29 +175,7 @@ const FoodForm = () => {
           <section className="card-x">
             <div className="card-x-header"><h2>{t('form.imageTitle')}</h2></div>
             <div className="card-x-body">
-              <div
-                className={`dropzone ${dragging ? 'dragging' : ''} ${imagePreview ? 'has-image' : ''}`}
-                role="button" tabIndex={0}
-                onClick={() => fileInput.current?.click()}
-                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && fileInput.current?.click()}
-                onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-                onDragLeave={() => setDragging(false)}
-                onDrop={onDrop}
-              >
-                {imagePreview ? (
-                  <>
-                    <img src={imagePreview} alt="" />
-                    <span className="dropzone-change"><i className="bi bi-camera"></i>{t('form.changeImage')}</span>
-                  </>
-                ) : (
-                  <>
-                    <i className="bi bi-cloud-arrow-up"></i>
-                    <strong>{t('form.imageHint')}</strong>
-                    <small>{t('form.imageFormats')}</small>
-                  </>
-                )}
-              </div>
-              <input ref={fileInput} type="file" accept="image/*" hidden onChange={(e) => pickImage(e.target.files[0])} />
+              <ImageDropzone file={image} currentUrl={imageUrl} onChange={setImage} />
             </div>
           </section>
 
@@ -225,10 +183,24 @@ const FoodForm = () => {
             <div className="card-x-header"><h2>{t('form.detailsCard')}</h2></div>
             <div className="card-x-body">
               <div className="mb-3">
-                <label htmlFor="food-category" className="form-label">{t('form.category')}</label>
-                <select id="food-category" className="form-select" value={category} onChange={(e) => setCategory(e.target.value)}>
-                  {CATEGORIES.map((c) => <option key={c} value={c}>{t(`categories.${c}`)}</option>)}
+                <label htmlFor="food-category" className="form-label">{t('form.category')} <span className="required-mark">*</span></label>
+                <select id="food-category" className="form-select" value={categoryId} onChange={(e) => setCategoryId(e.target.value)}
+                  disabled={categories.length === 0}>
+                  {!categoryId && <option value="" disabled>{t('form.chooseCategory')}</option>}
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {localizedText(c.name)}{c.active ? '' : ` (${t('categories.inactive')})`}
+                    </option>
+                  ))}
                 </select>
+                {categories.length === 0 ? (
+                  <p className="form-hint">
+                    {t('form.noCategories')}{' '}
+                    <Link to="/categories/new" className="link-btn">{t('form.createCategory')}</Link>
+                  </p>
+                ) : !categoryId && legacyCategory ? (
+                  <p className="form-hint">{t('form.legacyCategory', { name: legacyCategory })}</p>
+                ) : null}
               </div>
               <div>
                 <label htmlFor="food-price" className="form-label">{t('form.price')} <span className="required-mark">*</span></label>
@@ -245,7 +217,7 @@ const FoodForm = () => {
 
       <div className="form-actions">
         <Link to="/foods" className="btn btn-light">{t('common.cancel')}</Link>
-        <button type="submit" className="btn btn-primary px-4" disabled={saving}>
+        <button type="submit" className="btn btn-primary px-4" disabled={saving || categories.length === 0}>
           {saving && <span className="spinner-border spinner-inline" aria-hidden="true"></span>}
           {saving ? t('form.saving') : t('common.save')}
         </button>

@@ -8,6 +8,8 @@ import Topbar from './components/Layout/Topbar';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Foods from './pages/Foods/Foods';
 import FoodForm from './pages/FoodForm/FoodForm';
+import Categories from './pages/Categories/Categories';
+import CategoryForm from './pages/CategoryForm/CategoryForm';
 import Orders from './pages/Orders/Orders';
 import Profile from './pages/Profile/Profile';
 import Login from './pages/Login/Login';
@@ -19,6 +21,9 @@ const pageTitleKey = (path) => {
   if (path.startsWith('/foods/new')) return 'form.addTitle';
   if (path.match(/^\/foods\/[^/]+\/edit/)) return 'form.editTitle';
   if (path.startsWith('/foods')) return 'foods.title';
+  if (path.startsWith('/categories/new')) return 'categoryForm.addTitle';
+  if (path.match(/^\/categories\/[^/]+\/edit/)) return 'categoryForm.editTitle';
+  if (path.startsWith('/categories')) return 'categories.title';
   if (path.startsWith('/orders')) return 'orders.title';
   if (path.startsWith('/profile')) return 'profile.title';
   return 'nav.dashboard';
@@ -83,6 +88,9 @@ const App = () => {
               <Route path="/foods" element={<Foods />} />
               <Route path="/foods/new" element={<FoodForm />} />
               <Route path="/foods/:id/edit" element={<FoodForm />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/categories/new" element={<CategoryForm />} />
+              <Route path="/categories/:id/edit" element={<CategoryForm />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/profile" element={<Profile />} />
               {/* alte Adressen */}

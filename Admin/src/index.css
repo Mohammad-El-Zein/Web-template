@@ -950,9 +950,59 @@ html[lang='ar'] .table-x th {
   background: var(--danger-soft);
 }
 
+.action-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
 .actions {
   display: flex;
   gap: 8px;
+}
+
+/* ---------- Schalter (z. B. Kategorie aktiv) ---------- */
+.switch-x {
+  position: relative;
+  flex-shrink: 0;
+  width: 42px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: var(--border-strong);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.switch-x-knob {
+  position: absolute;
+  top: 3px;
+  inset-inline-start: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: inset-inline-start 0.15s ease;
+}
+
+.switch-x.on {
+  background: var(--brand);
+}
+
+.switch-x.on .switch-x-knob {
+  inset-inline-start: 21px;
+}
+
+.switch-x:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.switch-x:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .status-select {

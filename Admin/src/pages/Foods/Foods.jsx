@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { deleteFood, getFoodList } from '../../services/foodService';
+import { getCategories } from '../../services/categoryService';
 import { formatPrice, localizedText, LANGUAGES } from '../../i18n';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 
-import { CATEGORIES } from '../../constants';
+// Filterwert für Gerichte, die noch keiner Kategorie zugeordnet sind
+const NO_CATEGORY = 'none';
 
 const hasText = (texts, lang) => typeof texts === 'object' && texts !== null && !!(texts[lang] || '').trim();
 
@@ -14,15 +16,23 @@ const Foods = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [foods, setFoods] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('');
+  const [categoryId, setCategoryId] = useState('');
   const [toDelete, setToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
   const fetchFoods = async () => {
     try {
-      setFoods(await getFoodList());
+      // Ohne Kategorien trotzdem die Gerichte anzeigen
+      const loadCategories = getCategories().catch(() => {
+        toast.error(t('categories.loadError'));
+        return [];
+      });
+      const [foodList, categoryList] = await Promise.all([getFoodList(), loadCategories]);
+      setFoods(foodList);
+      setCategories(categoryList);
     } catch {
       toast.error(t('foods.loadError'));
     } finally {
@@ -35,15 +45,20 @@ const Foods = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const categoryById = useMemo(() => Object.fromEntries(categories.map((c) => [c.id, c])), [categories]);
+  const hasUnassigned = useMemo(() => foods.some((food) => !categoryById[food.categoryId]), [foods, categoryById]);
+
   // Suche in allen Sprachen
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
     return foods.filter((food) => {
       const names = typeof food.name === 'object' && food.name ? Object.values(food.name) : [food.name || ''];
       const matchesSearch = !query || names.some((n) => (n || '').toLowerCase().includes(query));
-      return matchesSearch && (!category || food.category === category);
+      const matchesCategory = !categoryId
+        || (categoryId === NO_CATEGORY ? !categoryById[food.categoryId] : food.categoryId === categoryId);
+      return matchesSearch && matchesCategory;
     });
-  }, [foods, search, category]);
+  }, [foods, search, categoryId, categoryById]);
 
   const closeDialog = useCallback(() => setToDelete(null), []);
 
@@ -78,10 +93,11 @@ const Foods = () => {
             <input type="search" className="form-control" placeholder={t('foods.searchPlaceholder')}
               value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <select className="form-select" value={category} onChange={(e) => setCategory(e.target.value)}
+          <select className="form-select" value={categoryId} onChange={(e) => setCategoryId(e.target.value)}
             aria-label={t('foods.category')}>
             <option value="">{t('foods.allCategories')}</option>
-            {CATEGORIES.map((c) => <option key={c} value={c}>{t(`categories.${c}`)}</option>)}
+            {categories.map((c) => <option key={c.id} value={c.id}>{localizedText(c.name)}</option>)}
+            {hasUnassigned && <option value={NO_CATEGORY}>{t('foods.noCategory')}</option>}
           </select>
         </div>
 
@@ -113,7 +129,16 @@ const Foods = () => {
                         </div>
                       </div>
                     </td>
-                    <td><span className="badge-x neutral no-dot">{t(`categories.${food.category}`, food.category)}</span></td>
+                    <td>
+                      {categoryById[food.categoryId] ? (
+                        <span className="badge-x neutral no-dot">{localizedText(categoryById[food.categoryId].name)}</span>
+                      ) : (
+                        // Alter Text ohne Zuordnung: sichtbar markieren, damit das Gericht bearbeitet wird
+                        <span className="badge-x warning no-dot" title={t('foods.unassigned')}>
+                          {food.category || t('foods.noCategory')}
+                        </span>
+                      )}
+                    </td>
                     <td className="nowrap fw-semibold">{formatPrice(food.price)}</td>
                     <td>
                       <div className="lang-chips">
