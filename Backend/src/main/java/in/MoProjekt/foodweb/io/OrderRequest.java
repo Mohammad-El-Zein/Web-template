@@ -13,4 +13,6 @@ public class OrderRequest {
     private String email;
     private String phoneNumber;
     private String orderStatus;
+    // "DELIVERY" oder "PICKUP", optional (Standard: DELIVERY)
+    private String orderType;
 }

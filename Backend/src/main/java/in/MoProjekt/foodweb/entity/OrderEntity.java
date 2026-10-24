@@ -25,6 +25,8 @@ public class OrderEntity {
     private String email;
     private List<OrderItem> orderedItems;
     private double amount;
+    private String orderType;
+    private double deliveryFee;
     private String PaymentStatus;
     private String stripeOrderId;
     private String stripeSignature;

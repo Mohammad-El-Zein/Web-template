@@ -21,24 +21,35 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import in.MoProjekt.foodweb.controller.AdminController;
 import in.MoProjekt.foodweb.controller.AdminOrderController;
+import in.MoProjekt.foodweb.controller.AdminSettingsController;
 import in.MoProjekt.foodweb.controller.AiController;
 import in.MoProjekt.foodweb.controller.FoodController;
+import in.MoProjekt.foodweb.controller.OrderController;
+import in.MoProjekt.foodweb.controller.SiteSettingsController;
 import in.MoProjekt.foodweb.controller.UserController;
 import in.MoProjekt.foodweb.entity.FoodImageEntity;
+import in.MoProjekt.foodweb.entity.SiteSettingsEntity;
 import in.MoProjekt.foodweb.entity.UserEntity;
+import in.MoProjekt.foodweb.exception.OrderRejectedException;
+import in.MoProjekt.foodweb.exception.SettingsValidationException;
 import in.MoProjekt.foodweb.filters.JwtAuthenticationFilter;
 import in.MoProjekt.foodweb.io.NutritionResponse;
+import in.MoProjekt.foodweb.repository.OrderRepository;
 import in.MoProjekt.foodweb.repository.UserRepository;
 import in.MoProjekt.foodweb.service.AppUserDetailsService;
 import in.MoProjekt.foodweb.service.FoodService;
 import in.MoProjekt.foodweb.service.NutritionService;
 import in.MoProjekt.foodweb.service.OrderService;
+import in.MoProjekt.foodweb.service.PaymentService;
 import in.MoProjekt.foodweb.service.RateLimiter;
+import in.MoProjekt.foodweb.service.SiteSettingsDefaults;
+import in.MoProjekt.foodweb.service.SiteSettingsService;
 import in.MoProjekt.foodweb.service.UserService;
 import in.MoProjekt.foodweb.io.ProfileResponse;
 import in.MoProjekt.foodweb.util.JwtUtil;
 
-@WebMvcTest(controllers = { FoodController.class, AdminOrderController.class, AiController.class, AdminController.class, UserController.class })
+@WebMvcTest(controllers = { FoodController.class, AdminOrderController.class, AiController.class, AdminController.class, UserController.class,
+        SiteSettingsController.class, AdminSettingsController.class, OrderController.class })
 @Import({ SecurityConfig.class, JwtAuthenticationFilter.class, JwtUtil.class, AppUserDetailsService.class, RateLimiter.class })
 @TestPropertySource(properties = {
         "jwt.secret.key=dGVzdFNlY3JldEtleUZvclVuaXRUZXN0c09ubHlOb3RQcm9kdWN0aW9uMTIzNDU2",
@@ -58,6 +69,9 @@ class SecurityConfigTest {
     @MockitoBean private OrderService orderService;
     @MockitoBean private NutritionService nutritionService;
     @MockitoBean private UserService userService;
+    @MockitoBean private SiteSettingsService siteSettingsService;
+    @MockitoBean private PaymentService paymentService;
+    @MockitoBean private OrderRepository orderRepository;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -127,6 +141,71 @@ class SecurityConfigTest {
         mvc.perform(post("/api/nutrition/analyze").contentType(MediaType.APPLICATION_JSON).content(valid)).andExpect(status().isOk());
         mvc.perform(post("/api/nutrition/analyze").contentType(MediaType.APPLICATION_JSON).content(valid)).andExpect(status().isOk());
         mvc.perform(post("/api/nutrition/analyze").contentType(MediaType.APPLICATION_JSON).content(valid)).andExpect(status().isTooManyRequests());
+    }
+
+    @Test
+    void settingsAreReadableByEveryone() throws Exception {
+        when(siteSettingsService.getSettings()).thenReturn(SiteSettingsDefaults.create(2025));
+        mvc.perform(get("/api/settings"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.restaurantName").value("FlavorHaus"))
+                .andExpect(jsonPath("$.primaryColor").value("#9a401c"))
+                .andExpect(jsonPath("$.ordering.ordersOnlyDuringOpeningHours").value(false))
+                .andExpect(jsonPath("$.openingHours.days.MONDAY[0].open").value("11:00"))
+                .andExpect(jsonPath("$.id").doesNotExist());
+        mvc.perform(get("/api/settings").header("Authorization", "Bearer kaputt")).andExpect(status().isOk());
+    }
+
+    @Test
+    void onlyAdminsCanChangeSettings() throws Exception {
+        String body = "{\"restaurantName\":\"Neu\"}";
+        when(siteSettingsService.updateSettings(any())).thenReturn(SiteSettingsEntity.builder().restaurantName("Neu").build());
+        mvc.perform(put("/api/admin/settings").contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isUnauthorized());
+        mvc.perform(put("/api/admin/settings").header("Authorization", token("user@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isForbidden());
+        mvc.perform(put("/api/admin/settings").header("Authorization", token("admin@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.restaurantName").value("Neu"));
+        // PUT auf den öffentlichen Pfad ist nicht erlaubt
+        mvc.perform(put("/api/settings").contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void invalidSettingsReturnJsonError() throws Exception {
+        when(siteSettingsService.updateSettings(any()))
+                .thenThrow(new SettingsValidationException("primaryColor", "Color must be a hex value like #9a401c"));
+        mvc.perform(put("/api/admin/settings").header("Authorization", token("admin@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content("{\"primaryColor\":\"rot\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("SETTINGS_INVALID"))
+                .andExpect(jsonPath("$.field").value("primaryColor"))
+                .andExpect(jsonPath("$.message").value("Color must be a hex value like #9a401c"));
+    }
+
+    @Test
+    void rejectedOrdersReturnJsonError() throws Exception {
+        String body = "{\"orderedItems\":[{\"foodId\":\"p1\",\"quantity\":1}]}";
+        when(orderService.createOrderWithPayment(any())).thenThrow(new OrderRejectedException(
+                OrderRejectedException.MIN_ORDER_NOT_REACHED, "Minimum order amount is 15.00 EUR",
+                java.util.Map.of("minOrderAmount", 15.0)));
+        mvc.perform(post("/api/orders/create").header("Authorization", token("user@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("MIN_ORDER_NOT_REACHED"))
+                .andExpect(jsonPath("$.message").value("Minimum order amount is 15.00 EUR"))
+                .andExpect(jsonPath("$.minOrderAmount").value(15.0));
+
+        org.mockito.Mockito.doThrow(
+                new OrderRejectedException(OrderRejectedException.RESTAURANT_CLOSED, "Restaurant is currently closed"))
+                .when(orderService).createOrderWithPayment(any());
+        mvc.perform(post("/api/orders/create").header("Authorization", token("user@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("RESTAURANT_CLOSED"))
+                .andExpect(jsonPath("$.minOrderAmount").doesNotExist());
     }
 
     @Test
