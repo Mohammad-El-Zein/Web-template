@@ -10,15 +10,18 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import './theme.css';
 import { StoreContextProvider } from './context/StoreContext.jsx';
 import { SettingsProvider } from './context/SettingsContext.jsx';
+import { CategoriesProvider } from './context/CategoriesContext.jsx';
 import "./i18n.js";
 
 // Einstellungen zuerst laden, damit Sprache und Farben stimmen, bevor die Gerichte geladen werden
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
   <SettingsProvider>
+  <CategoriesProvider>
   <StoreContextProvider>
      <App />
   </StoreContextProvider>
+  </CategoriesProvider>
   </SettingsProvider>
   </BrowserRouter>
 )

@@ -23,8 +23,23 @@ const ACCENT_VARIANTS = {
   "--accent-tint": 0.82,         // #fff2d9 (KI-Ergebnis)
 };
 
-const ACCENT_PROPERTIES = ["--accent", "--accent-rgb", "--accent-glow-rgb", "--accent-shadow-rgb", ...Object.keys(ACCENT_VARIANTS)];
-const PRIMARY_PROPERTIES = ["--primary", "--primary-rgb"];
+const ACCENT_PROPERTIES = ["--accent", "--accent-rgb", "--accent-glow-rgb", "--accent-shadow-rgb", "--on-accent", ...Object.keys(ACCENT_VARIANTS)];
+const PRIMARY_PROPERTIES = ["--primary", "--primary-rgb", "--on-primary"];
+
+// Kontrast nach WCAG: weiße oder dunkle Schrift, je nachdem was besser lesbar ist
+const DARK_TEXT = "#121212";
+const luminance = (rgb) => {
+  const [r, g, b] = rgb.map((v) => {
+    const c = v / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+const contrast = (a, b) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+export const readableTextOn = (hex) => {
+  const background = luminance(toRgb(hex));
+  return contrast(background, 1) >= contrast(background, luminance(toRgb(DARK_TEXT))) ? "#fff" : DARK_TEXT;
+};
 
 export const applyTheme = (primaryColor, accentColor) => {
   const style = document.documentElement.style;
@@ -33,6 +48,7 @@ export const applyTheme = (primaryColor, accentColor) => {
   if (HEX.test(primary) && primary !== DEFAULT_PRIMARY) {
     style.setProperty("--primary", primary);
     style.setProperty("--primary-rgb", toRgb(primary).join(", "));
+    style.setProperty("--on-primary", readableTextOn(primary));
   } else {
     PRIMARY_PROPERTIES.forEach((p) => style.removeProperty(p));
   }
@@ -44,8 +60,21 @@ export const applyTheme = (primaryColor, accentColor) => {
     style.setProperty("--accent-rgb", rgb.join(", "));
     style.setProperty("--accent-glow-rgb", rgb.join(", "));
     style.setProperty("--accent-shadow-rgb", rgb.join(", "));
+    style.setProperty("--on-accent", readableTextOn(accent));
     Object.entries(ACCENT_VARIANTS).forEach(([property, amount]) => style.setProperty(property, toHex(mix(rgb, amount))));
   } else {
     ACCENT_PROPERTIES.forEach((p) => style.removeProperty(p));
+  }
+
+  // Aktiver/Hover-Link in der Menüleiste: Akzentfarbe nur, wenn sie auf der Hauptfarbe lesbar ist (Kontrast >= 3)
+  const customColors = HEX.test(primary) && HEX.test(accent) && (primary !== DEFAULT_PRIMARY || accent !== DEFAULT_ACCENT);
+  if (customColors) {
+    const background = luminance(toRgb(primary));
+    const fallback = readableTextOn(primary);
+    const pick = (hex) => (contrast(luminance(toRgb(hex)), background) >= 3 ? hex : fallback);
+    style.setProperty("--nav-active", pick(accent));
+    style.setProperty("--nav-hover", pick(toHex(mix(toRgb(accent), ACCENT_VARIANTS["--accent-light"]))));
+  } else {
+    ["--nav-active", "--nav-hover"].forEach((p) => style.removeProperty(p));
   }
 };

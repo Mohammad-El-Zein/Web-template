@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
@@ -7,9 +6,9 @@ import ScrollReveal from "scrollreveal";
 import { analyzeNutrition } from "../../service/NutritionService";
 import "./FoodItem.css";
 import { useTranslation } from "react-i18next";
-import { getFoodImageById, handleFoodImageError } from "../../assets/assets";
+import FoodImage from "../FoodImage/FoodImage";
 
-const FoodItem = ({ name, description, id, imageUrl, price, category }) => {
+const FoodItem = ({ name, description, id, imageUrl, price }) => {
   const { increaseQty, decreaseQty, quantities } = useContext(StoreContext);
   const { t } = useTranslation();
 
@@ -106,12 +105,7 @@ const FoodItem = ({ name, description, id, imageUrl, price, category }) => {
 
       <div className={`food-card ${animateResult ? "highlight-card" : ""}`}>
         <Link to={`/food/${id}`}>
-          <img
-            src={getFoodImageById(id, category, imageUrl)}
-            onError={handleFoodImageError(category)}
-            alt={displayName}   
-            className="food-image"
-          />
+          <FoodImage src={imageUrl} alt={displayName} className="food-image" />
         </Link>
 
         <div className="food-body">
@@ -120,9 +114,8 @@ const FoodItem = ({ name, description, id, imageUrl, price, category }) => {
 
           <div className="food-bottom">
             <span className="food-price">
-              {price} {t("card.priceSuffix")}
+              {Number(price).toFixed(2)} {t("card.priceSuffix")}
             </span>
-            <span className="food-rating">⭐ 4.5</span>
           </div>
 
           {!nutrition && (

@@ -28,7 +28,7 @@ nav.navbar {
 }
 
 .navbar .nav-link {
-  color: #ffffff !important;
+  color: var(--on-primary) !important;
   text-align: center;
   font-size: 1.5rem;
   font-weight: 500;
@@ -38,18 +38,18 @@ nav.navbar {
 }
 
 .navbar .nav-link:hover {
-  color: var(--accent-light) !important;
+  color: var(--nav-hover) !important;
 }
 
 .navbar .nav-link.active {
-  color: var(--accent) !important;
+  color: var(--nav-active) !important;
   font-weight: 600;
 }
 
 .navbar .btn-login {
   padding: 8px 18px;
   background-color: transparent;
-  color: #ffffff !important;
+  color: var(--on-primary) !important;
   border: 2px solid #ffffff;
   border-radius: 8px;
   font-weight: 500;
@@ -59,13 +59,13 @@ nav.navbar {
 .navbar .btn-login:hover {
   background-color: var(--accent);
   border-color: var(--accent);
-  color: #ffffff !important;
+  color: var(--on-accent) !important;
 }
 
 .navbar .btn-register {
   padding: 8px 18px;
   background-color: transparent;
-  color: #ffffff !important;
+  color: var(--on-primary) !important;
   border: 2px solid #ffffff;
   border-radius: 8px;
   font-weight: 600;
@@ -75,7 +75,7 @@ nav.navbar {
 .navbar .btn-register:hover {
   background-color: var(--accent-dark);
   border-color: var(--accent-dark);
-  color: #ffffff !important;
+  color: var(--on-accent) !important;
 }
 
 .user-icon-wrapper::after {
@@ -93,12 +93,12 @@ nav.navbar {
 
 .user-icon {
   font-size: 40px !important;
-  color: white;
+  color: var(--on-primary);
   transition: color 0.2s;
 }
 
 .user-icon-wrapper:hover .user-icon {
-  color: var(--accent);
+  color: var(--nav-active);
 }
 
 @keyframes fadeDown {
@@ -123,7 +123,7 @@ nav.navbar {
 
 .dropdown-menu .dropdown-item:hover {
   background-color: var(--accent);
-  color: #ffffff;
+  color: var(--on-accent);
 }
 
 .navbar .container-fluid {
@@ -226,14 +226,14 @@ nav.navbar {
     background: transparent;
     border: none;
     text-align: left;
-    color: #fff;
+    color: var(--on-primary);
     font-size: 18px;
     padding: 10px 6px;
     cursor: pointer;
     width: 100%;
   }
   .mobile-link:hover {
-    color: var(--accent-light);
+    color: var(--nav-hover);
   }
 
   .mobile-sep {
@@ -252,7 +252,7 @@ nav.navbar {
   .mobile-icon-link,
   .mobile-icon-btn,
   .mobile-cart-link {
-    color: #fff;
+    color: var(--on-primary);
     text-decoration: none;
     background: transparent;
     border: none;
@@ -267,7 +267,7 @@ nav.navbar {
   .mobile-cart-link svg,
   .mobile-icon-btn svg {
     font-size: 22px;
-    color: #fff;
+    color: var(--on-primary);
   }
 }
 

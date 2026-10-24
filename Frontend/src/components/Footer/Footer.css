@@ -1,0 +1,93 @@
+/* Footer (Farben und Schriften wie der bisherige Footer) */
+.footer {
+  background: rgb(28, 27, 27);
+  color: white;
+  margin-top: 2rem;
+  padding-bottom: 1rem;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  padding: 40px 0 30px;
+}
+
+.footer-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-box h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 300;
+  font-family: "Righteous", sans-serif;
+  color: var(--accent);
+}
+
+.footer .social a {
+  display: inline-block;
+  height: 30px;
+  width: 30px;
+  line-height: 30px;
+  text-align: center;
+  border-radius: 50%;
+  background: #ffffff;
+  color: rgb(28, 27, 27);
+  margin-inline-end: 10px;
+  font-size: 20px;
+  transition: all 0.3s ease;
+  margin-top: 0.3rem;
+  margin-bottom: 0.7rem;
+}
+
+.footer .social a:hover {
+  background: #030303;
+  color: #fff;
+}
+
+/* Kontakt und Links untereinander */
+.footer-list {
+  gap: 0.6rem;
+  font-family: "Poppins", sans-serif;
+}
+
+.footer-list a,
+.footer-address {
+  color: #eeeceb;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.footer-list a {
+  width: fit-content;
+}
+
+.footer-list a:hover {
+  color: var(--accent);
+}
+
+.footer-address {
+  white-space: pre-line;
+}
+
+.copyright {
+  text-align: center;
+  padding: 1px;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: #faf9f9;
+  font-family: "Poppins", sans-serif;
+}
+
+.site-credit {
+  text-align: center;
+  margin: 0;
+  font-size: 0.8rem;
+  color: #9d9b9a;
+}
+
+.site-credit a {
+  color: inherit;
+}

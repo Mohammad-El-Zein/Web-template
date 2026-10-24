@@ -6,7 +6,6 @@ import { DEFAULT_SETTINGS, localized, normalizeSettings } from "../util/settings
 import { applyTheme } from "../util/theme";
 import { isOpenAt } from "../util/openingHours";
 import { SettingsContext } from "./settingsContext";
-import { assets } from "../assets/assets";
 
 const CACHE_KEY = "siteSettings";
 
@@ -27,16 +26,20 @@ const writeCache = (settings) => {
   }
 };
 
-// Favicon aus den Einstellungen, sonst das Logo
+// Favicon aus den Einstellungen, sonst das Logo, sonst keins
 const setFavicon = (url) => {
   let link = document.querySelector("link[rel='icon']");
+  if (!url) {
+    link?.remove();
+    return;
+  }
   if (!link) {
     link = document.createElement("link");
     link.rel = "icon";
     document.head.appendChild(link);
   }
   link.removeAttribute("type");
-  link.href = url || assets.logo;
+  link.href = url;
 };
 
 // Lädt die Einstellungen einmal beim Start. Beim ersten Besuch wird gewartet (neutraler Spinner),
@@ -89,8 +92,8 @@ export const SettingsProvider = ({ children }) => {
   // Farben, Favicon und Titel des Browser-Tabs
   useEffect(() => {
     applyTheme(settings.primaryColor, settings.accentColor);
-    setFavicon(settings.faviconUrl);
-  }, [settings.primaryColor, settings.accentColor, settings.faviconUrl]);
+    setFavicon(settings.faviconUrl || settings.logoUrl);
+  }, [settings.primaryColor, settings.accentColor, settings.faviconUrl, settings.logoUrl]);
 
   useEffect(() => {
     const slogan = localized(settings.slogan, i18n.language);
@@ -110,7 +113,6 @@ export const SettingsProvider = ({ children }) => {
     isOpenNow,
     // Bestellen ist erlaubt, wenn nicht nur während der Öffnungszeiten bestellt werden darf oder gerade geöffnet ist
     canOrderNow: !settings.ordering.ordersOnlyDuringOpeningHours || isOpenNow,
-    logo: settings.logoUrl || assets.logo,
     reloadSettings: load,
     now,
   }), [settings, isOpenNow, load, now]);

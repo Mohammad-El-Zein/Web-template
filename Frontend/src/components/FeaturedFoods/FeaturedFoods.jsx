@@ -23,7 +23,8 @@ import "swiper/css/navigation";
 import ScrollReveal from "scrollreveal";
 import "./FeaturedFoods.css";
 import { useTranslation } from "react-i18next";
-import { getFoodImageById, handleFoodImageError } from "../../assets/assets";
+import FoodImage from "../FoodImage/FoodImage";
+import { useCategories } from "../../context/categoriesContext";
 
 const FeaturedFoods = () => {
   const { foodList, increaseQty, decreaseQty, quantities } =
@@ -31,10 +32,8 @@ const FeaturedFoods = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
-
-  const translateCategory = (cat) => {
-  return t(`categoryMap.${cat}`, cat);
-};
+  // Kategoriename in der aktuellen Sprache (aus /api/categories)
+  const { categoryName } = useCategories();
 
 
   const featured = [...foodList, ...foodList].slice(0, 6);
@@ -138,9 +137,8 @@ const FeaturedFoods = () => {
               }`}
             >
               <div className="featured-card p-4">
-                <img
-                  src={getFoodImageById(food.id, food.category, food.imageUrl)}
-                  onError={handleFoodImageError(food.category)}
+                <FoodImage
+                  src={food.imageUrl}
                   alt={name}
                   className="featured-img"
                   onClick={() => {
@@ -159,15 +157,17 @@ const FeaturedFoods = () => {
                   {name}
                 </h4>
 
-                <span className="badge text-bg-warning mb-2">
-                  {translateCategory(food.category)}
-                </span>
+                {categoryName(food) && (
+                  <span className="badge text-bg-warning mb-2">
+                    {categoryName(food)}
+                  </span>
+                )}
 
                 <p className="small text-muted">{desc}</p>
 
                 <div className="d-flex justify-content-between align-items-center mt-3">
                   <span className="fs-5 fw-bold">
-                    {food.price}.00 {t("card.priceSuffix")}
+                    {Number(food.price).toFixed(2)} {t("card.priceSuffix")}
                   </span>
 
                   {quantities[food.id] > 0 ? (

@@ -3,6 +3,7 @@ import "./Menubar.css";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
 import { useSettings } from "../../context/settingsContext";
+import Logo from "../Logo/Logo";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PersonIcon from "@mui/icons-material/Person";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -13,8 +14,10 @@ import LanguageSwitcher from "../LanguageSwitcher/LanguageSwitcher";
 
 const Menubar = () => {
   const { t } = useTranslation();
-  // Logo und Name aus den Website-Einstellungen
-  const { settings, logo } = useSettings();
+  // "Über uns" nur anzeigen, wenn es Inhalt gibt
+  const { settings } = useSettings();
+  const hasText = (texts) => Object.values(texts || {}).some((text) => text && text.trim());
+  const hasAbout = hasText(settings.aboutTitle) || hasText(settings.aboutText) || !!settings.aboutImageUrl;
 
   const [active, setActive] = useState("home");
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -66,6 +69,8 @@ const Menubar = () => {
       setActive("home");
     } else if (path.startsWith("/explore")) {
       setActive("explore");
+    } else if (path.startsWith("/about")) {
+      setActive("about");
     } else if (path.startsWith("/contact")) {
       setActive("contact-us");
     } else if (path.startsWith("/cart")) {
@@ -85,13 +90,7 @@ const Menubar = () => {
         setMobileOpen(false);
       }}
     >
-      <img
-        src={logo}
-        alt={settings.restaurantName}
-        className="mx-4 logo-img"
-        width={120}
-        height={90}
-      />
+      <Logo className="mx-4 logo-img" width={120} height={90} onDark />
     </Link>
 
     <ul className="navbar-nav me-auto mb-2 mb-lg-0 worter desktop-links">
@@ -117,6 +116,19 @@ const Menubar = () => {
           {t("navbar.allDishes")}
         </Link>
       </li>
+      {hasAbout && (
+        <li className="nav-item">
+          <Link
+            className={
+              active === "about" ? "nav-link fw-bold active" : "nav-link"
+            }
+            to="/about"
+            onClick={() => setActive("about")}
+          >
+            {t("navbar.about")}
+          </Link>
+        </li>
+      )}
       <li className="nav-item">
         <Link
           className={
@@ -169,7 +181,7 @@ const Menubar = () => {
 
         <Link to="/cart">
           <div className="position-relative cart-icon-wrapper">
-            <ShoppingCartIcon style={{ fontSize: 36, color: "white" }} />
+            <ShoppingCartIcon style={{ fontSize: 36, color: "var(--on-primary)" }} />
             <span className="cart-badge">{uniqueItemsInCart}</span>
           </div>
         </Link>
@@ -181,9 +193,9 @@ const Menubar = () => {
         aria-label="Menü"
       >
         {mobileOpen ? (
-          <CloseIcon style={{ color: "white" }} />
+          <CloseIcon style={{ color: "var(--on-primary)" }} />
         ) : (
-          <MenuIcon style={{ color: "white" }} />
+          <MenuIcon style={{ color: "var(--on-primary)" }} />
         )}
       </button>
     </div>
@@ -203,6 +215,14 @@ const Menubar = () => {
           >
             {t("navbar.allDishes")}
           </button>
+          {hasAbout && (
+            <button
+              className="mobile-link"
+              onClick={() => handleNavClick("/about", "about")}
+            >
+              {t("navbar.about")}
+            </button>
+          )}
           <button
             className="mobile-link"
             onClick={() => handleNavClick("/contact", "contact-us")}

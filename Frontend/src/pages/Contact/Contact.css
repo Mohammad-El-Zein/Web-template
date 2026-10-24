@@ -41,7 +41,7 @@
   border-radius: 10px;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--on-accent);
   transition: background-color 0.25s ease, transform 0.15s ease;
 }
 
@@ -53,13 +53,115 @@
 .contact-btn:active {
   transform: translateY(0px);
 }
-.contact-signature {
-  margin-top: 30px;
-  opacity: 0.8;
+
+
+/* Kontaktdaten */
+.contact-info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
-.signature-text {
-  font-size: 0.95rem;
-  color: #555;
-  font-style: italic;
+.contact-info-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.contact-info-list i {
+  font-size: 1.4rem;
+  line-height: 1.2;
+  color: var(--primary);
+}
+
+.contact-info-label {
+  display: block;
+  font-size: 0.85rem;
+  color: #747474;
+}
+
+.contact-info-list a,
+.contact-address {
+  color: #333;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.contact-info-list a:hover {
+  color: var(--primary);
+}
+
+.contact-address {
+  white-space: pre-line;
+}
+
+/* Social-Media-Links auf weißem Hintergrund */
+.contact-social {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.contact-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: 1.15rem;
+  transition: background-color 0.2s ease;
+}
+
+.contact-social a:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* Öffnungszeiten, heutiger Tag hervorgehoben */
+.hours-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.hours-table th,
+.hours-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  font-weight: 400;
+  text-align: start;
+}
+
+.hours-table td {
+  text-align: end;
+}
+
+.hours-table tr:last-child th,
+.hours-table tr:last-child td {
+  border-bottom: none;
+}
+
+.hours-table tr.today {
+  background: var(--accent-soft);
+}
+
+.hours-table tr.today th,
+.hours-table tr.today td {
+  font-weight: 600;
+}
+
+.hours-closed {
+  color: #888;
+}
+
+.hours-slot {
+  display: inline-block;
+  white-space: nowrap;
 }

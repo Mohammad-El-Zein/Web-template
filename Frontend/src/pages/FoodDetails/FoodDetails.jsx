@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars */
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { fetchFoodDetails } from "../../service/foodService";
 import { analyzeNutrition } from "../../service/NutritionService";
 import { toast } from "react-toastify";
@@ -8,7 +7,8 @@ import { StoreContext } from "../../context/StoreContext";
 import ScrollReveal from "scrollreveal";
 import "./FoodDetails.css";
 import { useTranslation } from "react-i18next";
-import { getFoodImageById, handleFoodImageError } from "../../assets/assets";
+import FoodImage from "../../components/FoodImage/FoodImage";
+import { useCategories } from "../../context/categoriesContext";
 
 const FoodDetails = () => {
   const { id } = useParams();
@@ -23,9 +23,8 @@ const FoodDetails = () => {
 
   const lang = i18n.language;
 
-  const translateCategory = (cat) => {
-    return t(`categoryMap.${cat}`, cat);
-  };
+  // Kategoriename in der aktuellen Sprache (aus /api/categories)
+  const { categoryName } = useCategories();
 
   const name =
     typeof data.name === "object"
@@ -42,7 +41,7 @@ const FoodDetails = () => {
       try {
         const foodData = await fetchFoodDetails(id); 
         setData(foodData);
-      } catch (error) {
+      } catch {
         toast.error(t("messages.fetchFoodError"));
       }
     };
@@ -137,26 +136,27 @@ const FoodDetails = () => {
         <div className="container px-4 px-lg-5 my-5">
           <div className="row gx-4 gx-lg-5 align-items-center">
             <div className="col-md-6">
-              <img
+              <FoodImage
                 className="card-img-top mb-5 mb-md-0"
-                 src={getFoodImageById(data.id, data.category, data.imageUrl)}
-                 onError={handleFoodImageError(data.category)}
-                 alt={name}
+                src={data.imageUrl}
+                alt={name}
               />
             </div>
 
             <div className="col-md-6">
-              <div className="fs-5 mb-1">
-                {t("foodDetails.category")}:{" "}
-                <span className="badge text-bg-warning">
-                  {translateCategory(data.category)}
-                </span>
-              </div>
+              {categoryName(data) && (
+                <div className="fs-5 mb-1">
+                  {t("foodDetails.category")}:{" "}
+                  <span className="badge text-bg-warning">
+                    {categoryName(data)}
+                  </span>
+                </div>
+              )}
 
               <h1 className="display-5 fw-bold">{name}</h1>
 
               <div className="fs-5 mb-2">
-                <span>{data.price} €</span>
+                <span>{data.price != null ? `${Number(data.price).toFixed(2)} €` : ""}</span>
               </div>
 
               <p className="lead">{desc}</p>

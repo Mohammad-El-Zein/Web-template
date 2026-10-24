@@ -10,7 +10,7 @@
   background-color: var(--primary);   
   position: relative;
   padding: 7rem 1rem 2rem;
-  color: #fff;
+  color: var(--on-primary);
   width: 100vw;                 
   left: 50%;
   right: 50%;
@@ -26,7 +26,7 @@
     grid-template-columns: repeat(2, 1fr);
     align-items: center;
     gap: 1.5rem;
-    color: #fff;
+    color: var(--on-primary);
     text-align: left;
     z-index: 4;
 }
@@ -64,12 +64,14 @@
     justify-content: center;
     border-radius: 10px;
     background: var(--accent-medium);
-    color: #fff;
+    color: var(--on-accent);
 }
 
 
 .header-text .btn:hover {
     background: #121212;
+    /* Hover ist immer dunkel -> immer weiße Schrift */
+    color: #fff;
     transition: 0.4s all cubic-bezier(0.075, 0.82, 0.165, 1);
 
 }
@@ -187,3 +189,16 @@
 
 
 
+
+/* Ohne Bild oben: Text über die ganze Breite (wie in der Handy-Ansicht) */
+.content-header.no-image {
+    grid-template-columns: 1fr;
+    min-height: 420px;
+}
+
+/* Lange Namen (z. B. Restaurantname als Titel) nicht über den Rand laufen lassen; kurze Wörter bleiben unverändert */
+.header-text h1 {
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
+}

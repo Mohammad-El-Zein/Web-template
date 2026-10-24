@@ -4,6 +4,7 @@ import FoodItem from "../FoodItem/FoodItem";
 import "./FoodDisplay.css";
 import { useTranslation } from "react-i18next";
 
+// category = "All" oder eine categoryId aus /api/categories
 const FoodDisplay = ({ category, searchText }) => {
   const { foodList } = useContext(StoreContext);
   const { t, i18n } = useTranslation();
@@ -12,7 +13,7 @@ const FoodDisplay = ({ category, searchText }) => {
 
   const filteredFoods = foodList.filter((food) => {
     const name = food.name?.[lang] || "";
-    const matchesCategory = category === "All" || food.category === category;
+    const matchesCategory = category === "All" || food.categoryId === category;
     const matchesSearch = name.toLowerCase().includes(searchText.toLowerCase());
 
     return matchesCategory && matchesSearch;
@@ -26,7 +27,6 @@ const FoodDisplay = ({ category, searchText }) => {
             key={food.id}
             id={food.id}
             imageUrl={food.imageUrl}
-            category={food.category}
             price={food.price}
             // WICHTIG: jetzt als STRING an FoodItem geben!
             name={food.name[lang]}

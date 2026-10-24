@@ -8,21 +8,11 @@
     "myOrders": "Bestellungen",
     "logout": "Abmelden",
     "cart": "Warenkorb",
-    "menuLabel": "Menü"
+    "menuLabel": "Menü",
+    "about": "Über uns"
   },
   "header": {
-    "title": "FLAVOR HAUS",
-    "subtitle": "Bestell dein Lieblingsessen direkt bei uns.",
-    "qualityLine": "Premium-Qualität, faire Preise und schnelle Lieferung garantiert",
-    "orderNow": "Jetzt bestellen",
-    "feature1Title": "Frische Zutaten",
-    "feature1Desc": "Wir verwenden nur die frischesten Zutaten für unsere Gerichte.",
-    "feature2Title": "Schnelle Lieferung",
-    "feature2Desc": "Erhalte deine Bestellung in max 25 Minuten.",
-    "feature3Title": "Professioneller Service",
-    "feature3Desc": "Schnell, freundlich und zuverlässig.",
-    "feature4Title": "Parkmöglichkeiten",
-    "feature4Desc": "Praktische Parkplätze stehen dir jederzeit zur Verfügung."
+    "orderNow": "Jetzt bestellen"
   },
   "explorePage": {
     "title": "Alle Gerichte entdecken",
@@ -114,14 +104,7 @@
     "total": "Gesamtbetrag"
   },
   "contactPage": {
-    "title": "Kontakt",
-    "subtitle": "Wir helfen dir gerne!",
-    "sendMessage": "Nachricht senden",
-    "formTitle": "Schreibe uns an",
-    "firstNamePlaceholder": "Vorname",
-    "lastNamePlaceholder": "Nachname",
-    "emailPlaceholder": "E-Mail Adresse",
-    "messagePlaceholder": "Deine Nachricht"
+    "title": "Kontakt"
   },
   "modals": {
     "aiEstimateTitle": "Portionsgröße schätzen",
@@ -147,25 +130,15 @@
     "title": "Unsere Speisekarte"
   },
   "loginNew": {
-  "titleNew": "Anmelden",
-  "emailNew": "E-Mail",
-  "passwordNew": "Passwort",
-  "loginBtnNew": "Einloggen",
-  "resetBtnNew": "Zurücksetzen",
-  "noAccountNew": "Noch keinen Account?",
-  "registerNew": "Registrieren",
-  "successNew": "Erfolgreich eingeloggt!",
-  "failedNew": "Login fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben."
-},
-  "categories": {
-    "all": "Alles",
-    "pizza": "Pizza",
-    "pasta": "Pasta",
-    "burger": "Burger",
-    "arabic": "Arabisches",
-    "salad": "Salat",
-    "dessert": "Dessert",
-    "drinks": "Getränke"
+    "titleNew": "Anmelden",
+    "emailNew": "E-Mail",
+    "passwordNew": "Passwort",
+    "loginBtnNew": "Einloggen",
+    "resetBtnNew": "Zurücksetzen",
+    "noAccountNew": "Noch keinen Account?",
+    "registerNew": "Registrieren",
+    "successNew": "Erfolgreich eingeloggt!",
+    "failedNew": "Login fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben."
   },
   "buttons": {
     "cancel": "Abbrechen",
@@ -191,57 +164,6 @@
     "noItems": "Keine Gerichte verfügbar.",
     "showDetails": "Anzeigen"
   },
-  "testimonials": {
-    "title": "Bewertungen und Feedback",
-    "review1": "Ausgezeichnetes Essen und schneller Service! Ich liebe die Vielfalt der Gerichte. Einfach klasse!",
-    "review2": "Das Essen war unglaublich lecker! Lieferung super schnell und der Service sehr freundlich.",
-    "review3": "Frische Zutaten und perfekte Würzung! Jede Bestellung war bisher ein Volltreffer. Sehr empfehlenswert!",
-    "review4": "Top Qualität und super Preis-Leistungs-Verhältnis. Die Lieferung kam heiß an und schmeckte fantastisch."
-  },
-  "newsletter": {
-    "title": "Jetzt abonnieren und 10% Rabatt sichern",
-    "subtitle": "Sei der Erste, der die neuesten Neuigkeiten, Aktionen und vieles mehr erhält!",
-    "emailPlaceholder": "Geben Sie Ihre E-Mail-Adresse ein",
-    "button": "Abonnieren"
-  },
-  "moreDetails": {
-    "back": "Zurück",
-    "backAria": "Zurück zur Startseite",
-    "title": "Mehr über mich",
-    "p1": "Mein Name ist <strong>Mohammad El Zein</strong>, ich bin 22 Jahre alt und komme aus dem Libanon. Im Oktober 2022 bin ich nach Deutschland gekommen, um mein Informatikstudium an der <strong>TU Dortmund</strong> aufzunehmen und meine Leidenschaft für Technologie und Softwareentwicklung weiter zu vertiefen. Nach einem intensiven Jahr Deutschlernen, in dem ich erfolgreich die <strong>telc C1-Prüfung</strong> abgelegt habe, befinde ich mich nun im fünften Semester meines Studiums.",
-    "p2": "Bereits früh habe ich gemerkt, dass mich die Informatik besonders begeistert – vor allem das Lösen komplexer Probleme, das Entwickeln neuer Funktionen und das Verständnis dafür, wie Systeme intern funktionieren. Mein Studium und zahlreiche eigene Projekte haben mir dabei geholfen, ein breites Spektrum an Programmierkenntnissen aufzubauen: <strong>C, C++, Python, Java, SQL, HTML, CSS, JavaScript</strong>.",
-    "p3": "Besonders stolz bin ich auf die Projekte, die ich eigenständig oder gemeinsam mit anderen umgesetzt habe. So habe ich meine <strong>Portfolio-Website</strong> entwickelt und arbeite derzeit mit einem Freund an einer <strong>Food-Webapp für ein Restaurant</strong>, bei der Nutzer online das Menü einsehen und Bestellungen über eine Test-Zahlungsfunktion abwickeln können. Dabei setzen wir moderne Technologien wie <strong>React, Spring Boot, MongoDB</strong> und Stripe ein.",
-    "p4": "Neben der Programmierung habe ich ein gutes Verständnis für <strong>Softwarearchitektur, Anforderungsanalyse und Projektplanung</strong> entwickelt. Im Rahmen meines Studiums habe ich UML-Diagramme, BPMN-Modelle und systematische Softwareentwicklung kennengelernt. Zudem konnte ich durch ein Praktikum im Backend-Bereich in meinem Heimatland Erfahrungen mit Datenbanksystemen und Java sammeln.",
-    "p5": "Praktische Erfahrung im professionellen Umfeld konnte ich auch durch meine Tätigkeit in unserem Familienunternehmen (Western Union) und als Postbote bei DHL sammeln. Dort habe ich gelernt, strukturiert, zuverlässig und verantwortungsvoll mit Daten umzugehen – sei es bei der Verwaltung von Kundendaten in Excel oder der Analyse von Transaktionen in Power BI.",
-    "p6": "Derzeit beschäftige ich mich intensiv mit <strong>Cloud-Technologien</strong> und bereite mich auf die <strong>Microsoft Azure Fundamentals-Zertifizierung</strong> vor. Langfristig möchte ich mich im Bereich <strong>Cloud- und DevOps-Engineering</strong> spezialisieren, um spannende Projekte in der Softwareentwicklung umzusetzen und mein Wissen kontinuierlich zu erweitern.",
-    "p7": "Ich liebe es, Neues zu lernen, Herausforderungen anzunehmen und meine Ideen in funktionierende Software umzusetzen. Auf dieser Website möchte ich nicht nur meine bisherigen Projekte vorstellen, sondern auch zeigen, dass ich motiviert bin, mich fachlich weiterzuentwickeln und praxisnah zu arbeiten."
-  },
-  "footer": {
-    "developedBy": "Entwickelt von",
-    "moreAboutMeBtn": "Mehr über mich lesen",
-    "aboutTitle": "Über uns",
-    "aboutText": "Wir sind zwei fleißige Informatik-Studenten der TU Dortmund mit großer Leidenschaft für den IT-Bereich. Dieses Full-Stack-Website haben wir eigenständig mit React, Spring Boot, MongoDB und Stripe umgesetzt und zusätzlich um KI-Funktionalitäten erweitert, um unsere Fähigkeiten weiterzuentwickeln und uns bestmöglich auf den Einstieg in den Arbeitsmarkt vorzubereiten.",
-    "copyright": "© 2025 A&M Flavor Haus. Alle Rechte vorbehalten."
-  },
-  "people": {
-    "mohammad": {
-      "name": "Mohammad El Zein",
-      "role": "Informatik Student",
-      "email": "mhmdzein70781311@gmail.com",
-      "githubLabel": "Mohammad GitHub",
-      "linkedinLabel": "Mohammad LinkedIn",
-      "whatsappLabel": "Mohammad WhatsApp"
-    },
-    "abdullah": {
-      "name": "Abdullah Al Qazzaz",
-      "role": "Informatik Student",
-      "email": "abood.emad10@yahoo.com",
-      "githubLabel": "Abdullah GitHub",
-      "linkedinLabel": "Abdullah LinkedIn",
-      "whatsappLabel": "Abdullah WhatsApp"
-    }
-  },
-
   "orderStatus": {
     "PENDING": "Wartet auf Zahlung",
     "PREPARING": "In Zubereitung",
@@ -278,5 +200,31 @@
     "FRIDAY": "Freitag",
     "SATURDAY": "Samstag",
     "SUNDAY": "Sonntag"
+  },
+  "about": {
+    "title": "Über uns",
+    "empty": "Hier gibt es noch keinen Text."
+  },
+  "contactInfo": {
+    "address": "Adresse",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "whatsapp": "WhatsApp",
+    "map": "Karte",
+    "openMaps": "In Google Maps öffnen",
+    "empty": "Kontaktdaten folgen in Kürze."
+  },
+  "hours": {
+    "title": "Öffnungszeiten",
+    "closed": "Geschlossen",
+    "today": "heute"
+  },
+  "legal": {
+    "imprint": "Impressum",
+    "privacyPolicy": "Datenschutz",
+    "notAvailable": "Dieser Inhalt ist noch nicht verfügbar."
+  },
+  "footer": {
+    "websiteBy": "Website von"
   }
 }

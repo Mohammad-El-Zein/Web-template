@@ -4,7 +4,8 @@ import { StoreContext } from "../../context/StoreContext";
 import { Link, useNavigate } from "react-router-dom";
 import { calculateCartTotals } from "../../util/cartUtils";
 import { useTranslation } from "react-i18next";
-import { getFoodImageById, handleFoodImageError } from "../../assets/assets";
+import FoodImage from "../../components/FoodImage/FoodImage";
+import { useCategories } from "../../context/categoriesContext";
 import { useSettings } from "../../context/settingsContext";
 import OrderNotice from "../../components/OrderNotice/OrderNotice";
 import { useOrderAvailability } from "../../components/OrderNotice/useOrderAvailability";
@@ -21,11 +22,8 @@ const Cart = () => {
   } = useContext(StoreContext);
 
   const { t } = useTranslation();
-
-  // eslint-disable-next-line no-unused-vars
-  const translateCategory = (cat) => {
-  return t(`categoryMap.${cat}`, cat);
-};
+  // Kategoriename in der aktuellen Sprache (aus /api/categories)
+  const { categoryName } = useCategories();
 
 
   // CART ITEMS filtern
@@ -70,16 +68,16 @@ const Cart = () => {
                 return (
                   <div key={food.id} className="row cart-item">
                     <div className="col-md-3 d-flex justify-content-center">
-                    <img src={getFoodImageById(food.id, food.category, food.imageUrl)}
-                    onError={handleFoodImageError(food.category)}
-                    alt={name} className="cart-img" />                   
+                    <FoodImage src={food.imageUrl} alt={name} className="cart-img" />
                      </div>
 
                     <div className="col-md-5">
                       <h5 className="cart-title">{name}</h5>
-                      <p className="cart-category">
-                        {t("cart.categoryLabel")}: {food.category}
-                      </p>
+                      {categoryName(food) && (
+                        <p className="cart-category">
+                          {t("cart.categoryLabel")}: {categoryName(food)}
+                        </p>
+                      )}
                       <p className="cart-description">{desc}</p>
                     </div>
 

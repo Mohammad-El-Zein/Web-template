@@ -1,6 +1,6 @@
 import React from "react";
 import Menubar from "./components/Menubar/Menubar";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import Contact from "./pages/Contact/Contact";
 import ExploreFood from "./pages/ExploreFood/ExploreFood";
@@ -13,23 +13,14 @@ import { ToastContainer } from "react-toastify";
 import PaymentSuccess from "./components/PaymentSuccess/PaymentSuccess";
 import PaymentFailure from "./components/PaymentFailure/PaymentFailure";
 import MyOrders from "./pages/MyOrders/MyOrders";
-import Moredetails from "./pages/Moredetails/Moredetails";
-import { useTranslation } from "react-i18next";
+import About from "./pages/About/About";
+import Legal from "./pages/Legal/Legal";
+import Footer from "./components/Footer/Footer";
 
 const App = () => {
-  const location = useLocation();
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language;
-
-
-  // Routen, auf denen die Menubar NICHT angezeigt werden soll
-  const hideNavbarOn = ["/Moredetails"]; // ggf. weitere Pfade hinzufügen
-
-  const shouldShowNavbar = !hideNavbarOn.includes(location.pathname);
-
   return (
     <div>
-      {shouldShowNavbar && <Menubar />}
+      <Menubar />
 
       <ToastContainer autoClose={2000} />
       <Routes>
@@ -44,8 +35,14 @@ const App = () => {
         <Route path="/payment/success/:orderId" element={<PaymentSuccess />} />
         <Route path="/payment/fail/:orderId" element={<PaymentFailure />} />
         <Route path="/myorders" element={<MyOrders />} />
-        <Route path="/moredetails" element={<Moredetails />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/impressum" element={<Legal field="imprint" />} />
+        <Route path="/datenschutz" element={<Legal field="privacyPolicy" />} />
+        {/* alte Entwickler-Seite (Groß-/Kleinschreibung egal) -> Über uns */}
+        <Route path="/moredetails" element={<Navigate to="/about" replace />} />
       </Routes>
+
+      <Footer />
     </div>
   );
 };

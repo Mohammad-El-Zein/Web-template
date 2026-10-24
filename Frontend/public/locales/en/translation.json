@@ -8,34 +8,17 @@
     "myOrders": "My orders",
     "logout": "Logout",
     "cart": "Cart",
-    "menuLabel": "Menu"
+    "menuLabel": "Menu",
+    "about": "About us"
   },
-
   "header": {
-    "title": "FLAVOR HAUS",
-    "subtitle": "Order your favorite meals directly from us.",
-    "qualityLine": "Premium quality, fair prices and fast delivery guaranteed",
-    "orderNow": "Order Now",
-
-    "feature1Title": "Fresh Ingredients",
-    "feature1Desc": "We use only the freshest ingredients for our dishes.",
-
-    "feature2Title": "Fast Delivery",
-    "feature2Desc": "Receive your order in a maximum of 25 minutes.",
-
-    "feature3Title": "Professional Service",
-    "feature3Desc": "Fast, friendly and reliable.",
-
-    "feature4Title": "Parking Options",
-    "feature4Desc": "Convenient parking spaces are always available."
+    "orderNow": "Order Now"
   },
-
   "explorePage": {
     "title": "Explore all dishes",
     "searchPlaceholder": "Search...",
     "filterAll": "All"
   },
-
   "foodDetails": {
     "ingredients": "Ingredients",
     "nutrition": "Nutrition",
@@ -49,20 +32,6 @@
     "fat": "Fat",
     "portion": "Portion"
   },
-  "testimonials": {
-    "title": "Reviews and Feedback",
-    "review1": "Excellent food and fast service! I love the variety of dishes. Simply great!",
-    "review2": "The food was incredibly delicious! Delivery was super fast and the service very friendly.",
-    "review3": "Fresh ingredients and perfect seasoning! Every order so far has been a hit. Highly recommended!",
-    "review4": "Top quality and great value for money. The food arrived hot and tasted fantastic."
-  },
-  "newsletter": {
-    "title": "Subscribe now and get 10% off",
-    "subtitle": "Be the first to receive the latest news, offers and more!",
-    "emailPlaceholder": "Enter your email address",
-    "button": "Subscribe"
-  },
-
   "cart": {
     "title": "Your cart",
     "empty": "Your cart is empty.",
@@ -75,7 +44,6 @@
     "quantity": "Quantity",
     "minOrderMissing": "Minimum order {{min}} – {{missing}} to go."
   },
-
   "placeOrder": {
     "title": "Place order",
     "detailsTitle": "Your details",
@@ -99,11 +67,9 @@
     "addressPlaceholder": "Street, house number, etc.",
     "zipPlaceholder": "ZIP code"
   },
-
   "myorders": {
     "c": "Items"
   },
-
   "auth": {
     "loginTitle": "Login",
     "registerTitle": "Register",
@@ -130,7 +96,6 @@
     "aiEstimateFailed": "AI estimation failed.",
     "addedToCart": "Added to cart"
   },
-
   "payment": {
     "checking": "Checking payment...",
     "pending": "Payment not confirmed yet",
@@ -151,18 +116,9 @@
     "date": "Date",
     "total": "Total Amount"
   },
-
   "contactPage": {
-    "title": "Contact",
-    "subtitle": "We are happy to help!",
-    "sendMessage": "Send message",
-    "formTitle": "Send us a message",
-    "firstNamePlaceholder": "First name",
-    "lastNamePlaceholder": "Last name",
-    "emailPlaceholder": "Email address",
-    "messagePlaceholder": "Your message"
+    "title": "Contact"
   },
-
   "modals": {
     "aiEstimateTitle": "Estimate portion size",
     "aiEstimateDesc": "How many grams do you think this portion roughly has?",
@@ -170,7 +126,6 @@
     "estimate": "Estimate",
     "cancel": "Cancel"
   },
-
   "buttons": {
     "cancel": "Cancel",
     "save": "Save",
@@ -179,54 +134,27 @@
     "continueShopping": "Continue shopping"
   },
   "loginNew": {
-  "titleNew": "Login",
-  "emailNew": "Email",
-  "passwordNew": "Password",
-  "loginBtnNew": "Log in",
-  "resetBtnNew": "Reset",
-  "noAccountNew": "Don't have an account?",
-  "registerNew": "Register",
-  "successNew": "Successfully logged in!",
-  "failedNew": "Login failed. Please check your inputs."
-},
-
-  "moreDetails": {
-  "back": "Back",
-  "backAria": "Back to home",
-  "title": "More about me",
-  "p1": "My name is <strong>Mohammad El Zein</strong>, I am 22 years old and from Lebanon. In October 2022 I moved to Germany to start my computer science studies at <strong>TU Dortmund</strong> and to deepen my passion for technology and software development. After an intensive year of learning German, in which I successfully passed the <strong>telc C1 exam</strong>, I am now in the fifth semester of my studies.",
-  "p2": "I realized early on that computer science excites me – especially solving complex problems, developing new features and understanding how systems work internally. Through my studies and many personal projects I have built a broad range of programming skills in <strong>C, C++, Python, Java, SQL, HTML, CSS, JavaScript</strong>.",
-  "p3": "I am particularly proud of the projects I have implemented on my own or together with others. For example, I developed my own <strong>portfolio website</strong> and am currently working with a friend on a <strong>food web app for a restaurant</strong>, where users can browse the menu online and place orders using a test payment integration. We use modern technologies such as <strong>React, Spring Boot, MongoDB</strong> and Stripe.",
-  "p4": "Alongside programming I have developed a solid understanding of <strong>software architecture, requirements engineering and project planning</strong>. As part of my studies I worked with UML diagrams, BPMN models and systematic software development. In addition, I gained experience with database systems and Java through a backend internship in my home country.",
-  "p5": "I also gained practical experience in a professional environment through my work in our family business (Western Union) and as a postal worker at DHL. There I learned to handle data in a structured, reliable and responsible way – for example when managing customer data in Excel or analyzing transactions in Power BI.",
-  "p6": "Currently I am focusing intensively on <strong>cloud technologies</strong> and preparing for the <strong>Microsoft Azure Fundamentals certification</strong>. In the long term I want to specialize in <strong>cloud and DevOps engineering</strong> in order to implement exciting software projects and continuously expand my knowledge.",
-  "p7": "I love learning new things, taking on challenges and turning my ideas into working software. With this website I not only want to present my projects, but also show that I am highly motivated to grow professionally and work in a hands-on environment."
-},
-
+    "titleNew": "Login",
+    "emailNew": "Email",
+    "passwordNew": "Password",
+    "loginBtnNew": "Log in",
+    "resetBtnNew": "Reset",
+    "noAccountNew": "Don't have an account?",
+    "registerNew": "Register",
+    "successNew": "Successfully logged in!",
+    "failedNew": "Login failed. Please check your inputs."
+  },
   "general": {
     "loading": "Loading...",
     "error": "An error occurred",
     "retry": "Retry"
   },
-
   "featured": {
     "title": "Popular Dishes",
     "seeAll": "View full menu →"
   },
-
   "menu": {
     "title": "Our Menu"
-  },
-
-  "categories": {
-    "all": "All",
-    "pizza": "Pizza",
-    "pasta": "Pasta",
-    "burger": "Burger",
-    "arabic": "Arabic",
-    "salad": "Salad",
-    "dessert": "Dessert",
-    "drinks": "Drinks"
   },
   "card": {
     "addToCart": "Add to cart",
@@ -236,34 +164,6 @@
     "noItems": "No dishes available.",
     "showDetails": "View"
   },
-
-  "footer": {
-    "developedBy": "Developed by",
-    "moreAboutMeBtn": "Read more about me",
-    "aboutTitle": "About us",
-    "aboutText": "We are two hardworking and ambitious Computer Science students at TU Dortmund University with a strong passion for Information Technology. We independently developed this full-stack website using React, Spring Boot, MongoDB and Stripe, and enhanced it with AI-powered features to further strengthen our technical skills and prepare for our professional careers.",
-    "copyright": "© 2025 A&M Flavor Haus. All rights reserved."
-  },
-
-  "people": {
-    "mohammad": {
-      "name": "Mohammad El Zein",
-      "role": "Computer Science Student",
-      "email": "mhmdzein70781311@gmail.com",
-      "githubLabel": "Mohammad GitHub",
-      "linkedinLabel": "Mohammad LinkedIn",
-      "whatsappLabel": "Mohammad WhatsApp"
-    },
-    "abdullah": {
-      "name": "Abdullah Al Qazzaz",
-      "role": "Computer Science Student",
-      "email": "abood.emad10@yahoo.com",
-      "githubLabel": "Abdullah GitHub",
-      "linkedinLabel": "Abdullah LinkedIn",
-      "whatsappLabel": "Abdullah WhatsApp"
-    }
-  },
-
   "orderStatus": {
     "PENDING": "Awaiting payment",
     "PREPARING": "Preparing",
@@ -300,5 +200,31 @@
     "FRIDAY": "Friday",
     "SATURDAY": "Saturday",
     "SUNDAY": "Sunday"
+  },
+  "about": {
+    "title": "About us",
+    "empty": "There is no text here yet."
+  },
+  "contactInfo": {
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email",
+    "whatsapp": "WhatsApp",
+    "map": "Map",
+    "openMaps": "Open in Google Maps",
+    "empty": "Contact details will follow soon."
+  },
+  "hours": {
+    "title": "Opening hours",
+    "closed": "Closed",
+    "today": "today"
+  },
+  "legal": {
+    "imprint": "Imprint",
+    "privacyPolicy": "Privacy policy",
+    "notAvailable": "This content is not available yet."
+  },
+  "footer": {
+    "websiteBy": "Website by"
   }
 }

@@ -18,6 +18,12 @@
   --accent-tint: #fff2d9;
   --accent-glow-rgb: 255, 200, 0;
   --accent-shadow-rgb: 255, 165, 0;
+  /* Schrift auf Flächen in Haupt-/Akzentfarbe (bei hellen eigenen Farben dunkel, siehe theme.js) */
+  --on-primary: #fff;
+  --on-accent: #fff;
+  /* Aktiver/Hover-Link in der Menüleiste (bei schlechtem Kontrast setzt theme.js die Schriftfarbe) */
+  --nav-active: var(--accent);
+  --nav-hover: var(--accent-light);
 }
 
 /* Ladeanzeige beim ersten Besuch (neutral, Markenfarben sind noch nicht bekannt) */

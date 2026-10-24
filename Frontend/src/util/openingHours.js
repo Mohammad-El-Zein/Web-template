@@ -34,6 +34,21 @@ export const isOpenAt = (hours, date = new Date()) => {
   }
 };
 
+// Heutiger Wochentag (z. B. "MONDAY") in der Zeitzone des Restaurants, für die Hervorhebung in der Tabelle
+export const todayWeekday = (hours, date = new Date()) => {
+  try {
+    return WEEKDAYS[localTime(date, hours.timeZone).dayIndex] || "";
+  } catch {
+    return WEEKDAYS[(date.getDay() + 6) % 7];
+  }
+};
+
+// Zeitfenster eines Tages als Text, z. B. "11:00–14:30, 17:00–22:00" (über Mitternacht: "18:00–02:00"); leer = geschlossen
+export const formatDaySlots = (hours, weekday) => (hours?.days?.[weekday] || [])
+  .filter((slot) => slot?.open && slot?.close)
+  .map((slot) => `${slot.open}–${slot.close}`)
+  .join(", ");
+
 // Nächste Öffnung: { daysAhead: 0 = heute, 1 = morgen, ..., weekday: "MONDAY", time: "11:00" } oder null
 export const nextOpening = (hours, date = new Date()) => {
   try {

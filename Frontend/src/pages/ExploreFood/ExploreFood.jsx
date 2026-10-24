@@ -4,13 +4,16 @@ import "./ExploreFood.css";
 import ScrollReveal from "scrollreveal";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useCategories } from "../../context/categoriesContext";
+import { localized } from "../../util/settings";
 
 
 const ExploreFood = () => {
   const [category, setCategory] = useState("All");
   const [searchText, setSearchText] = useState("");
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { categories } = useCategories();
 
   
 
@@ -53,13 +56,10 @@ const ExploreFood = () => {
             <option value="All">
               {t("explorePage.filterAll")} {/* "Alles" / "All" */}
             </option>
-            <option value="Pizza">{t("categories.pizza")}</option>
-            <option value="Pasta">{t("categories.pasta")}</option>
-            <option value="Burger">{t("categories.burger")}</option>
-            <option value="Arabisches">{t("categories.arabic")}</option>
-            <option value="Salat">{t("categories.salad")}</option>
-            <option value="Dessert">{t("categories.dessert")}</option>
-            <option value="Getränke">{t("categories.drinks")}</option>
+            {/* Kategorien aus der API, Wert = categoryId */}
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>{localized(c.name, i18n.language)}</option>
+            ))}
           </select>
 
           <input

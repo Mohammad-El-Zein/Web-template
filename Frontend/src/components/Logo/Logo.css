@@ -1,0 +1,31 @@
+/* Text-Logo, wenn kein Logo-Bild hochgeladen ist */
+.text-logo,
+html[lang] body .text-logo {
+  /* spezifischer als die Cairo-Regel für Arabisch in index.css */
+  font-family: "Righteous", sans-serif !important;
+}
+
+.text-logo {
+  display: inline-block;
+  font-size: 1.9rem;
+  line-height: 1.1;
+  color: var(--primary);
+  white-space: nowrap;
+}
+
+/* In der Menüleiste (Hintergrund = Hauptfarbe) */
+.text-logo.on-primary {
+  color: var(--on-primary);
+}
+
+/* Handy: kleiner und notfalls mit "…" gekürzt, damit Menü und Sprachauswahl in der Leiste bleiben */
+@media (max-width: 800px) {
+  .text-logo {
+    font-size: 1.15rem;
+    /* gleiche Breite wie das Logo-Bild (120px) */
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+  }
+}

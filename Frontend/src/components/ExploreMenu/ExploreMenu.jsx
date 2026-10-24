@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react";
-import { categories } from "../../assets/assets";
+import { useCategories } from "../../context/categoriesContext";
+import { localized } from "../../util/settings";
 import "./ExploreMenu.css";
 import ScrollReveal from "scrollreveal";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -9,7 +10,9 @@ const ExploreMenu = ({ category, setCategory }) => {
   const menuRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  // Kategorien aus /api/categories (nur aktive, sortiert)
+  const { categories } = useCategories();
 
   const scrollLeft = () => {
     if (menuRef.current) {
@@ -44,14 +47,6 @@ const ExploreMenu = ({ category, setCategory }) => {
     }
   };
 
-  const mapCategoryKey = (cat) => {
-    if (!cat) return "";
-    const lower = cat.toLowerCase();
-    if (lower === "arabisches") return "arabic";
-    if (lower === "getränke") return "drinks";
-    return lower;
-  };
-
   return (
     <div className="explore-menu position-relative">
       <div className="d-flex align-items-center justify-content-between my-title">
@@ -76,32 +71,37 @@ const ExploreMenu = ({ category, setCategory }) => {
         className="d-flex justify-content-between gap-4 overflow-auto explore-menu-list"
         ref={menuRef}
       >
-        {categories.map((item, index) => {
-          const key = mapCategoryKey(item.category);
+        {categories.map((item) => {
+          const name = localized(item.name, i18n.language);
           const isActive =
-            item.category === category && location.pathname === "/explore";
+            item.id === category && location.pathname === "/explore";
 
           return (
             <div
-              key={index}
+              key={item.id}
               className="text-center explore-menu-list-item"
-              onClick={() => handleCategoryClick(item.category)}
+              onClick={() => handleCategoryClick(item.id)}
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {
-                if (e.key === "Enter") handleCategoryClick(item.category);
+                if (e.key === "Enter") handleCategoryClick(item.id);
               }}
             >
-              <img
-                src={item.icon}
-                alt={item.category}
-                className={`rounded-circle ${isActive ? "active" : ""}`}
-                height={100}
-                width={128}
-              />
-              <p className="mt-2 fwbold">
-                {t(`categories.${key}`, item.category)}
-              </p>
+              {item.imageUrl ? (
+                <img
+                  src={item.imageUrl}
+                  alt={name}
+                  className={`rounded-circle ${isActive ? "active" : ""}`}
+                  height={100}
+                  width={128}
+                />
+              ) : (
+                // Ohne Bild: runder Platzhalter mit Anfangsbuchstaben im gleichen Format
+                <span className={`category-chip rounded-circle ${isActive ? "active" : ""}`} aria-hidden="true">
+                  {name.charAt(0)}
+                </span>
+              )}
+              <p className="mt-2 fwbold">{name}</p>
             </div>
           );
         })}

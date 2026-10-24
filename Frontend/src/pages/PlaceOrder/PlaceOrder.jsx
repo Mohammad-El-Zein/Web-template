@@ -4,7 +4,7 @@ import { StoreContext } from "../../context/StoreContext";
 import { calculateCartTotals } from "../../util/cartUtils";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { getFoodImageById } from "../../assets/assets";
+import Logo from "../../components/Logo/Logo";
 import { createOrder } from "../../service/orderService";
 import { useSettings } from "../../context/settingsContext";
 import { orderErrorCode, orderErrorMessage } from "../../util/orderErrors";
@@ -16,7 +16,7 @@ const ORDER_TYPES = ["DELIVERY", "PICKUP"];
 const PlaceOrder = () => {
   const { foodList, quantities, token } = useContext(StoreContext);
   const { t } = useTranslation();
-  const { settings, logo, reloadSettings } = useSettings();
+  const { settings, reloadSettings } = useSettings();
   const { ordering } = settings;
   const { blocked } = useOrderAvailability();
 
@@ -69,7 +69,7 @@ const PlaceOrder = () => {
         price: item.price,
         name: safeText(item.name), // FIXED
         description: safeText(item.description), // FIXED
-        imageUrl: getFoodImageById(item.id, item.category),
+        imageUrl: item.imageUrl,
         category: item.category,
       }));
 
@@ -101,7 +101,9 @@ const PlaceOrder = () => {
   return (
     <div className="container placeorder-container mt-4">
       <div className="text-center mb-4">
-        <img src={logo} alt={settings.restaurantName} width="120" className="mb-3" />
+        <div className="mb-3">
+          <Logo width="120" />
+        </div>
         <h2>{t("placeOrder.title")}</h2>
       </div>
 

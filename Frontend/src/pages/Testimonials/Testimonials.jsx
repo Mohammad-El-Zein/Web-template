@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
 import "./Testimonials.css";
-import { assets } from "../../assets/assets";
 import ScrollReveal from "scrollreveal";
-import { useTranslation } from "react-i18next";
+import FoodImage from "../../components/FoodImage/FoodImage";
 
-const Testimonials = () => {
-  const { t } = useTranslation();
-
+// Bewertungen. Wird zurzeit NICHT angezeigt: die bisherigen Bewertungen waren erfunden.
+// Später kommen echte Bewertungen aus dem Admin-Panel: reviews = [{ name, text, rating (1–5), imageUrl }]
+const Testimonials = ({ title, reviews = [] }) => {
   useEffect(() => {
     const sr = ScrollReveal({
       origin: "top",
@@ -22,103 +21,32 @@ const Testimonials = () => {
       origin: "bottom",
       interval: 200,
     });
-    sr.reveal(".newsletter", {
-      origin: "top",
-    });
   }, []);
+
+  if (reviews.length === 0) return null;
 
   return (
     <section className="testimonials" id="testimonials">
-      <h2 className="heading-container">{t("testimonials.title")}</h2>
+      {title && <h2 className="heading-container">{title}</h2>}
 
       <div className="testimonial-content container">
-        <div className="t-box">
-          <div className="stars">
-            <i className="bi-star-fill"></i>
-            <i className="bi-star-fill"></i>
-            <i className="bi-star-fill"></i>
-            <i className="bi-star-fill"></i>
-            <i className="bi-star-fill"></i>
-          </div>
-          <p>{t("testimonials.review1")}</p>
-          <div className="profile">
-            <img src={assets.me} alt="Mohammad El Zein" />
-            <div className="profile-data">
-              <h3>Mohammad El Zein</h3>
-              <span></span>
+        {reviews.map((review, index) => (
+          <div className="t-box" key={index}>
+            <div className="stars">
+              {Array.from({ length: Math.min(5, Math.max(0, review.rating || 0)) }, (_, i) => (
+                <i key={i} className="bi-star-fill"></i>
+              ))}
+            </div>
+            <p>{review.text}</p>
+            <div className="profile">
+              <FoodImage src={review.imageUrl} alt={review.name} />
+              <div className="profile-data">
+                <h3>{review.name}</h3>
+                <span></span>
+              </div>
             </div>
           </div>
-        </div>
-
-        <div className="t-box">
-          <div className="stars">
-            <i className="bi-star-fill"></i>
-            <i className="bi-star-fill"></i>
-            <i className="bi-star-fill"></i>
-            <i className="bi-star-fill"></i>
-            <i className="bi-star-fill"></i>
-          </div>
-          <p>{t("testimonials.review2")}</p>
-          <div className="profile">
-            <img src={assets.me2} alt="Abdullah Al Qazzaz" />
-            <div className="profile-data">
-              <h3>Abdullah Al Qazzaz</h3>
-              <span></span>
-            </div>
-          </div>
-        </div>
-
-        <div className="t-box">
-          <div className="stars">
-            <i className="bi-star-fill"></i>
-            <i className="bi-star-fill"></i>
-            <i className="bi-star-fill"></i>
-            <i className="bi-star-fill"></i>
-            <i className="bi-star-fill"></i>
-          </div>
-          <p>{t("testimonials.review3")}</p>
-          <div className="profile">
-            <img src={assets.profile3} alt="Antonio Carluccio" />
-            <div className="profile-data">
-              <h3>Antonio Carluccio</h3>
-              <span></span>
-            </div>
-          </div>
-        </div>
-
-        <div className="t-box">
-          <div className="stars">
-            <i className="bi-star-fill"></i>
-            <i className="bi-star-fill"></i>
-            <i className="bi-star-fill"></i>
-            <i className="bi-star-fill"></i>
-            <i className="bi-star-fill"></i>
-          </div>
-          <p>{t("testimonials.review4")}</p>
-          <div className="profile">
-            <img src={assets.profile4} alt="Mark Herrmann" />
-            <div className="profile-data">
-              <h3>Mark Herrmann</h3>
-              <span></span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="newsletter container" id="newsletter">
-        <h2>{t("newsletter.title")}</h2>
-        <p>{t("newsletter.subtitle")}</p>
-        <form action="">
-          <input
-            type="email"
-            className="email"
-            placeholder={t("newsletter.emailPlaceholder")}
-            required
-          />
-          <button type="submit" className="s-btn">
-            {t("newsletter.button")}
-          </button>
-        </form>
+        ))}
       </div>
     </section>
   );

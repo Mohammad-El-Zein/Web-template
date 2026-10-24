@@ -1,0 +1,18 @@
+/* Seiten "Über uns", Impressum, Datenschutz */
+.about-img {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Text aus den Einstellungen: Zeilenumbrüche beibehalten (kein HTML) */
+.page-text {
+  white-space: pre-line;
+  text-align: start;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #333;
+  margin-bottom: 0;
+  overflow-wrap: anywhere;
+}
