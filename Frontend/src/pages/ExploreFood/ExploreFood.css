@@ -1,128 +1,84 @@
-.explore-container {
+/* Suche mit Lupe im Feld */
+.fx-search {
+  position: relative;
+  display: block;
   width: 100%;
+}
+
+.fx-search i {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 18px;
+  transform: translateY(-50%);
+  color: var(--fx-muted);
+  pointer-events: none;
+}
+
+.fx-search .form-control {
+  border-radius: 999px;
+  padding-inline-start: 46px;
+}
+
+/* Kategorien als Pillen (auf dem Handy waagerecht wischen) */
+.fx-chips {
   display: flex;
-  justify-content: center;
-  margin-top: 40px;
+  gap: var(--s-2);
+  margin: 0 calc(-1 * var(--fx-gutter)) var(--s-6);
+  padding: 2px var(--fx-gutter);
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
-.explore-filter-box {
-  display: flex;
-  gap: 12px;
-  background: #ffffff;
-  padding: 16px 20px;
-  border-radius: 14px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  width: 90%;
-  max-width: 650px;
+.fx-chips::-webkit-scrollbar {
+  display: none;
 }
 
-.explore-select {
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  background: #fff;
-  font-size: 15px;
-  min-width: 150px;
-  transition: all 0.2s ease;
-}
-
-.explore-select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.2);
-  outline: none;
-}
-
-.explore-search {
-  flex: 1;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  background: #fff;
-  font-size: 15px;
-  transition: all 0.2s ease;
-}
-
-.explore-search:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.2);
-  outline: none;
-}
-
-.explore-btn {
-  padding: 10px 16px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  background: #fff;
+.fx-chip {
+  flex-shrink: 0;
+  padding: 9px 18px;
+  border: var(--fx-hairline);
+  border-radius: 999px;
+  background: var(--fx-surface);
+  color: var(--fx-ink);
+  font-family: var(--fx-cond);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-.explore-btn:hover {
-  background: #f5f5f5;
+html[lang="ar"] .fx-chip {
+  letter-spacing: 0;
 }
 
-.explore-btn i {
-  font-size: 18px;
+.fx-chip:hover {
+  border-color: var(--fx-ink);
 }
 
-.arrow-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;              
-  height: 36px;
-  margin-top: 1rem;         
-  background: transparent;   
-  border: 1px solid rgb(213, 209, 209);  
-  border-radius: 6px;       
-  color: black;            
-  text-decoration: none;
-  transition: all 0.2s ease;
-  margin-right: 3rem;
+.fx-chip[aria-pressed="true"] {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--on-primary);
 }
 
-.arrow-btn:hover,
-.arrow-btn:active,
-.arrow-btn:focus {
-  background: black;
-  color: white;
-  border-color: black;
+.fx-chip:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
-.arrow-btn i {
-  font-size: 16px;
-  line-height: 1;
-}
-
-@media (max-width: 800px) {
-  .arrow-btn {
-    padding: 6px 10px;     
-    margin-right: 2px;  
-    margin-top: 26px;   
+@media (min-width: 901px) {
+  .fx-search {
+    width: 320px;
+    flex-shrink: 0;
   }
 
-  .arrow-btn i {
-    font-size: 12px;       
-  }
-  
-}
-
-
-
-
-
-/* Handy: Filterleiste darf nicht breiter als der Bildschirm werden */
-@media (max-width: 600px) {
-  .explore-filter-box {
+  .fx-chips {
     flex-wrap: wrap;
-    padding: 12px;
-    max-width: 100%;
-  }
-  .explore-select {
-    flex: 1 1 100%;
-    min-width: 0;
-  }
-  .explore-search {
-    min-width: 0;
+    margin-inline: 0;
+    padding-inline: 0;
+    overflow: visible;
   }
 }

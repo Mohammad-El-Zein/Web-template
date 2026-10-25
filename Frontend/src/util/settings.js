@@ -67,6 +67,14 @@ export const normalizeSettings = (data) => {
   };
 };
 
+// Bilder für "Über uns": Liste aboutImages, sonst das einzelne aboutImageUrl, sonst keine
+export const aboutImagesOf = (settings) => {
+  const list = (Array.isArray(settings?.aboutImages) ? settings.aboutImages : [])
+    .filter((url) => typeof url === "string" && url.trim());
+  if (list.length) return list;
+  return settings?.aboutImageUrl ? [settings.aboutImageUrl] : [];
+};
+
 // Text in der gewählten Sprache (sonst Englisch, sonst Deutsch)
 export const localized = (texts, lang) => {
   if (!texts) return "";

@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Menubar from "./components/Menubar/Menubar";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import Contact from "./pages/Contact/Contact";
 import ExploreFood from "./pages/ExploreFood/ExploreFood";
@@ -10,6 +10,7 @@ import PlaceOrder from "./pages/PlaceOrder/PlaceOrder";
 import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
 import { ToastContainer } from "react-toastify";
+import { useTranslation } from "react-i18next";
 import PaymentSuccess from "./components/PaymentSuccess/PaymentSuccess";
 import PaymentFailure from "./components/PaymentFailure/PaymentFailure";
 import MyOrders from "./pages/MyOrders/MyOrders";
@@ -18,11 +19,19 @@ import Legal from "./pages/Legal/Legal";
 import Footer from "./components/Footer/Footer";
 
 const App = () => {
+  const { pathname } = useLocation();
+  const { i18n } = useTranslation();
+
+  // Neue Seite beginnt oben
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   return (
-    <div>
+    <div className="fx-app">
       <Menubar />
 
-      <ToastContainer autoClose={2000} />
+      <ToastContainer autoClose={2000} position="bottom-center" hideProgressBar rtl={i18n.dir() === "rtl"} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/contact" element={<Contact />} />

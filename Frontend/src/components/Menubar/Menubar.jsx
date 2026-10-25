@@ -1,283 +1,152 @@
-import React, { useContext, useState, useEffect } from "react";
-import "./Menubar.css";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { StoreContext } from "../../context/StoreContext";
-import { useSettings } from "../../context/settingsContext";
-import Logo from "../Logo/Logo";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import PersonIcon from "@mui/icons-material/Person";
-import MenuIcon from "@mui/icons-material/Menu";
-import CloseIcon from "@mui/icons-material/Close";
-import ScrollReveal from "scrollreveal";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { StoreContext } from "../../context/StoreContext";
+import { useRestaurant } from "../../util/useRestaurant";
+import { useScrolled } from "../../util/useScrolled";
+import Logo from "../Logo/Logo";
 import LanguageSwitcher from "../LanguageSwitcher/LanguageSwitcher";
+import "./Menubar.css";
 
+// Menüleiste: auf der Startseite transparent über dem Foto, sonst (und nach dem Scrollen) fest mit hellem Hintergrund
 const Menubar = () => {
   const { t } = useTranslation();
-  // "Über uns" nur anzeigen, wenn es Inhalt gibt
-  const { settings } = useSettings();
-  const hasText = (texts) => Object.values(texts || {}).some((text) => text && text.trim());
-  const hasAbout = hasText(settings.aboutTitle) || hasText(settings.aboutText) || !!settings.aboutImageUrl;
-
-  const [active, setActive] = useState("home");
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const { quantities, token, setToken, setQuantities } =
-    useContext(StoreContext);
-  const uniqueItemsInCart = quantities
-    ? Object.values(quantities).filter((qty) => qty > 0).length
-    : 0;
+  const { name, hasAbout } = useRestaurant();
+  const { quantities, token, setToken, setQuantities } = useContext(StoreContext);
   const navigate = useNavigate();
-  const location = useLocation(); 
+  const { pathname } = useLocation();
+  const scrolled = useScrolled();
+  const [open, setOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountRef = useRef(null);
+
+  const cartCount = Object.values(quantities || {}).filter((qty) => qty > 0).length;
+  const onPhoto = pathname === "/" && !scrolled && !open;
+  const links = [
+    { to: "/explore", label: t("navbar.menu") },
+    hasAbout && { to: "/about", label: t("navbar.about") },
+    { to: "/contact", label: t("navbar.contact") },
+  ].filter(Boolean);
+  const accountLinks = token
+    ? [{ to: "/myorders", label: t("navbar.myOrders") }]
+    : [{ to: "/login", label: t("navbar.login") }, { to: "/register", label: t("navbar.register") }];
+
+  // Konto-Menü schließen bei Klick außerhalb oder Escape
+  useEffect(() => {
+    const onClick = (e) => {
+      if (accountRef.current && !accountRef.current.contains(e.target)) setAccountOpen(false);
+    };
+    const onKey = (e) => {
+      if (e.key !== "Escape") return;
+      setAccountOpen(false);
+      setOpen(false);
+    };
+    // Beim Wechsel auf Desktop-Breite das Handy-Menü schließen
+    const desktop = window.matchMedia("(min-width: 901px)");
+    const onDesktop = () => desktop.matches && setOpen(false);
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    desktop.addEventListener("change", onDesktop);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+      desktop.removeEventListener("change", onDesktop);
+    };
+  }, []);
+
+  const close = () => {
+    setOpen(false);
+    setAccountOpen(false);
+  };
 
   const logout = () => {
     localStorage.removeItem("token");
     setToken("");
     setQuantities({});
+    close();
     navigate("/");
-    setMobileOpen(false);
   };
-
-  useEffect(() => {
-    const sr = ScrollReveal({
-      origin: "top",
-      distance: "60px",
-      duration: 1800,
-      delay: 400,
-    });
-    sr.reveal(".navbar", { origin: "top" });
-  }, []);
-
-  useEffect(() => {
-    const onResize = () => {
-      if (window.innerWidth > 800 && mobileOpen) setMobileOpen(false);
-    };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [mobileOpen]);
-
-  const toggleMobile = () => setMobileOpen((prev) => !prev);
-
-  const handleNavClick = (path, key) => {
-    setActive(key);
-    setMobileOpen(false);
-    navigate(path);
-  };
-  useEffect(() => {
-    const path = location.pathname;
-
-    if (path === "/") {
-      setActive("home");
-    } else if (path.startsWith("/explore")) {
-      setActive("explore");
-    } else if (path.startsWith("/about")) {
-      setActive("about");
-    } else if (path.startsWith("/contact")) {
-      setActive("contact-us");
-    } else if (path.startsWith("/cart")) {
-      setActive("cart");
-    } else {
-      setActive("");
-    }
-  }, [location.pathname]);
 
   return (
-    <nav className="navbar navbar-expand-lg">
-  <div className="container-fluid nav-inner">
-    <Link
-      to="/"
-      onClick={() => {
-        setActive("home");
-        setMobileOpen(false);
-      }}
-    >
-      <Logo className="mx-4 logo-img" width={120} height={90} onDark />
-    </Link>
-
-    <ul className="navbar-nav me-auto mb-2 mb-lg-0 worter desktop-links">
-      <li className="nav-item">
-        <Link
-          className={
-            active === "home" ? "nav-link fw-bold active" : "nav-link"
-          }
-          to="/"
-          onClick={() => setActive("home")}
-        >
-          {t("navbar.home")}
+    <header className={`fx-nav ${onPhoto ? "on-photo" : "is-solid"} ${open ? "is-open" : ""}`}>
+      <div className="fx-nav-inner">
+        <Link to="/" className="fx-nav-brand" onClick={close} aria-label={name}>
+          <Logo />
         </Link>
-      </li>
-      <li className="nav-item">
-        <Link
-          className={
-            active === "explore" ? "nav-link fw-bold active" : "nav-link"
-          }
-          to="/explore"
-          onClick={() => setActive("explore")}
-        >
-          {t("navbar.allDishes")}
-        </Link>
-      </li>
-      {hasAbout && (
-        <li className="nav-item">
-          <Link
-            className={
-              active === "about" ? "nav-link fw-bold active" : "nav-link"
-            }
-            to="/about"
-            onClick={() => setActive("about")}
-          >
-            {t("navbar.about")}
-          </Link>
-        </li>
-      )}
-      <li className="nav-item">
-        <Link
-          className={
-            active === "contact-us" ? "nav-link fw-bold active" : "nav-link"
-          }
-          to="/contact"
-          onClick={() => setActive("contact-us")}
-        >
-          {t("navbar.contact")}
-        </Link>
-      </li>
-    </ul>
 
-    <div className="d-flex align-items-center gap-3 right-controls">
-      <LanguageSwitcher />
+        <nav className="fx-nav-links" aria-label={t("navbar.menuLabel")}>
+          {links.map((link) => (
+            <NavLink key={link.to} to={link.to} className="fx-nav-link" onClick={close}>{link.label}</NavLink>
+          ))}
+        </nav>
 
-      <div className="d-flex align-items-center gap-4 desktop-icons">
-        {!token ? (
-          <>
-            <Link to="/login">
-              <button className="btn-login">{t("navbar.login")}</button>
-            </Link>
-            <Link to="/register">
-              <button className="btn-register">{t("navbar.register")}</button>
-            </Link>
-          </>
-        ) : (
-          <div className="dropdown text-end">
-            <a
-              href="#"
-              className="d-block user-icon-wrapper dropdown-toggle"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <PersonIcon className="user-icon" />
-            </a>
-            <ul className="dropdown-menu text-small">
-              <li
-                className="dropdown-item"
-                onClick={() => navigate("/myorders")}
-              >
-                {t("navbar.myOrders")}
-              </li>
-              <li className="dropdown-item" onClick={logout}>
-                {t("navbar.logout")}
-              </li>
-            </ul>
-          </div>
-        )}
+        <div className="fx-nav-end">
+          <LanguageSwitcher />
 
-        <Link to="/cart">
-          <div className="position-relative cart-icon-wrapper">
-            <ShoppingCartIcon style={{ fontSize: 36, color: "var(--on-primary)" }} />
-            <span className="cart-badge">{uniqueItemsInCart}</span>
-          </div>
-        </Link>
-      </div>
-
-      <button
-        className="mobile-menu-btn"
-        onClick={toggleMobile}
-        aria-label="Menü"
-      >
-        {mobileOpen ? (
-          <CloseIcon style={{ color: "var(--on-primary)" }} />
-        ) : (
-          <MenuIcon style={{ color: "var(--on-primary)" }} />
-        )}
-      </button>
-    </div>
-  </div>
-
-      <div className={`mobile-menu ${mobileOpen ? "open" : ""}`}>
-        <div className="mobile-links">
-          <button
-            className="mobile-link"
-            onClick={() => handleNavClick("/", "home")}
-          >
-            {t("navbar.home")}
-          </button>
-          <button
-            className="mobile-link"
-            onClick={() => handleNavClick("/explore", "explore")}
-          >
-            {t("navbar.allDishes")}
-          </button>
-          {hasAbout && (
+          <div className="fx-account" ref={accountRef}>
             <button
-              className="mobile-link"
-              onClick={() => handleNavClick("/about", "about")}
+              type="button"
+              className="fx-nav-icon"
+              aria-haspopup="menu"
+              aria-expanded={accountOpen}
+              aria-label={t("navbar.account")}
+              onClick={() => setAccountOpen((o) => !o)}
             >
-              {t("navbar.about")}
+              <i className="bi bi-person" aria-hidden="true"></i>
             </button>
-          )}
-          <button
-            className="mobile-link"
-            onClick={() => handleNavClick("/contact", "contact-us")}
-          >
-            {t("navbar.contact")}
-          </button>
-
-          <div className="mobile-sep" />
-
-          <div className="mobile-icons">
-            {!token ? (
-              <>
-                <Link
-                  to="/login"
-                  onClick={() => setMobileOpen(false)}
-                  className="mobile-icon-link"
-                >
-                  {t("navbar.login")}
-                </Link>
-                <Link
-                  to="/register"
-                  onClick={() => setMobileOpen(false)}
-                  className="mobile-icon-link"
-                >
-                  {t("navbar.register")}
-                </Link>
-              </>
-            ) : (
-              <>
-                <button
-                  className="mobile-icon-btn"
-                  onClick={() => {
-                    navigate("/myorders");
-                    setMobileOpen(false);
-                  }}
-                >
-                  <PersonIcon /> {t("navbar.myOrders")}
-                </button>
-                <button className="mobile-icon-btn" onClick={logout}>
-                  <PersonIcon /> {t("navbar.logout")}
-                </button>
-              </>
+            {accountOpen && (
+              <ul className="fx-menu" role="menu">
+                {accountLinks.map((link) => (
+                  <li key={link.to} role="none">
+                    <Link role="menuitem" to={link.to} onClick={close}>{link.label}</Link>
+                  </li>
+                ))}
+                {token && (
+                  <li role="none">
+                    <button type="button" role="menuitem" onClick={logout}>{t("navbar.logout")}</button>
+                  </li>
+                )}
+              </ul>
             )}
-
-            <Link
-              to="/cart"
-              onClick={() => setMobileOpen(false)}
-              className="mobile-cart-link"
-            >
-              <ShoppingCartIcon /> {t("navbar.cart")} ({uniqueItemsInCart})
-            </Link>
           </div>
+
+          <Link to="/cart" className="fx-nav-icon fx-nav-cart" onClick={close} aria-label={`${t("navbar.cart")} (${cartCount})`}>
+            <i className="bi bi-bag" aria-hidden="true"></i>
+            {cartCount > 0 && <span className="fx-nav-badge">{cartCount}</span>}
+          </Link>
+
+          <Link to="/explore" className="fx-btn fx-btn-outline fx-btn-small fx-nav-cta" onClick={close}>
+            {t("navbar.order")}
+          </Link>
+
+          <button
+            type="button"
+            className="fx-nav-toggle"
+            aria-expanded={open}
+            aria-controls="fx-nav-panel"
+            aria-label={open ? t("navbar.closeMenu") : t("navbar.openMenu")}
+            onClick={() => setOpen((o) => !o)}
+          >
+            <span></span><span></span>
+          </button>
         </div>
       </div>
-    </nav>
+
+      {/* Aufgeklapptes Menü auf dem Handy */}
+      <div id="fx-nav-panel" className="fx-nav-panel" hidden={!open}>
+        <nav aria-label={t("navbar.menuLabel")}>
+          {links.map((link) => (
+            <NavLink key={link.to} to={link.to} onClick={close}>{link.label}</NavLink>
+          ))}
+        </nav>
+        <div className="fx-nav-panel-account">
+          {accountLinks.map((link) => (
+            <Link key={link.to} to={link.to} onClick={close}>{link.label}</Link>
+          ))}
+          {token && <button type="button" onClick={logout}>{t("navbar.logout")}</button>}
+        </div>
+      </div>
+    </header>
   );
 };
 

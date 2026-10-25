@@ -1,41 +1,465 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Righteous&display=swap');
+/* Startseite (mobil zuerst, ab 901px Desktop) */
 
-
-
-
-:root {
-    --text-color: #121212;
-    --red: #a7431b;
-    --bg-color: #fff;
-    --text-alter-color: #94908e;
-
-    --font-family-1: "Mitr", sans-serif;
-    --font-family-2: "Righteous", sans-serif;
-    
+/* ---------- Foto oben ---------- */
+.fx-hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: max(560px, 92svh);
+  overflow: hidden;
+  background: var(--fx-dark);
+  color: var(--fx-on-photo);
 }
-@media (min-width: 1600px) {
-  :root {
-    --base-font: 18px;
-    --h1-size: 5rem;
-    --gap: 2.5rem;
+
+.fx-hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 62%;
+}
+
+/* Abdunkeln für lesbare Schrift auf dem Foto */
+.fx-hero-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--fx-scrim) 0%, var(--fx-scrim-light) 55%, var(--fx-scrim-light) 100%);
+}
+
+.fx-hero-content {
+  position: relative;
+  padding-block: calc(var(--fx-nav-h) + var(--s-6)) var(--s-8);
+}
+
+.fx-kicker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 var(--s-5);
+  font-family: var(--fx-cond);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.fx-kicker::before {
+  content: "";
+  width: 48px;
+  height: 1px;
+  background: currentColor;
+}
+
+.fx-hero-title {
+  margin: 0;
+  font-family: var(--fx-serif);
+  font-weight: 300;
+  font-size: clamp(3rem, 10vw, 8.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  font-variation-settings: "opsz" 144;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.fx-hero-lead {
+  max-width: 34ch;
+  margin: var(--s-5) 0 0;
+  font-family: var(--fx-serif);
+  font-style: italic;
+  font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+  line-height: 1.4;
+  opacity: 0.92;
+}
+
+.fx-hero-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--s-5) var(--s-6);
+  margin-top: var(--s-6);
+}
+
+.fx-link-light {
+  color: var(--fx-on-photo);
+}
+
+.fx-link-light:hover {
+  color: var(--fx-on-photo);
+}
+
+/* Senkrechte Zeile "Heute ..." nur auf großen Bildschirmen (siehe unten) */
+.fx-hero-hours {
+  display: none;
+}
+
+/* ---------- Vorteile ---------- */
+.fx-features {
+  border-bottom: var(--fx-hairline);
+  background: var(--fx-surface);
+}
+
+.fx-features-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.fx-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-4);
+  padding-block: var(--s-5);
+  border-top: var(--fx-hairline);
+}
+
+.fx-feature:first-child {
+  border-top: 0;
+}
+
+.fx-feature-img {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.fx-feature-title {
+  margin: 0 0 2px;
+  font-family: var(--fx-cond);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.fx-feature-text {
+  margin: 0;
+  color: var(--fx-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* ---------- Beliebte Gerichte ---------- */
+.fx-popular {
+  overflow: hidden;
+}
+
+/* ---------- Kategorien ---------- */
+.fx-home .fx-categories {
+  padding-top: var(--s-4);
+}
+
+/* Handy: waagerecht wischen */
+.fx-tiles {
+  display: flex;
+  gap: 14px;
+  margin-inline: calc(-1 * var(--fx-gutter));
+  padding-inline: var(--fx-gutter);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--fx-gutter);
+  scrollbar-width: none;
+}
+
+.fx-tiles::-webkit-scrollbar {
+  display: none;
+}
+
+.fx-tile {
+  position: relative;
+  display: flex;
+  flex: 0 0 68%;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 240px;
+  padding: 18px 20px;
+  overflow: hidden;
+  border-radius: var(--fx-radius);
+  background: var(--fx-tile);
+  color: var(--fx-ink);
+  text-decoration: none;
+  scroll-snap-align: start;
+  transition: background-color 0.25s ease;
+}
+
+.fx-tile:hover {
+  background: var(--fx-tile-hover);
+  color: var(--fx-ink);
+}
+
+.fx-tile:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.fx-tile img {
+  position: absolute;
+  inset-inline-end: -6%;
+  inset-block-start: 14%;
+  width: 62%;
+  transition: transform 0.35s ease;
+}
+
+.fx-tile:hover img {
+  transform: scale(1.05) rotate(-3deg);
+}
+
+.fx-tile.is-feature,
+.fx-tile.is-feature:hover {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.fx-tile-count {
+  position: relative;
+  font-family: var(--fx-cond);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.fx-tile-name {
+  position: relative;
+  font-family: var(--fx-serif);
+  font-weight: 400;
+  font-size: 1.75rem;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.fx-tile.is-feature .fx-tile-name {
+  font-size: 2.4rem;
+}
+
+/* ---------- Über uns ---------- */
+.fx-about {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.fx-about-photo {
+  aspect-ratio: 4 / 3;
+}
+
+.fx-about-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--s-5);
+  padding: var(--s-8) var(--fx-gutter);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.fx-about-panel .fx-tag {
+  margin-bottom: 0;
+}
+
+.fx-about-panel p {
+  max-width: 40ch;
+  margin: 0;
+  font-size: 1.12rem;
+  opacity: 0.92;
+}
+
+.fx-about-panel .fx-signature {
+  font-family: var(--fx-serif);
+  font-style: italic;
+  font-size: 1.25rem;
+  opacity: 1;
+}
+
+.fx-about-panel .fx-link:hover {
+  color: inherit;
+}
+
+/* ---------- Öffnungszeiten & Kontakt ---------- */
+.fx-visit-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-7);
+  align-items: start;
+}
+
+.fx-today {
+  margin: 0 0 var(--s-5);
+  font-family: var(--fx-cond);
+  font-weight: 800;
+  font-size: clamp(2.8rem, 12vw, 6.2rem);
+  line-height: 0.95;
+  overflow-wrap: anywhere;
+}
+
+/* Zeitspannen nie umbrechen (Cairo ist breiter als Barlow Condensed), mehrere untereinander */
+.fx-today span {
+  display: block;
+  white-space: nowrap;
+}
+
+html[dir="rtl"] .fx-today[dir="ltr"] {
+  text-align: end;
+}
+
+.fx-contact-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin-top: var(--s-8);
+  border-top: var(--fx-hairline);
+}
+
+.fx-contact-row > * {
+  display: flex;
+  flex-direction: column;
+  padding-block: var(--s-5);
+  border-bottom: var(--fx-hairline);
+  color: inherit;
+  text-decoration: none;
+}
+
+.fx-contact-row .fx-label {
+  margin-bottom: var(--s-2);
+}
+
+.fx-contact-row strong {
+  align-self: flex-start;
+  font-weight: 500;
+  font-size: 1.15rem;
+  overflow-wrap: anywhere;
+}
+
+.fx-contact-row a:hover strong {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+html[lang="ar"] .fx-kicker,
+html[lang="ar"] .fx-feature-title,
+html[lang="ar"] .fx-tile-count {
+  letter-spacing: 0;
+}
+
+@media (min-width: 901px) {
+  .fx-hero {
+    min-height: max(640px, 94vh);
+  }
+
+  .fx-hero-content {
+    padding-block-end: var(--s-9);
+  }
+
+  /* Senkrechte Zeile: logische Eigenschaften drehen hier mit, daher physisch rechts bzw. in RTL links */
+  .fx-hero-hours {
+    display: block;
+    position: absolute;
+    right: max(24px, calc((100% - 1200px) / 2));
+    bottom: 100px;
+    margin: 0;
+    font-family: var(--fx-cond);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+    opacity: 0.88;
+  }
+
+  html[dir="rtl"] .fx-hero-hours {
+    right: auto;
+    left: max(24px, calc((100% - 1200px) / 2));
+  }
+
+  .fx-hero-hours span {
+    display: inline-block;
+    padding-block-start: 18px;
+    border-inline-start: 1px solid color-mix(in srgb, var(--fx-on-photo) 50%, transparent);
+  }
+
+  /* So viele gleich breite Spalten wie Vorteile */
+  .fx-features-grid {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-template-columns: none;
+  }
+
+  .fx-feature {
+    padding: var(--s-6) var(--s-5);
+    border-top: 0;
+    border-inline-start: var(--fx-hairline);
+  }
+
+  .fx-feature:first-child {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+
+  .fx-popular-note {
+    text-align: end;
+  }
+
+  .fx-tiles {
+    display: grid;
+    grid-template-columns: 1.6fr repeat(3, minmax(0, 1fr));
+    grid-auto-rows: 230px;
+    grid-auto-flow: dense;
+    margin-inline: 0;
+    padding-inline: 0;
+    overflow: visible;
+  }
+
+  .fx-tile {
+    height: auto;
+  }
+
+  .fx-tile.is-feature {
+    grid-row: span 2;
+  }
+
+  .fx-tile.is-feature img {
+    width: 84%;
+    inset-inline-end: -8%;
+    inset-block-start: 18%;
+  }
+
+  .fx-tile.is-feature .fx-tile-name {
+    font-size: 3.2rem;
+  }
+
+  .fx-about {
+    grid-template-columns: 1.15fr 1fr;
+    min-height: 620px;
+  }
+
+  .fx-about.no-photo {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .fx-about-photo {
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 620px;
+  }
+
+  .fx-about-panel {
+    padding: clamp(40px, 7vw, 110px);
+  }
+
+  .fx-visit-grid {
+    grid-template-columns: 1fr 1.1fr;
+    gap: clamp(32px, 6vw, 96px);
+  }
+
+  .fx-contact-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .fx-contact-row > * {
+    padding-block: var(--s-5) 0;
+    padding-inline-end: var(--s-5);
+    border-bottom: 0;
   }
 }
-
-body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-}
-a {
-    text-decoration: none;
-}
-
-section {
-    padding: 3rem 0 2rem;
-}
-main.container {
-    width: 100%;
-    max-width: 1400px;
-    margin: auto;
-    
-}
-

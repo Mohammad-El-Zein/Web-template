@@ -8,6 +8,8 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 // Nach Bootstrap laden, damit die Bootstrap-Farben auf die Markenfarben umgestellt werden
 import './theme.css';
+// Gemeinsame Bausteine des Designs (Schrift, Knöpfe, Formulare)
+import './ui.css';
 import { StoreContextProvider } from './context/StoreContext.jsx';
 import { SettingsProvider } from './context/SettingsContext.jsx';
 import { CategoriesProvider } from './context/CategoriesContext.jsx';

@@ -1,0 +1,62 @@
+.fx-hours {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: var(--fx-hairline);
+}
+
+.fx-hours li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding-block: 12px;
+  border-bottom: var(--fx-hairline);
+}
+
+.fx-hours-day {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  font-family: var(--fx-cond);
+  font-weight: 600;
+  font-size: 1.02rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fx-hours-time {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0 var(--s-3);
+  font-family: var(--fx-cond);
+  font-weight: 500;
+  font-size: 1.08rem;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+.fx-hours li.is-today {
+  color: var(--primary-text);
+}
+
+.fx-hours-badge {
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-style: normal;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+}
+
+.fx-hours-closed {
+  color: var(--fx-muted);
+}
+
+html[lang="ar"] .fx-hours-day,
+html[lang="ar"] .fx-hours-badge {
+  letter-spacing: 0;
+}

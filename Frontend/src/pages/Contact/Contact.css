@@ -1,167 +1,124 @@
-.contact-section {
-  padding: 60px 0;
+.fx-contact {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-7);
+  align-items: start;
 }
 
-.contact-form-wrapper {
-  background: #ffffff;
-  padding: 40px 45px;
-  border-radius: 16px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.contact-form-wrapper:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.15);
-}
-
-.contact-title {
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.custom-input {
-  border-radius: 10px;
-  padding: 12px 14px;
-  border: 1px solid #ddd;
-  background: #fafafa;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.custom-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.35);
-  background: #fff;
-}
-
-.contact-btn {
-  background-color: var(--accent);
-  border: none;
-  border-radius: 10px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--on-accent);
-  transition: background-color 0.25s ease, transform 0.15s ease;
-}
-
-.contact-btn:hover {
-  background-color: var(--accent-dark-2);
-  transform: translateY(-2px);
-}
-
-.contact-btn:active {
-  transform: translateY(0px);
-}
-
-
-/* Kontaktdaten */
-.contact-info-list {
-  list-style: none;
-  padding: 0;
+.fx-contact-list {
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+  padding: 0;
+  list-style: none;
+  border-top: var(--fx-hairline);
 }
 
-.contact-info-list li {
+.fx-contact-list li {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
+  gap: var(--s-4);
+  padding-block: var(--s-5);
+  border-bottom: var(--fx-hairline);
 }
 
-.contact-info-list i {
-  font-size: 1.4rem;
-  line-height: 1.2;
-  color: var(--primary);
-}
-
-.contact-info-label {
-  display: block;
-  font-size: 0.85rem;
-  color: #747474;
-}
-
-.contact-info-list a,
-.contact-address {
-  color: #333;
-  font-weight: 500;
-  text-decoration: none;
-}
-
-.contact-info-list a:hover {
-  color: var(--primary);
-}
-
-.contact-address {
-  white-space: pre-line;
-}
-
-/* Social-Media-Links auf weißem Hintergrund */
-.contact-social {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 28px;
-}
-
-.contact-social a {
+.fx-contact-list i {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
+  background: var(--fx-tile);
+  color: var(--primary-text);
+  font-size: 1.1rem;
+}
+
+.fx-contact-list .fx-label {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.fx-contact-list div {
+  min-width: 0;
+  font-size: 1.15rem;
+  overflow-wrap: anywhere;
+}
+
+.fx-contact-list a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.fx-contact-list a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Telefonnummern (dir=ltr) in RTL trotzdem rechtsbündig */
+.fx-contact-list a[dir="ltr"] {
+  display: inline-block;
+}
+
+.fx-contact-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: var(--s-5);
+}
+
+.fx-contact-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: var(--fx-hairline);
+  border-radius: 50%;
+  background: var(--fx-surface);
+  color: var(--fx-ink);
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.fx-contact-social a:hover {
+  border-color: var(--primary);
   background: var(--primary);
   color: var(--on-primary);
-  font-size: 1.15rem;
-  transition: background-color 0.2s ease;
 }
 
-.contact-social a:hover {
-  background: var(--accent);
-  color: var(--on-accent);
+.fx-contact-hours {
+  padding: var(--s-6) var(--s-5);
 }
 
-/* Öffnungszeiten, heutiger Tag hervorgehoben */
-.hours-table {
-  width: 100%;
-  border-collapse: collapse;
+.fx-contact-today {
+  margin: 0 0 var(--s-4);
+  font-family: var(--fx-cond);
+  font-weight: 800;
+  font-size: clamp(2.6rem, 9vw, 4.2rem);
+  line-height: 0.95;
+  overflow-wrap: anywhere;
 }
 
-.hours-table th,
-.hours-table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #eee;
-  font-weight: 400;
-  text-align: start;
+.fx-contact-today span {
+  display: block;
+  white-space: nowrap;
 }
 
-.hours-table td {
+html[dir="rtl"] .fx-contact-today[dir="ltr"] {
   text-align: end;
 }
 
-.hours-table tr:last-child th,
-.hours-table tr:last-child td {
-  border-bottom: none;
+.fx-contact-hours-title {
+  margin-top: var(--s-6);
 }
 
-.hours-table tr.today {
-  background: var(--accent-soft);
-}
+@media (min-width: 901px) {
+  .fx-contact {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: clamp(40px, 6vw, 96px);
+  }
 
-.hours-table tr.today th,
-.hours-table tr.today td {
-  font-weight: 600;
-}
-
-.hours-closed {
-  color: #888;
-}
-
-.hours-slot {
-  display: inline-block;
-  white-space: nowrap;
+  .fx-contact-hours {
+    padding: var(--s-7);
+  }
 }

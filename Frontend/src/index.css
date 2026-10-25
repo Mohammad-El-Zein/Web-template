@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Righteous&family=Cairo:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@500;600;700;800&family=Tajawal:wght@400;500;700&display=swap');
 
 /* Markenfarben: Standardwerte = bisherige FlavorHaus-Töne (exakt).
    Andere Farben aus den Einstellungen setzt util/theme.js auf <html>. */
@@ -24,6 +24,64 @@
   /* Aktiver/Hover-Link in der Menüleiste (bei schlechtem Kontrast setzt theme.js die Schriftfarbe) */
   --nav-active: var(--accent);
   --nav-hover: var(--accent-light);
+  /* Hauptfarbe als Schrift auf hellem Grund (bei zu hellen eigenen Farben dunkler, siehe theme.js) */
+  --primary-text: var(--primary);
+
+  /* Neutrale Töne des Designs (warm, unabhängig von der Marke) */
+  --fx-bg: #faf7f2;
+  --fx-surface: #ffffff;
+  --fx-tile: #efe9e1;
+  --fx-tile-hover: #e6dfd5;
+  --fx-ink: #221c18;
+  --fx-muted: #776c64;
+  --fx-line: rgba(34, 28, 24, 0.12);
+  --fx-dark: #261e19;
+  --fx-dark-ink: #efe6dc;
+  --fx-dark-muted: rgba(239, 230, 220, 0.62);
+  --fx-dark-line: rgba(239, 230, 220, 0.14);
+  --fx-scrim: rgba(20, 14, 10, 0.78);
+  --fx-scrim-light: rgba(20, 14, 10, 0.25);
+  --fx-on-photo: #ffffff;
+  --fx-ok: #3f8a52;
+  --fx-error: #b3261e;
+  --fx-accent-soft: color-mix(in srgb, var(--accent) 18%, #ffffff);
+  --fx-primary-soft: color-mix(in srgb, var(--primary) 8%, #ffffff);
+
+  /* Schriften: Serif = große Überschriften und Name, Condensed = Labels/Zahlen/Zeiten, Sans = Text */
+  --fx-serif: "Fraunces", Georgia, serif;
+  --fx-cond: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --fx-sans: "Barlow", "Helvetica Neue", Arial, sans-serif;
+
+  /* Abstände (8er-Raster), Radien, Linien */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+  --fx-radius: 18px;
+  --fx-radius-sm: 12px;
+  --fx-hairline: 1px solid var(--fx-line);
+  --fx-shadow: 0 2px 6px rgba(34, 28, 24, 0.05), 0 24px 48px -22px rgba(34, 28, 24, 0.28);
+  --fx-nav-h: 68px;
+  --fx-gutter: 20px;
+}
+
+@media (min-width: 901px) {
+  :root {
+    --fx-nav-h: 84px;
+    --fx-gutter: 24px;
+  }
+}
+
+/* Arabisch: Amiri (Serif), Cairo (Labels/Zahlen), Tajawal (Text) */
+html[lang="ar"] {
+  --fx-serif: "Amiri", Georgia, serif;
+  --fx-cond: "Cairo", "Arial Narrow", sans-serif;
+  --fx-sans: "Tajawal", Arial, sans-serif;
 }
 
 /* Ladeanzeige beim ersten Besuch (neutral, Markenfarben sind noch nicht bekannt) */
@@ -38,18 +96,31 @@
 }
 
 body {
-  font-family: 'Poppins', sans-serif !important;
   margin: 0;
   padding: 0;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: var(--fx-bg);
+  color: var(--fx-ink);
+  font-family: var(--fx-sans);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Arabisch: passende Schrift für alle Texte (Icons nutzen ::before und bleiben unverändert) */
-html[lang="ar"] body,
-html[lang="ar"] body * {
-  font-family: 'Cairo', sans-serif !important;
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
 }
 
 /* Nichts darf seitlich über den Bildschirm hinausragen (wichtig für Arabisch / RTL) */

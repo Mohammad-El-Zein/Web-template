@@ -1,15 +1,12 @@
 import React, { useContext, useEffect } from "react";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import Card from "@mui/material/Card";
-import { useNavigate, useParams } from "react-router-dom";
-import { Button } from "@mui/material";
-import { red } from "@mui/material/colors";
+import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { StoreContext } from "../../context/StoreContext";
 import { cancelPayment } from "../../service/orderService";
+import "../Login/Login.css";
+import "../PaymentSuccess/PaymentSuccess.css";
 
 const PaymentFailure = () => {
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const { orderId } = useParams();
   const { token } = useContext(StoreContext);
@@ -24,36 +21,17 @@ const PaymentFailure = () => {
   }, [orderId]);
 
   return (
-    <section className="py-5">
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-lg-6 col-md-8">
-            <Card
-              className="p-5 shadow-sm bg-white text-center"
-              style={{ borderRadius: "12px" }}
-            >
-              <HighlightOffIcon sx={{ fontSize: "5rem", color: red[500] }} />
-
-              <h1 className="py-4 text-2xl fw-bold">
-                {t("payment.fail")}
-              </h1>
-
-              <p className="text-muted mb-2">{t("payment.failDesc1")}</p>
-              <p className="text-muted mb-4">{t("payment.failDesc2")}</p>
-
-              <Button
-                variant="contained"
-                color="error"
-                onClick={() => navigate("/")}
-                className="w-100 py-2"
-              >
-                {t("payment.backHome")}
-              </Button>
-            </Card>
-          </div>
-        </div>
+    <main className="fx-page fx-auth">
+      <div className="fx-card fx-auth-card fx-result" role="status">
+        <span className="fx-result-icon is-error"><i className="bi bi-x-lg" aria-hidden="true"></i></span>
+        <span className="fx-tag">{t("pages.paymentTag")}</span>
+        <h1 className="fx-h2">{t("payment.fail")}</h1>
+        <p className="fx-result-text">{t("payment.failDesc1")}</p>
+        <p className="fx-result-text">{t("payment.failDesc2")}</p>
+        <Link to="/cart" className="fx-btn fx-btn-primary fx-btn-block">{t("navbar.cart")}</Link>
+        <Link to="/" className="fx-link fx-result-link">{t("payment.backHome")}</Link>
       </div>
-    </section>
+    </main>
   );
 };
 

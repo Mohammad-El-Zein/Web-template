@@ -1,60 +1,130 @@
-.placeorder-btn {
-  background-color: var(--accent-strong); 
-  color: #1b1b1b; 
-  border: none;
-  border-radius: 10px;
-  padding: 14px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  width: 100%;
-  transition: background-color 0.2s ease;
-  margin-top: 20px;    
-  margin-bottom: 40px; 
+/* Checkout: Formular + Übersicht (Stil der Übersicht siehe Cart.css) */
+.fx-checkout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-6);
+  align-items: start;
 }
 
-.placeorder-btn:hover {
-  background-color: var(--accent-strong-dark); 
+.fx-checkout-form .fx-h3 {
+  margin-bottom: var(--s-5);
 }
 
-.placeorder-btn:disabled {
-  background-color: #d1d1d1 !important;
-  color: #7a7a7a !important;
-  cursor: not-allowed;
+.fx-checkout-submit {
+  margin-top: var(--s-3);
 }
-/* Auswahl Lieferung / Abholung (gleicher Stil wie die Eingabefelder) */
+
+/* Auswahl Lieferung / Abholung (zwei Pillen) */
 .order-type-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: var(--s-3);
 }
 
 .order-type-option {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 12px 14px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  background: #fafafa;
-  color: #333;
-  font-weight: 500;
-  transition: border-color 0.2s, background-color 0.2s;
+  gap: var(--s-2);
+  min-height: 50px;
+  padding: 10px 14px;
+  border: var(--fx-hairline);
+  border-radius: 999px;
+  background: var(--fx-surface);
+  color: var(--fx-ink);
+  font-family: var(--fx-cond);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+html[lang="ar"] .order-type-option {
+  letter-spacing: 0;
 }
 
 .order-type-option:hover {
-  border-color: var(--accent);
+  border-color: var(--fx-ink);
 }
 
 .order-type-option.active {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-  box-shadow: inset 0 0 0 1px var(--accent);
-  color: #1b1b1b;
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.order-type-option:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .order-type-hint {
   margin: 0;
-  font-size: 0.9rem;
-  color: #555;
+  color: var(--fx-muted);
+  font-size: 0.95rem;
+}
+
+/* Übersicht */
+.fx-checkout-summary-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.fx-checkout-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--fx-accent-soft);
+  font-family: var(--fx-cond);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.fx-checkout-items {
+  margin: 0 0 var(--s-2);
+  padding: 0;
+  list-style: none;
+  border-top: var(--fx-hairline);
+}
+
+.fx-checkout-items li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding-block: 12px;
+  border-bottom: var(--fx-hairline);
+}
+
+.fx-checkout-name {
+  display: block;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.fx-checkout-items small {
+  color: var(--fx-muted);
+}
+
+.fx-checkout-items .fx-num {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (min-width: 901px) {
+  .fx-checkout {
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: var(--s-7);
+  }
+
+  .fx-checkout-form {
+    padding: var(--s-6);
+  }
 }

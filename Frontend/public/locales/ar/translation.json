@@ -9,7 +9,12 @@
     "logout": "تسجيل الخروج",
     "cart": "السلة",
     "menuLabel": "القائمة",
-    "about": "من نحن"
+    "about": "من نحن",
+    "menu": "قائمة الطعام",
+    "order": "اطلب",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة",
+    "account": "الحساب"
   },
   "header": {
     "orderNow": "اطلب الآن"
@@ -17,20 +22,22 @@
   "explorePage": {
     "title": "اكتشف جميع الأطباق",
     "searchPlaceholder": "ابحث...",
-    "filterAll": "الكل"
+    "filterAll": "الكل",
+    "searchLabel": "ابحث عن طبق"
   },
   "foodDetails": {
     "ingredients": "المكونات",
     "nutrition": "القيم الغذائية",
     "addToCart": "أضف إلى السلة",
-    "aiEstimate": "احسب السعرات بالذكاء الاصطناعي ✨",
+    "aiEstimate": "احسب السعرات بالذكاء الاصطناعي",
     "category": "الفئة",
-    "estimatedWithAI": "تقدير بالذكاء الاصطناعي ✨",
+    "estimatedWithAI": "تقدير بالذكاء الاصطناعي",
     "calories": "السعرات الحرارية",
     "protein": "البروتين",
     "carbs": "الكربوهيدرات",
     "fat": "الدهون",
-    "portion": "الحصة"
+    "portion": "الحصة",
+    "back": "العودة إلى القائمة"
   },
   "cart": {
     "title": "سلة التسوق",
@@ -42,7 +49,10 @@
     "checkout": "إتمام الطلب",
     "categoryLabel": "الفئة",
     "quantity": "الكمية",
-    "minOrderMissing": "الحد الأدنى للطلب {{min}} – يتبقى {{missing}}."
+    "minOrderMissing": "الحد الأدنى للطلب {{min}} – يتبقى {{missing}}.",
+    "remove": "إزالة",
+    "emptyText": "اختر شيئاً شهياً من القائمة.",
+    "toMenu": "إلى القائمة"
   },
   "placeOrder": {
     "title": "إتمام الطلب",
@@ -114,7 +124,10 @@
     "order": "الطلب",
     "items": "العناصر",
     "date": "التاريخ",
-    "total": "المبلغ الإجمالي"
+    "total": "المبلغ الإجمالي",
+    "empty": "لا توجد طلبات بعد.",
+    "loginFirst": "سجّل الدخول لعرض طلباتك.",
+    "refresh": "تحديث"
   },
   "contactPage": {
     "title": "تواصل معنا"
@@ -151,7 +164,7 @@
   },
   "featured": {
     "title": "الأطباق الأكثر طلباً",
-    "seeAll": "← عرض القائمة كاملة"
+    "seeAll": " عرض القائمة كاملة"
   },
   "menu": {
     "title": "قائمتنا"
@@ -162,7 +175,9 @@
     "quantityPlus": "+",
     "quantityMinus": "-",
     "noItems": "لا توجد أطباق متاحة.",
-    "showDetails": "عرض"
+    "showDetails": "عرض",
+    "decrease": "أقل",
+    "increase": "أكثر"
   },
   "orderStatus": {
     "PENDING": "بانتظار الدفع",
@@ -225,6 +240,57 @@
     "notAvailable": "هذا المحتوى غير متاح بعد."
   },
   "footer": {
-    "websiteBy": "تصميم الموقع:"
+    "websiteBy": "تصميم الموقع:",
+    "todayOpen": "مفتوح اليوم",
+    "allHours": "كل أوقات العمل",
+    "links": "روابط",
+    "contact": "تواصل",
+    "rights": "جميع الحقوق محفوظة."
+  },
+  "home": {
+    "kickerBoth": "توصيل واستلام",
+    "kickerDelivery": "توصيل",
+    "kickerPickup": "استلام من المطعم",
+    "orderNow": "اطلب الآن",
+    "seeMenu": "عرض القائمة",
+    "today": "اليوم",
+    "closedToday": "مغلق اليوم",
+    "popularTag": "من مطبخنا",
+    "popularTitle": "الأطباق المفضلة",
+    "prevDish": "الطبق السابق",
+    "nextDish": "الطبق التالي",
+    "inCart": "{{count}} في السلة",
+    "categoriesTag": "الفئات",
+    "categoriesTitle": "ماذا تشتهي اليوم؟",
+    "fullMenu": "عرض القائمة كاملة",
+    "dishCount_zero": "لا أطباق",
+    "dishCount_one": "طبق واحد",
+    "dishCount_two": "طبقان",
+    "dishCount_few": "{{count}} أطباق",
+    "dishCount_many": "{{count}} طبقاً",
+    "dishCount_other": "{{count}} طبق",
+    "aboutMore": "المزيد عنا",
+    "team": "فريق {{name}}",
+    "visitTag": "زورونا",
+    "openNow": "مفتوح الآن",
+    "closedNow": "مغلق حالياً",
+    "call": "اتصل بنا",
+    "write": "راسلنا",
+    "route": "الاتجاهات"
+  },
+  "reviews": {
+    "tag": "التقييمات",
+    "title": "آراء ضيوفنا",
+    "prev": "التقييم السابق",
+    "next": "التقييم التالي",
+    "via": "عبر",
+    "example": "مثال"
+  },
+  "pages": {
+    "menuTag": "القائمة",
+    "orderTag": "طلبك",
+    "accountTag": "الحساب",
+    "legalTag": "معلومات قانونية",
+    "paymentTag": "الدفع"
   }
 }

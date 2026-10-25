@@ -2,18 +2,14 @@ import React from "react";
 import { useSettings } from "../../context/settingsContext";
 import "./Logo.css";
 
-// Logo aus den Einstellungen, sonst der Restaurantname als Text-Logo (Schrift wie die Überschriften)
-const Logo = ({ className = "", width, height, onDark = false }) => {
+// Logo aus den Einstellungen, sonst der Restaurantname als Text-Logo (Serifenschrift, Farbe vom Umfeld)
+const Logo = ({ className = "" }) => {
   const { settings } = useSettings();
 
   if (settings.logoUrl) {
-    return <img src={settings.logoUrl} alt={settings.restaurantName} className={className} width={width} height={height} />;
+    return <img src={settings.logoUrl} alt={settings.restaurantName} className={`fx-logo-img ${className}`} />;
   }
-  return (
-    <span className={`text-logo ${onDark ? "on-primary" : ""} ${className}`}>
-      {settings.restaurantName}
-    </span>
-  );
+  return <span className={`fx-logo-text ${className}`}>{settings.restaurantName}</span>;
 };
 
 export default Logo;

@@ -1,93 +1,141 @@
-/* Footer (Farben und Schriften wie der bisherige Footer) */
-.footer {
-  background: rgb(28, 27, 27);
-  color: white;
-  margin-top: 2rem;
-  padding-bottom: 1rem;
+/* Footer: dunkler, warmer Ton, Spalten mit feinen Linien getrennt */
+.fx-footer {
+  padding-block: var(--s-8) var(--s-6);
+  background: var(--fx-dark);
+  color: var(--fx-dark-ink);
 }
 
-.footer-content {
+.fx-footer-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  padding: 40px 0 30px;
+  grid-template-columns: minmax(0, 1fr);
 }
 
-.footer-box {
+.fx-footer-grid > * {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding-block: var(--s-6);
+  border-top: 1px solid var(--fx-dark-line);
 }
 
-.footer-box h3 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  font-weight: 300;
-  font-family: "Righteous", sans-serif;
-  color: var(--accent);
+.fx-footer-grid > :first-child {
+  padding-top: 0;
+  border-top: 0;
 }
 
-.footer .social a {
-  display: inline-block;
-  height: 30px;
-  width: 30px;
-  line-height: 30px;
-  text-align: center;
-  border-radius: 50%;
-  background: #ffffff;
-  color: rgb(28, 27, 27);
-  margin-inline-end: 10px;
-  font-size: 20px;
-  transition: all 0.3s ease;
-  margin-top: 0.3rem;
-  margin-bottom: 0.7rem;
+.fx-footer .fx-label {
+  margin-bottom: var(--s-2);
+  color: color-mix(in srgb, var(--accent) 80%, var(--fx-dark-ink));
 }
 
-.footer .social a:hover {
-  background: #030303;
-  color: #fff;
-}
-
-/* Kontakt und Links untereinander */
-.footer-list {
-  gap: 0.6rem;
-  font-family: "Poppins", sans-serif;
-}
-
-.footer-list a,
-.footer-address {
-  color: #eeeceb;
-  text-decoration: none;
-  font-size: 1rem;
-}
-
-.footer-list a {
-  width: fit-content;
-}
-
-.footer-list a:hover {
-  color: var(--accent);
-}
-
-.footer-address {
-  white-space: pre-line;
-}
-
-.copyright {
-  text-align: center;
-  padding: 1px;
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-  color: #faf9f9;
-  font-family: "Poppins", sans-serif;
-}
-
-.site-credit {
-  text-align: center;
+.fx-footer-name {
   margin: 0;
-  font-size: 0.8rem;
-  color: #9d9b9a;
+  font-family: var(--fx-serif);
+  font-style: italic;
+  font-size: 2.5rem;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
 }
 
-.site-credit a {
+.fx-footer-text {
+  margin: 0;
+  max-width: 30ch;
+  color: var(--fx-dark-muted);
+}
+
+.fx-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: var(--s-4);
+}
+
+.fx-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--fx-dark-ink) 30%, transparent);
+  color: var(--fx-dark-ink);
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.fx-social a:hover {
+  background: var(--fx-dark-ink);
+  border-color: var(--fx-dark-ink);
+  color: var(--fx-dark);
+}
+
+.fx-footer-today {
+  margin: 0;
+  font-family: var(--fx-cond);
+  font-weight: 700;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.fx-footer-address {
+  margin: 0;
+}
+
+.fx-footer-link {
+  color: color-mix(in srgb, var(--fx-dark-ink) 72%, transparent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.fx-footer-link:hover {
+  color: var(--fx-dark-ink);
+}
+
+.fx-footer a:focus-visible {
+  outline: 2px solid var(--fx-dark-ink);
+  outline-offset: 3px;
+}
+
+.fx-footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--s-2) var(--s-5);
+  margin-top: var(--s-5);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--fx-dark-line);
+  color: color-mix(in srgb, var(--fx-dark-ink) 50%, transparent);
+  font-size: 0.85rem;
+}
+
+.fx-footer-bottom a {
   color: inherit;
+}
+
+@media (min-width: 901px) {
+  .fx-footer {
+    padding-block: var(--s-9) var(--s-6);
+  }
+
+  .fx-footer-grid {
+    grid-template-columns: 1.6fr repeat(3, minmax(0, 1fr));
+  }
+
+  .fx-footer-grid > *,
+  .fx-footer-grid > :first-child {
+    padding-block: 0;
+    padding-inline: clamp(20px, 3vw, 40px);
+    border-top: 0;
+    border-inline-start: 1px solid var(--fx-dark-line);
+  }
+
+  .fx-footer-grid > :first-child {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+
+  .fx-footer-bottom {
+    margin-top: var(--s-8);
+  }
 }

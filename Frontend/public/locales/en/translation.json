@@ -9,7 +9,12 @@
     "logout": "Logout",
     "cart": "Cart",
     "menuLabel": "Menu",
-    "about": "About us"
+    "about": "About us",
+    "menu": "Menu",
+    "order": "Order",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "account": "Account"
   },
   "header": {
     "orderNow": "Order Now"
@@ -17,20 +22,22 @@
   "explorePage": {
     "title": "Explore all dishes",
     "searchPlaceholder": "Search...",
-    "filterAll": "All"
+    "filterAll": "All",
+    "searchLabel": "Search dishes"
   },
   "foodDetails": {
     "ingredients": "Ingredients",
     "nutrition": "Nutrition",
     "addToCart": "Add to cart",
-    "aiEstimate": "Estimate calories with AI ✨",
+    "aiEstimate": "Estimate calories with AI",
     "category": "Category",
-    "estimatedWithAI": "Estimated with AI ✨",
+    "estimatedWithAI": "Estimated with AI",
     "calories": "Calories",
     "protein": "Protein",
     "carbs": "Carbohydrates",
     "fat": "Fat",
-    "portion": "Portion"
+    "portion": "Portion",
+    "back": "Back to the menu"
   },
   "cart": {
     "title": "Your cart",
@@ -42,7 +49,10 @@
     "checkout": "Checkout",
     "categoryLabel": "Category",
     "quantity": "Quantity",
-    "minOrderMissing": "Minimum order {{min}} – {{missing}} to go."
+    "minOrderMissing": "Minimum order {{min}} – {{missing}} to go.",
+    "remove": "Remove",
+    "emptyText": "Pick something tasty from the menu.",
+    "toMenu": "To the menu"
   },
   "placeOrder": {
     "title": "Place order",
@@ -114,7 +124,10 @@
     "order": "Order",
     "items": "Items",
     "date": "Date",
-    "total": "Total Amount"
+    "total": "Total Amount",
+    "empty": "You have no orders yet.",
+    "loginFirst": "Log in to see your orders.",
+    "refresh": "Refresh"
   },
   "contactPage": {
     "title": "Contact"
@@ -151,7 +164,7 @@
   },
   "featured": {
     "title": "Popular Dishes",
-    "seeAll": "View full menu →"
+    "seeAll": "View full menu"
   },
   "menu": {
     "title": "Our Menu"
@@ -162,7 +175,9 @@
     "quantityPlus": "+",
     "quantityMinus": "-",
     "noItems": "No dishes available.",
-    "showDetails": "View"
+    "showDetails": "View",
+    "decrease": "Less",
+    "increase": "More"
   },
   "orderStatus": {
     "PENDING": "Awaiting payment",
@@ -225,6 +240,53 @@
     "notAvailable": "This content is not available yet."
   },
   "footer": {
-    "websiteBy": "Website by"
+    "websiteBy": "Website by",
+    "todayOpen": "Open today",
+    "allHours": "All opening hours",
+    "links": "Links",
+    "contact": "Contact",
+    "rights": "All rights reserved."
+  },
+  "home": {
+    "kickerBoth": "Delivery & pickup",
+    "kickerDelivery": "Delivery",
+    "kickerPickup": "Pickup",
+    "orderNow": "Order now",
+    "seeMenu": "See the menu",
+    "today": "Today",
+    "closedToday": "Closed today",
+    "popularTag": "From the kitchen",
+    "popularTitle": "Popular dishes",
+    "prevDish": "Previous dish",
+    "nextDish": "Next dish",
+    "inCart": "{{count}} in cart",
+    "categoriesTag": "Categories",
+    "categoriesTitle": "What would you like?",
+    "fullMenu": "View the full menu",
+    "dishCount_one": "{{count}} dish",
+    "dishCount_other": "{{count}} dishes",
+    "aboutMore": "More about us",
+    "team": "The team at {{name}}",
+    "visitTag": "Visit us",
+    "openNow": "Open now",
+    "closedNow": "Closed right now",
+    "call": "Call us",
+    "write": "Send an email",
+    "route": "Get directions"
+  },
+  "reviews": {
+    "tag": "Reviews",
+    "title": "What our guests say",
+    "prev": "Previous review",
+    "next": "Next review",
+    "via": "via",
+    "example": "Example"
+  },
+  "pages": {
+    "menuTag": "The menu",
+    "orderTag": "Your order",
+    "accountTag": "Account",
+    "legalTag": "Legal",
+    "paymentTag": "Payment"
   }
 }

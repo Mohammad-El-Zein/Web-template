@@ -1,14 +1,5 @@
-.food-grid-container {
-  width: 100%;
-  max-width: 1200px;   
-  margin: 0 auto;      
-}
-
-.food-grid {
+.fx-food-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 24px;
-  padding: 20px;
-  max-width: 1400px;
-  margin: 0 auto;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+  gap: var(--s-5);
 }

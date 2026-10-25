@@ -1,16 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import HourglassTopIcon from "@mui/icons-material/HourglassTop";
-import Card from "@mui/material/Card";
-import { useNavigate, useParams } from "react-router-dom";
-import { Button, CircularProgress } from "@mui/material";
-import { green, orange } from "@mui/material/colors";
+import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { StoreContext } from "../../context/StoreContext";
 import { verifyPayment } from "../../service/orderService";
+import "../Login/Login.css";
+import "./PaymentSuccess.css";
 
 const PaymentSuccess = () => {
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const { orderId } = useParams();
   const { token, setQuantities } = useContext(StoreContext);
@@ -38,79 +34,39 @@ const PaymentSuccess = () => {
 
   if (state !== "paid") {
     return (
-      <section className="py-5">
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-lg-6 col-md-8">
-              <Card
-                className="p-5 shadow-sm bg-white text-center"
-                style={{ borderRadius: "12px" }}
-              >
-                {state === "checking" ? (
-                  <CircularProgress sx={{ margin: "0 auto" }} />
-                ) : (
-                  <HourglassTopIcon sx={{ fontSize: "5rem", color: orange[500] }} />
-                )}
-
-                <h1 className="py-4 text-2xl fw-bold">
-                  {state === "checking" ? t("payment.checking") : t("payment.pending")}
-                </h1>
-
-                {state === "pending" && (
-                  <p className="text-muted mb-4">{t("payment.pendingDesc")}</p>
-                )}
-
-                <Button
-                  variant="contained"
-                  onClick={() => navigate("/myorders")}
-                  className="w-100 py-2"
-                  disabled={state === "checking"}
-                >
-                  {t("payment.toMyOrders")}
-                </Button>
-              </Card>
-            </div>
-          </div>
+      <main className="fx-page fx-auth">
+        <div className="fx-card fx-auth-card fx-result" role="status">
+          {state === "checking" ? (
+            <span className="fx-result-icon"><span className="spinner-border spinner-border-sm" aria-hidden="true"></span></span>
+          ) : (
+            <span className="fx-result-icon"><i className="bi bi-hourglass-split" aria-hidden="true"></i></span>
+          )}
+          <span className="fx-tag">{t("pages.paymentTag")}</span>
+          <h1 className="fx-h2">{state === "checking" ? t("payment.checking") : t("payment.pending")}</h1>
+          {state === "pending" && <p className="fx-result-text">{t("payment.pendingDesc")}</p>}
+          <Link
+            to="/myorders"
+            className={`fx-btn fx-btn-primary fx-btn-block ${state === "checking" ? "is-disabled" : ""}`}
+            aria-disabled={state === "checking"}
+          >
+            {t("payment.toMyOrders")}
+          </Link>
         </div>
-      </section>
+      </main>
     );
   }
 
   return (
-    <section className="py-5">
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-lg-6 col-md-8">
-            <Card
-              className="p-5 shadow-sm bg-white text-center"
-              style={{ borderRadius: "12px" }}
-            >
-              <TaskAltIcon sx={{ fontSize: "5rem", color: green[500] }} />
-
-              <h1 className="py-4 text-2xl fw-bold">
-                {t("payment.success")}
-              </h1>
-
-              <p className="text-muted mb-2">
-                {t("payment.successDesc1")}
-              </p>
-
-              <p className="text-muted mb-4">
-                {t("payment.successDesc2")}
-              </p>
-
-              <Button
-                variant="contained"
-                onClick={() => navigate("/")}
-                className="w-100 py-2"
-              >
-                {t("payment.backHome")}
-              </Button>
-            </Card>
-          </div>
-        </div>
+    <main className="fx-page fx-auth">
+      <div className="fx-card fx-auth-card fx-result" role="status">
+        <span className="fx-result-icon is-success"><i className="bi bi-check2" aria-hidden="true"></i></span>
+        <span className="fx-tag">{t("pages.paymentTag")}</span>
+        <h1 className="fx-h2">{t("payment.success")}</h1>
+        <p className="fx-result-text">{t("payment.successDesc1")}</p>
+        <p className="fx-result-text">{t("payment.successDesc2")}</p>
+        <Link to="/" className="fx-btn fx-btn-primary fx-btn-block">{t("payment.backHome")}</Link>
       </div>
-    </section>
+    </main>
   );
 };
 

@@ -1,0 +1,33 @@
+/* Größe gibt der umgebende Rahmen vor; alle Bilder füllen ihn vollständig aus */
+.about-slides {
+  position: relative;
+  overflow: hidden;
+  background: var(--fx-tile);
+}
+
+.about-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+}
+
+/* Neues Bild blendet über dem vorherigen ein, das vorherige bleibt bis dahin voll sichtbar (kein Aufhellen) */
+.about-slide.is-prev {
+  opacity: 1;
+  z-index: 1;
+}
+
+.about-slide.is-active {
+  opacity: 1;
+  z-index: 2;
+  transition: opacity 1.4s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-slide.is-active {
+    transition: none;
+  }
+}

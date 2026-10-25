@@ -9,7 +9,12 @@
     "logout": "Abmelden",
     "cart": "Warenkorb",
     "menuLabel": "Menü",
-    "about": "Über uns"
+    "about": "Über uns",
+    "menu": "Speisekarte",
+    "order": "Bestellen",
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen",
+    "account": "Konto"
   },
   "header": {
     "orderNow": "Jetzt bestellen"
@@ -17,7 +22,8 @@
   "explorePage": {
     "title": "Alle Gerichte entdecken",
     "searchPlaceholder": "Suchen...",
-    "filterAll": "Alles"
+    "filterAll": "Alles",
+    "searchLabel": "Gerichte suchen"
   },
   "cart": {
     "title": "Dein Warenkorb",
@@ -29,7 +35,10 @@
     "checkout": "Zur Kasse",
     "categoryLabel": "Kategorie",
     "quantity": "Anzahl",
-    "minOrderMissing": "Mindestbestellwert {{min}} – es fehlen noch {{missing}}."
+    "minOrderMissing": "Mindestbestellwert {{min}} – es fehlen noch {{missing}}.",
+    "remove": "Entfernen",
+    "emptyText": "Such dir etwas Leckeres auf der Speisekarte aus.",
+    "toMenu": "Zur Speisekarte"
   },
   "placeOrder": {
     "title": "Bestellung abschließen",
@@ -101,7 +110,10 @@
     "order": "Bestellung",
     "items": "Artikel",
     "date": "Datum",
-    "total": "Gesamtbetrag"
+    "total": "Gesamtbetrag",
+    "empty": "Du hast noch keine Bestellungen.",
+    "loginFirst": "Melde dich an, um deine Bestellungen zu sehen.",
+    "refresh": "Aktualisieren"
   },
   "contactPage": {
     "title": "Kontakt"
@@ -117,14 +129,15 @@
     "ingredients": "Zutaten",
     "nutrition": "Nährwerte",
     "addToCart": "In den Warenkorb",
-    "aiEstimate": "Mit AI Kalorien schätzen ✨",
+    "aiEstimate": "Mit AI Kalorien schätzen",
     "category": "Kategorie",
-    "estimatedWithAI": "Mit AI geschätzt ✨",
+    "estimatedWithAI": "Mit AI geschätzt",
     "calories": "Kalorien",
     "protein": "Protein",
     "carbs": "Kohlenhydrate",
     "fat": "Fett",
-    "portion": "Portion"
+    "portion": "Portion",
+    "back": "Zur Speisekarte"
   },
   "menu": {
     "title": "Unsere Speisekarte"
@@ -154,7 +167,7 @@
   },
   "featured": {
     "title": "Beliebte Gerichte",
-    "seeAll": "Zum gesamten Menü →"
+    "seeAll": "Zum gesamten Menü"
   },
   "card": {
     "addToCart": "Hinzufügen",
@@ -162,7 +175,9 @@
     "quantityPlus": "+",
     "quantityMinus": "-",
     "noItems": "Keine Gerichte verfügbar.",
-    "showDetails": "Anzeigen"
+    "showDetails": "Anzeigen",
+    "decrease": "Weniger",
+    "increase": "Mehr"
   },
   "orderStatus": {
     "PENDING": "Wartet auf Zahlung",
@@ -225,6 +240,53 @@
     "notAvailable": "Dieser Inhalt ist noch nicht verfügbar."
   },
   "footer": {
-    "websiteBy": "Website von"
+    "websiteBy": "Website von",
+    "todayOpen": "Heute geöffnet",
+    "allHours": "Alle Öffnungszeiten",
+    "links": "Links",
+    "contact": "Kontakt",
+    "rights": "Alle Rechte vorbehalten."
+  },
+  "home": {
+    "kickerBoth": "Lieferung & Abholung",
+    "kickerDelivery": "Lieferung",
+    "kickerPickup": "Abholung",
+    "orderNow": "Jetzt bestellen",
+    "seeMenu": "Speisekarte ansehen",
+    "today": "Heute",
+    "closedToday": "Heute geschlossen",
+    "popularTag": "Aus der Küche",
+    "popularTitle": "Beliebte Gerichte",
+    "prevDish": "Vorheriges Gericht",
+    "nextDish": "Nächstes Gericht",
+    "inCart": "{{count}} im Warenkorb",
+    "categoriesTag": "Kategorien",
+    "categoriesTitle": "Was darf es sein?",
+    "fullMenu": "Ganze Karte ansehen",
+    "dishCount_one": "{{count}} Gericht",
+    "dishCount_other": "{{count}} Gerichte",
+    "aboutMore": "Mehr über uns",
+    "team": "Das Team von {{name}}",
+    "visitTag": "Besuch uns",
+    "openNow": "Jetzt geöffnet",
+    "closedNow": "Gerade geschlossen",
+    "call": "Anrufen",
+    "write": "E-Mail schreiben",
+    "route": "Route planen"
+  },
+  "reviews": {
+    "tag": "Bewertungen",
+    "title": "Stimmen unserer Gäste",
+    "prev": "Vorherige Bewertung",
+    "next": "Nächste Bewertung",
+    "via": "über",
+    "example": "Beispiel"
+  },
+  "pages": {
+    "menuTag": "Die Karte",
+    "orderTag": "Bestellung",
+    "accountTag": "Konto",
+    "legalTag": "Rechtliches",
+    "paymentTag": "Zahlung"
   }
 }

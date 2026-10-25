@@ -1,20 +1,17 @@
-import React, { useState, useEffect } from "react";
-import "./Register.css";
+import React, { useState } from "react";
+import "../Login/Login.css";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { registerUser } from "../../service/authService";
-import ScrollReveal from "scrollreveal";
 import { useTranslation } from "react-i18next";
+
+const EMPTY = { name: "", email: "", password: "" };
 
 const Register = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const [data, setData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [data, setData] = useState(EMPTY);
 
   const onChangeHandler = (event) => {
     const { name, value } = event.target;
@@ -31,112 +28,74 @@ const Register = () => {
       } else {
         toast.error(t("messages.registerFailed"));
       }
-    } catch (error) {
+    } catch {
       toast.error(t("messages.registerFailed"));
     }
   };
 
-  useEffect(() => {
-    const sr = ScrollReveal({
-      origin: "top",
-      distance: "60px",
-      duration: 1800,
-      delay: 400,
-    });
-
-    sr.reveal(".container", {
-      origin: "top",
-    });
-  }, []);
-
   return (
-    <div className="container register-container">
-      <div className="row">
-        <div className="col-sm-9 col-md-7 col-lg-5 mx-auto">
-          <div className="card border-0 shadow rounded-3 my-5">
-            <div className="card-body p-4 p-sm-5">
-              <h5 className="card-title text-center mb-5 fw-light fs-5">
-                {t("auth.registerTitle")}
-              </h5>
+    <main className="fx-page fx-auth">
+      <div className="fx-card fx-auth-card">
+        <span className="fx-tag">{t("pages.accountTag")}</span>
+        <h1 className="fx-h2">{t("auth.registerTitle")}</h1>
 
-              <form onSubmit={onSubmitHandler}>
-                <div className="form-floating mb-3">
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="floatingName"
-                    placeholder={t("auth.name")}
-                    name="name"
-                    onChange={onChangeHandler}
-                    value={data.name}
-                    required
-                  />
-                  <label htmlFor="floatingName">
-                    {t("auth.name")}
-                  </label>
-                </div>
-
-                <div className="form-floating mb-3">
-                  <input
-                    type="email"
-                    className="form-control"
-                    id="floatingInput"
-                    placeholder={t("auth.email")}
-                    name="email"
-                    onChange={onChangeHandler}
-                    value={data.email}
-                    required
-                  />
-                  <label htmlFor="floatingInput">
-                    {t("auth.email")}
-                  </label>
-                </div>
-
-                <div className="form-floating mb-3">
-                  <input
-                    type="password"
-                    className="form-control"
-                    id="floatingPassword"
-                    placeholder={t("auth.password")}
-                    name="password"
-                    onChange={onChangeHandler}
-                    value={data.password}
-                    required
-                  />
-                  <label htmlFor="floatingPassword">
-                    {t("auth.password")}
-                  </label>
-                </div>
-
-                <div className="d-grid">
-                  <button
-                    className="btn btn-outline-primary btn-login text-uppercase"
-                    type="submit"
-                  >
-                    {t("auth.registerSubmit")}
-                  </button>
-
-                  <button
-                    className="btn btn-outline-danger btn-login text-uppercase mt-2"
-                    type="reset"
-                  >
-                    {t("auth.reset")}
-                  </button>
-                </div>
-
-                <div className="mt-4">
-                  {t("auth.alreadyAccount")}{" "}
-                  <Link to="/login">
-                    {t("auth.loginLink")}
-                  </Link>
-                </div>
-              </form>
-
-            </div>
+        <form onSubmit={onSubmitHandler} className="fx-auth-form">
+          <div className="fx-field">
+            <label htmlFor="register-name">{t("auth.name")}</label>
+            <input
+              type="text"
+              className="form-control"
+              id="register-name"
+              name="name"
+              autoComplete="name"
+              onChange={onChangeHandler}
+              value={data.name}
+              required
+            />
           </div>
-        </div>
+
+          <div className="fx-field">
+            <label htmlFor="register-email">{t("auth.email")}</label>
+            <input
+              type="email"
+              className="form-control"
+              id="register-email"
+              name="email"
+              autoComplete="email"
+              onChange={onChangeHandler}
+              value={data.email}
+              required
+            />
+          </div>
+
+          <div className="fx-field">
+            <label htmlFor="register-password">{t("auth.password")}</label>
+            <input
+              type="password"
+              className="form-control"
+              id="register-password"
+              name="password"
+              autoComplete="new-password"
+              onChange={onChangeHandler}
+              value={data.password}
+              required
+            />
+          </div>
+
+          <button className="fx-btn fx-btn-primary fx-btn-block" type="submit">
+            {t("auth.registerSubmit")}
+          </button>
+          <button className="fx-text-btn fx-auth-reset" type="reset" onClick={() => setData(EMPTY)}>
+            {t("auth.reset")}
+          </button>
+        </form>
+
+        <p className="fx-auth-switch">
+          {t("auth.alreadyAccount")}{" "}
+          <Link to="/login">{t("auth.loginLink")}</Link>
+        </p>
       </div>
-    </div>
+    </main>
   );
 };
 

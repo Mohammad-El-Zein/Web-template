@@ -1,27 +1,23 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { fetchFoodDetails } from "../../service/foodService";
-import { analyzeNutrition } from "../../service/NutritionService";
 import { toast } from "react-toastify";
 import { StoreContext } from "../../context/StoreContext";
-import ScrollReveal from "scrollreveal";
 import "./FoodDetails.css";
 import { useTranslation } from "react-i18next";
 import FoodImage from "../../components/FoodImage/FoodImage";
+import AiNutrition from "../../components/AiNutrition/AiNutrition";
+import QuantityStepper from "../../components/QuantityStepper/QuantityStepper";
 import { useCategories } from "../../context/categoriesContext";
 
 const FoodDetails = () => {
   const { id } = useParams();
-  const { increaseQty, decreaseQty, quantities } = useContext(StoreContext);
+  const { increaseQty, quantities } = useContext(StoreContext);
   const { t, i18n } = useTranslation();
-
   const [data, setData] = useState({});
-  const [showAI, setShowAI] = useState(false);
-  const [portion, setPortion] = useState(300);
-  const [loading, setLoading] = useState(false);
-  const [nutrition, setNutrition] = useState(null);
 
   const lang = i18n.language;
+  const rtl = i18n.dir(lang) === "rtl";
 
   // Kategoriename in der aktuellen Sprache (aus /api/categories)
   const { categoryName } = useCategories();
@@ -39,7 +35,7 @@ const FoodDetails = () => {
   useEffect(() => {
     const loadFoodDetails = async () => {
       try {
-        const foodData = await fetchFoodDetails(id); 
+        const foodData = await fetchFoodDetails(id);
         setData(foodData);
       } catch {
         toast.error(t("messages.fetchFoodError"));
@@ -48,184 +44,54 @@ const FoodDetails = () => {
     loadFoodDetails();
   }, [id, t]);
 
-  useEffect(() => {
-    ScrollReveal().reveal(".py-5", {
-      origin: "top",
-      distance: "60px",
-      duration: 1000,
-      delay: 200,
-      opacity: 0,
-      easing: "ease-in-out",
-    });
-  }, []);
-
   const addToCart = () => {
     if (!data.id) return;
     increaseQty(data.id);
     toast.success(t("messages.addedToCart"));
   };
 
-  const handleAI = async () => {
-    if (!name) {
-      toast.error(t("messages.foodNotLoaded"));
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const result = await analyzeNutrition(name, portion);
-      setNutrition(result);
-      setShowAI(false);
-    } catch (e) {
-      toast.error(
-        t(e.response?.status === 429 ? "messages.aiLimitReached" : "messages.aiEstimateFailed")
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <>
-      {showAI && (
-        <div
-          className="ai-popup-overlay"
-          onClick={() => !loading && setShowAI(false)}
-        >
-          <div className="ai-popup" onClick={(e) => e.stopPropagation()}>
-            <h4>{t("modals.aiEstimateTitle")}</h4>
-            <p>{t("modals.aiEstimateDesc")}</p>
+    <main className="fx-page">
+      <div className="fx-wrap">
+        <Link to="/explore" className="fx-back">
+          <i className={`bi ${rtl ? "bi-arrow-right" : "bi-arrow-left"}`} aria-hidden="true"></i>
+          {t("foodDetails.back")}
+        </Link>
 
-            <div className="ai-popup-input-row">
-              <input
-                type="number"
-                value={portion}
-                onChange={(e) => setPortion(e.target.value)}
-                className="ai-popup-input"
-              />
-              <span className="ai-popup-input-unit">{t("modals.grams")}</span>
-            </div>
-
-            <div className="ai-popup-buttons">
-              <button
-                className="ai-popup-cancel"
-                disabled={loading}
-                onClick={() => setShowAI(false)}
-              >
-                {t("buttons.cancel")}
-              </button>
-              <button
-                className="ai-popup-ok"
-                disabled={loading}
-                onClick={handleAI}
-              >
-                {loading ? t("general.loading") : t("modals.estimate")}
-              </button>
-            </div>
+        <div className="fx-detail">
+          <div className="fx-detail-photo">
+            <FoodImage src={data.imageUrl} alt={name} />
           </div>
-        </div>
-      )}
 
-      <section className="py-5">
-        <div className="explore-header">
-          <Link to="/explore" className="arrow-btn">
-            <i className="bi bi-arrow-left"></i>
-          </Link>
-        </div>
+          <div className="fx-detail-info">
+            {categoryName(data) && <span className="fx-tag">{categoryName(data)}</span>}
+            <h1 className="fx-h1">{name}</h1>
+            {data.price != null && <p className="fx-detail-price">{Number(data.price).toFixed(2)} €</p>}
+            {desc && <p className="fx-detail-desc">{desc}</p>}
 
-        <div className="container px-4 px-lg-5 my-5">
-          <div className="row gx-4 gx-lg-5 align-items-center">
-            <div className="col-md-6">
-              <FoodImage
-                className="card-img-top mb-5 mb-md-0"
-                src={data.imageUrl}
-                alt={name}
-              />
+            <div className="fx-detail-ai">
+              <AiNutrition name={name} />
             </div>
 
-            <div className="col-md-6">
-              {categoryName(data) && (
-                <div className="fs-5 mb-1">
-                  {t("foodDetails.category")}:{" "}
-                  <span className="badge text-bg-warning">
-                    {categoryName(data)}
-                  </span>
-                </div>
-              )}
-
-              <h1 className="display-5 fw-bold">{name}</h1>
-
-              <div className="fs-5 mb-2">
-                <span>{data.price != null ? `${Number(data.price).toFixed(2)} €` : ""}</span>
-              </div>
-
-              <p className="lead">{desc}</p>
-
-              {!nutrition && (
-                <button
-                  className="btn btn-link p-0 mb-3 ai-details-link"
-                  onClick={() => setShowAI(true)}
-                >
-                  {t("foodDetails.aiEstimate")}
+            <div className="fx-detail-actions">
+              {quantities[data.id] > 0 ? (
+                <>
+                  <QuantityStepper id={data.id} />
+                  <Link to="/cart" className="fx-link">
+                    {t("navbar.cart")} <i className={`bi ${rtl ? "bi-arrow-left" : "bi-arrow-right"}`} aria-hidden="true"></i>
+                  </Link>
+                </>
+              ) : (
+                <button type="button" className="fx-btn fx-btn-primary" onClick={addToCart} disabled={!data.id}>
+                  <i className="bi bi-bag-plus" aria-hidden="true"></i>
+                  {t("foodDetails.addToCart")}
                 </button>
               )}
-
-              {nutrition && (
-                <div className="ai-details-result animate-slide-in">
-                  <div className="ai-result-label">
-                    {t("foodDetails.estimatedWithAI")}
-                  </div>
-                  <div>
-                    <strong>{t("foodDetails.calories")}:</strong>{" "}
-                    {nutrition.calories} kcal
-                  </div>
-                  <div>
-                    <strong>{t("foodDetails.protein")}:</strong>{" "}
-                    {nutrition.protein} g
-                  </div>
-                  <div>
-                    <strong>{t("foodDetails.carbs")}:</strong> {nutrition.carbs}{" "}
-                    g
-                  </div>
-                  <div>
-                    <strong>{t("foodDetails.fat")}:</strong> {nutrition.fat} g
-                  </div>
-                  <div className="mt-2">
-                    <strong>{t("foodDetails.portion")}:</strong> {portion}{" "}
-                    {t("modals.grams")}
-                  </div>
-                </div>
-              )}
-
-              <div className="d-flex align-items-center gap-3 mt-4">
-                {quantities[data.id] > 0 ? (
-                  <>
-                    <button
-                      className="btn btn-outline-dark"
-                      onClick={() => decreaseQty(data.id)}
-                    >
-                      -
-                    </button>
-                    <span className="fw-bold fs-5">{quantities[data.id]}</span>
-                    <button
-                      className="btn btn-outline-dark"
-                      onClick={() => increaseQty(data.id)}
-                    >
-                      +
-                    </button>
-                  </>
-                ) : (
-                  <button className="btn btn-outline-dark" onClick={addToCart}>
-                    <i className="bi-cart-fill me-1"></i>
-                    {t("foodDetails.addToCart")}
-                  </button>
-                )}
-              </div>
             </div>
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </main>
   );
 };
 

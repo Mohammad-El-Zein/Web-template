@@ -24,7 +24,9 @@ const ACCENT_VARIANTS = {
 };
 
 const ACCENT_PROPERTIES = ["--accent", "--accent-rgb", "--accent-glow-rgb", "--accent-shadow-rgb", "--on-accent", ...Object.keys(ACCENT_VARIANTS)];
-const PRIMARY_PROPERTIES = ["--primary", "--primary-rgb", "--on-primary"];
+const PRIMARY_PROPERTIES = ["--primary", "--primary-rgb", "--on-primary", "--primary-text"];
+// Hintergrund der Seite (--fx-bg in index.css)
+const PAGE_BG = "#faf7f2";
 
 // Kontrast nach WCAG: weiße oder dunkle Schrift, je nachdem was besser lesbar ist
 const DARK_TEXT = "#121212";
@@ -41,6 +43,14 @@ export const readableTextOn = (hex) => {
   return contrast(background, 1) >= contrast(background, luminance(toRgb(DARK_TEXT))) ? "#fff" : DARK_TEXT;
 };
 
+// Hauptfarbe als Schrift auf der hellen Seite: so lange abdunkeln, bis der Kontrast mindestens 4.5 ist
+const readablePrimaryText = (hex) => {
+  const background = luminance(toRgb(PAGE_BG));
+  let rgb = toRgb(hex);
+  for (let i = 0; i < 20 && contrast(luminance(rgb), background) < 4.5; i += 1) rgb = mix(rgb, -0.1);
+  return toHex(rgb);
+};
+
 export const applyTheme = (primaryColor, accentColor) => {
   const style = document.documentElement.style;
 
@@ -49,6 +59,7 @@ export const applyTheme = (primaryColor, accentColor) => {
     style.setProperty("--primary", primary);
     style.setProperty("--primary-rgb", toRgb(primary).join(", "));
     style.setProperty("--on-primary", readableTextOn(primary));
+    style.setProperty("--primary-text", readablePrimaryText(primary));
   } else {
     PRIMARY_PROPERTIES.forEach((p) => style.removeProperty(p));
   }

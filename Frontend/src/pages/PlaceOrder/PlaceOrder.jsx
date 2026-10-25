@@ -4,7 +4,6 @@ import { StoreContext } from "../../context/StoreContext";
 import { calculateCartTotals } from "../../util/cartUtils";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import Logo from "../../components/Logo/Logo";
 import { createOrder } from "../../service/orderService";
 import { useSettings } from "../../context/settingsContext";
 import { orderErrorCode, orderErrorMessage } from "../../util/orderErrors";
@@ -12,6 +11,15 @@ import OrderNotice from "../../components/OrderNotice/OrderNotice";
 import { useOrderAvailability } from "../../components/OrderNotice/useOrderAvailability";
 
 const ORDER_TYPES = ["DELIVERY", "PICKUP"];
+
+// Wandelt name/description IMMER sicher in String um
+const safeText = (value) => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object")
+    return value.de || Object.values(value)[0] || "";
+  return "";
+};
 
 const PlaceOrder = () => {
   const { foodList, quantities, token } = useContext(StoreContext);
@@ -36,15 +44,6 @@ const PlaceOrder = () => {
   const orderType = showTypeChoice ? chosenType : ordering.deliveryEnabled ? "DELIVERY" : "PICKUP";
   const isDelivery = orderType === "DELIVERY";
 
-  // Wandelt name/description IMMER sicher in String um
-  const safeText = (value) => {
-    if (!value) return "";
-    if (typeof value === "string") return value;
-    if (typeof value === "object")
-      return value.de || Object.values(value)[0] || "";
-    return "";
-  };
-
   const cartItems = foodList.filter((food) => quantities[food.id] > 0);
 
   const { subtotal, shipping, total, minReached, missing } = calculateCartTotals(
@@ -67,8 +66,8 @@ const PlaceOrder = () => {
         foodId: item.id,
         quantity: quantities[item.id],
         price: item.price,
-        name: safeText(item.name), // FIXED
-        description: safeText(item.description), // FIXED
+        name: safeText(item.name),
+        description: safeText(item.description),
         imageUrl: item.imageUrl,
         category: item.category,
       }));
@@ -99,231 +98,221 @@ const PlaceOrder = () => {
   };
 
   return (
-    <div className="container placeorder-container mt-4">
-      <div className="text-center mb-4">
-        <div className="mb-3">
-          <Logo width="120" />
-        </div>
-        <h2>{t("placeOrder.title")}</h2>
-      </div>
+    <main className="fx-page">
+      <div className="fx-wrap">
+        <header className="fx-page-head">
+          <span className="fx-tag">{t("pages.orderTag")}</span>
+          <h1 className="fx-h1">{t("placeOrder.title")}</h1>
+        </header>
 
-      <div className="row g-5">
-        {/* LEFT FORM */}
-        <div className="col-lg-7">
-          <OrderNotice />
-          <div className="form-box p-4 shadow-sm rounded-4 bg-white">
-            <h4 className="mb-4 fw-semibold">{t("placeOrder.detailsTitle")}</h4>
+        <div className="fx-checkout">
+          {/* FORMULAR */}
+          <div>
+            <OrderNotice />
+            <form onSubmit={handleSubmit} className="fx-card fx-checkout-form">
+              <h2 className="fx-h3">{t("placeOrder.detailsTitle")}</h2>
 
-            <form onSubmit={handleSubmit} className="row g-3">
-              {/* LIEFERUNG ODER ABHOLUNG */}
-              {showTypeChoice && (
-                <div className="col-12">
-                  <span className="form-label d-block">{t("orderType.label")}</span>
-                  <div className="order-type-options" role="radiogroup" aria-label={t("orderType.label")}>
-                    {ORDER_TYPES.map((type) => (
-                      <button
-                        key={type}
-                        type="button"
-                        role="radio"
-                        aria-checked={orderType === type}
-                        className={`order-type-option ${orderType === type ? "active" : ""}`}
-                        onClick={() => setChosenType(type)}
-                      >
-                        <i className={`bi ${type === "DELIVERY" ? "bi-truck" : "bi-bag"}`} aria-hidden="true"></i>
-                        {t(`orderType.${type}`)}
-                      </button>
-                    ))}
+              <div className="fx-form-grid">
+                {/* LIEFERUNG ODER ABHOLUNG */}
+                {showTypeChoice && (
+                  <div className="fx-field fx-span-6">
+                    <span className="fx-field-label">{t("orderType.label")}</span>
+                    <div className="order-type-options" role="radiogroup" aria-label={t("orderType.label")}>
+                      {ORDER_TYPES.map((type) => (
+                        <button
+                          key={type}
+                          type="button"
+                          role="radio"
+                          aria-checked={orderType === type}
+                          className={`order-type-option ${orderType === type ? "active" : ""}`}
+                          onClick={() => setChosenType(type)}
+                        >
+                          <i className={`bi ${type === "DELIVERY" ? "bi-truck" : "bi-bag"}`} aria-hidden="true"></i>
+                          {t(`orderType.${type}`)}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-              {!isDelivery && (
-                <div className="col-12">
-                  <p className="order-type-hint">{t("orderType.pickupHint")}</p>
-                </div>
-              )}
-
-              {/* FIRST NAME */}
-              <div className="col-md-6">
-                <label className="form-label">
-                  {t("placeOrder.firstName")}
-                </label>
-                <input
-                  type="text"
-                  className="form-control custom-input"
-                  placeholder={t("placeOrder.firstNamePlaceholder")}
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  required
-                />
-              </div>
-
-              {/* LAST NAME */}
-              <div className="col-md-6">
-                <label className="form-label">{t("placeOrder.lastName")}</label>
-                <input
-                  type="text"
-                  className="form-control custom-input"
-                  placeholder={t("placeOrder.lastNamePlaceholder")}
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  required
-                />
-              </div>
-
-              {/* EMAIL */}
-              <div className="col-12">
-                <label className="form-label">{t("placeOrder.email")}</label>
-                <input
-                  type="email"
-                  className="form-control custom-input"
-                  placeholder={t("placeOrder.emailPlaceholder")}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-
-              {/* PHONE */}
-              <div className="col-12">
-                <label className="form-label">{t("placeOrder.phone")}</label>
-                <input
-                  type="tel"
-                  className="form-control custom-input"
-                  placeholder={t("placeOrder.phonePlaceholder")}
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  required
-                />
-              </div>
-
-              {/* Adresse nur bei Lieferung */}
-              {isDelivery && (
-                <>
-                  {/* ADDRESS */}
-                  <div className="col-12">
-                    <label className="form-label">{t("placeOrder.address")}</label>
-                    <input
-                      type="text"
-                      className="form-control custom-input"
-                      placeholder={t("placeOrder.addressPlaceholder")}
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      required
-                    />
-                  </div>
-
-                  {/* COUNTRY */}
-                  <div className="col-md-5">
-                    <label className="form-label">{t("placeOrder.country")}</label>
-                    <select
-                      className="form-select custom-input"
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                      required
-                    >
-                      <option value="">{t("placeOrder.countryPlaceholder")}</option>
-                      <option value="Deutschland">{t("placeOrder.a")}</option>
-                    </select>
-                  </div>
-
-                  {/* STATE */}
-                  <div className="col-md-4">
-                    <label className="form-label">{t("placeOrder.state")}</label>
-                    <select
-                      className="form-select custom-input"
-                      value={state}
-                      onChange={(e) => setState(e.target.value)}
-                      required
-                    >
-                      <option value="">{t("placeOrder.statePlaceholder")}</option>
-                      <option value="Nordrhein-Westfalen">
-                        {t("placeOrder.b")}
-                      </option>
-                    </select>
-                  </div>
-
-                  {/* ZIP */}
-                  <div className="col-md-3">
-                    <label className="form-label">{t("placeOrder.zip")}</label>
-                    <input
-                      type="text"
-                      className="form-control custom-input"
-                      placeholder={t("placeOrder.zipPlaceholder")}
-                      value={zip}
-                      onChange={(e) => setZip(e.target.value)}
-                      required
-                    />
-                  </div>
-                </>
-              )}
-
-              {/* SUBMIT */}
-              <div className="col-12 mt-3">
-                {cartItems.length > 0 && !minReached && (
-                  <p className="cart-min-order mt-0">
-                    <i className="bi bi-info-circle" aria-hidden="true"></i>{" "}
-                    {t("cart.minOrderMissing", {
-                      min: `${ordering.minOrderAmount.toFixed(2)} €`,
-                      missing: `${missing.toFixed(2)} €`,
-                    })}
-                  </p>
                 )}
-                <button
-                  className="placeorder-btn"
-                  type="submit"
-                  disabled={cartItems.length === 0 || !minReached || blocked || submitting}
-                >
-                  {t("placeOrder.submit")}
-                </button>
+                {!isDelivery && (
+                  <p className="order-type-hint fx-span-6">{t("orderType.pickupHint")}</p>
+                )}
+
+                <div className="fx-field fx-span-3">
+                  <label htmlFor="po-first">{t("placeOrder.firstName")}</label>
+                  <input
+                    id="po-first"
+                    type="text"
+                    className="form-control"
+                    placeholder={t("placeOrder.firstNamePlaceholder")}
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    autoComplete="given-name"
+                    required
+                  />
+                </div>
+
+                <div className="fx-field fx-span-3">
+                  <label htmlFor="po-last">{t("placeOrder.lastName")}</label>
+                  <input
+                    id="po-last"
+                    type="text"
+                    className="form-control"
+                    placeholder={t("placeOrder.lastNamePlaceholder")}
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    autoComplete="family-name"
+                    required
+                  />
+                </div>
+
+                <div className="fx-field fx-span-3">
+                  <label htmlFor="po-email">{t("placeOrder.email")}</label>
+                  <input
+                    id="po-email"
+                    type="email"
+                    className="form-control"
+                    placeholder={t("placeOrder.emailPlaceholder")}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
+                    required
+                  />
+                </div>
+
+                <div className="fx-field fx-span-3">
+                  <label htmlFor="po-phone">{t("placeOrder.phone")}</label>
+                  <input
+                    id="po-phone"
+                    type="tel"
+                    className="form-control"
+                    placeholder={t("placeOrder.phonePlaceholder")}
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    autoComplete="tel"
+                    required
+                  />
+                </div>
+
+                {/* Adresse nur bei Lieferung */}
+                {isDelivery && (
+                  <>
+                    <div className="fx-field fx-span-6">
+                      <label htmlFor="po-address">{t("placeOrder.address")}</label>
+                      <input
+                        id="po-address"
+                        type="text"
+                        className="form-control"
+                        placeholder={t("placeOrder.addressPlaceholder")}
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        autoComplete="street-address"
+                        required
+                      />
+                    </div>
+
+                    <div className="fx-field fx-span-2">
+                      <label htmlFor="po-country">{t("placeOrder.country")}</label>
+                      <select
+                        id="po-country"
+                        className="form-select"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        required
+                      >
+                        <option value="">{t("placeOrder.countryPlaceholder")}</option>
+                        <option value="Deutschland">{t("placeOrder.a")}</option>
+                      </select>
+                    </div>
+
+                    <div className="fx-field fx-span-2">
+                      <label htmlFor="po-state">{t("placeOrder.state")}</label>
+                      <select
+                        id="po-state"
+                        className="form-select"
+                        value={state}
+                        onChange={(e) => setState(e.target.value)}
+                        required
+                      >
+                        <option value="">{t("placeOrder.statePlaceholder")}</option>
+                        <option value="Nordrhein-Westfalen">{t("placeOrder.b")}</option>
+                      </select>
+                    </div>
+
+                    <div className="fx-field fx-span-2">
+                      <label htmlFor="po-zip">{t("placeOrder.zip")}</label>
+                      <input
+                        id="po-zip"
+                        type="text"
+                        className="form-control"
+                        placeholder={t("placeOrder.zipPlaceholder")}
+                        value={zip}
+                        onChange={(e) => setZip(e.target.value)}
+                        autoComplete="postal-code"
+                        required
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* ABSCHICKEN */}
+                <div className="fx-span-6 fx-checkout-submit">
+                  {cartItems.length > 0 && !minReached && (
+                    <p className="fx-hint cart-min-order">
+                      <i className="bi bi-info-circle" aria-hidden="true"></i>
+                      <span>
+                        {t("cart.minOrderMissing", {
+                          min: `${ordering.minOrderAmount.toFixed(2)} €`,
+                          missing: `${missing.toFixed(2)} €`,
+                        })}
+                      </span>
+                    </p>
+                  )}
+                  <button
+                    className="fx-btn fx-btn-primary fx-btn-block placeorder-btn"
+                    type="submit"
+                    disabled={cartItems.length === 0 || !minReached || blocked || submitting}
+                  >
+                    {t("placeOrder.submit")}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
-        </div>
 
-        {/* RIGHT CART SUMMARY */}
-        <div className="col-lg-5">
-          <div className="cart-box shadow-sm p-4 rounded-4 bg-white">
-            <h4 className="d-flex justify-content-between align-items-center mb-3">
-              <span className="fw-semibold">{t("cart.title")}</span>
-              <span className="badge bg-warning text-dark rounded-pill">
-                {cartItems.length}
-              </span>
-            </h4>
+          {/* ÜBERSICHT */}
+          <aside className="fx-card fx-summary">
+            <h2 className="fx-h3 fx-checkout-summary-title">
+              <span>{t("cart.title")}</span>
+              <span className="fx-checkout-count">{cartItems.length}</span>
+            </h2>
 
-            <ul className="list-group mb-3">
+            <ul className="fx-checkout-items">
               {cartItems.map((item) => (
-                <li
-                  key={item.id}
-                  className="list-group-item d-flex justify-content-between lh-sm border-0 pb-2"
-                >
+                <li key={item.id}>
                   <div>
-                    <h6 className="my-0 fw-medium">{safeText(item.name)}</h6>
-                    <small className="text-muted">
-                      {t("cart.quantity")}: {quantities[item.id]}
-                    </small>
+                    <span className="fx-checkout-name">{safeText(item.name)}</span>
+                    <small>{t("cart.quantity")}: {quantities[item.id]}</small>
                   </div>
-                  <span className="fw-semibold">
-                    {(item.price * quantities[item.id]).toFixed(2)}€
-                  </span>
+                  <span className="fx-num">{(item.price * quantities[item.id]).toFixed(2)} €</span>
                 </li>
               ))}
-
-              <li className="list-group-item d-flex justify-content-between border-0">
-                <span>{t("cart.shipping")}</span>
-                <span>
-                  {subtotal === 0 ? "0.00€" : shipping.toFixed(2) + "€"}
-                </span>
-              </li>
-
-              <li className="list-group-item d-flex justify-content-between border-0 mt-2 pt-2 border-top">
-                <strong>{t("cart.total")}</strong>
-                <strong>{total.toFixed(2)}€</strong>
-              </li>
             </ul>
-          </div>
+
+            <dl className="fx-summary-lines">
+              <div>
+                <dt>{t("cart.shipping")}</dt>
+                <dd className="fx-num">{subtotal === 0 ? "0.00" : shipping.toFixed(2)} €</dd>
+              </div>
+              <div className="fx-summary-total">
+                <dt>{t("cart.total")}</dt>
+                <dd className="fx-num">{total.toFixed(2)} €</dd>
+              </div>
+            </dl>
+          </aside>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

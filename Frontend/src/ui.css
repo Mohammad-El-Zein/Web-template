@@ -1,0 +1,667 @@
+/* Gemeinsame Bausteine aller Seiten (nach Bootstrap und theme.css geladen).
+   Mobile zuerst; ab 901px die Desktop-Varianten. */
+
+/* Bootstrap an das Schriftsystem und die neutralen Töne anpassen */
+:root {
+  --bs-body-font-family: var(--fx-sans);
+  --bs-body-font-size: 17px;
+  --bs-body-line-height: 1.6;
+  --bs-body-color: var(--fx-ink);
+  --bs-body-bg: var(--fx-bg);
+  --bs-border-color: var(--fx-line);
+  --bs-border-radius: var(--fx-radius-sm);
+  --bs-link-color-rgb: var(--primary-rgb);
+  --bs-link-hover-color-rgb: var(--primary-rgb);
+}
+
+.fx-app {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.fx-app > main {
+  flex: 1;
+}
+
+.fx-wrap {
+  width: min(1200px, 100% - 2 * var(--fx-gutter));
+  margin-inline: auto;
+}
+
+.fx-wrap-narrow {
+  width: min(760px, 100% - 2 * var(--fx-gutter));
+  margin-inline: auto;
+}
+
+.fx-section {
+  padding-block: clamp(64px, 10vw, 128px);
+}
+
+/* Seiten unter der festen Menüleiste */
+.fx-page {
+  padding-block: calc(var(--fx-nav-h) + var(--s-6)) var(--s-9);
+}
+
+.fx-page-head {
+  margin-bottom: var(--s-7);
+}
+
+.fx-page-head .fx-note {
+  margin-top: var(--s-4);
+}
+
+/* ---------- Schrift ---------- */
+.fx-label {
+  margin: 0 0 var(--s-3);
+  font-family: var(--fx-cond);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--primary-text);
+}
+
+html[lang="ar"] .fx-label {
+  letter-spacing: 0;
+}
+
+.fx-label-muted {
+  color: var(--fx-muted);
+}
+
+.fx-tag {
+  display: inline-block;
+  margin-bottom: var(--s-4);
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-family: var(--fx-cond);
+  font-weight: 600;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.fx-tag-outline {
+  background: transparent;
+  color: inherit;
+  border: 1px solid currentColor;
+}
+
+.fx-h1,
+.fx-h2 {
+  margin: 0;
+  font-family: var(--fx-serif);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  font-variation-settings: "opsz" 144;
+  overflow-wrap: break-word;
+}
+
+.fx-h1 {
+  font-size: clamp(2.6rem, 6vw, 4.6rem);
+}
+
+.fx-h2 {
+  font-size: clamp(2.1rem, 4.4vw, 3.6rem);
+}
+
+.fx-h3 {
+  margin: 0;
+  font-family: var(--fx-serif);
+  font-weight: 400;
+  font-size: 1.6rem;
+  line-height: 1.15;
+}
+
+.fx-note {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--fx-muted);
+}
+
+.fx-pre {
+  white-space: pre-line;
+}
+
+.fx-num {
+  font-family: var(--fx-cond);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Knöpfe und Links ---------- */
+.fx-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: 48px;
+  padding: 12px 28px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  font-family: var(--fx-cond);
+  font-weight: 600;
+  font-size: 0.98rem;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, opacity 0.25s ease;
+}
+
+html[lang="ar"] .fx-btn {
+  letter-spacing: 0;
+}
+
+.fx-btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.fx-btn-primary:hover {
+  background: var(--fx-ink);
+  border-color: var(--fx-ink);
+  color: var(--fx-surface);
+}
+
+/* Auf dem Foto oben: Hover in Weiß */
+.fx-btn-primary.on-photo:hover {
+  background: var(--fx-surface);
+  border-color: var(--fx-surface);
+  color: var(--fx-ink);
+}
+
+.fx-btn-outline {
+  border-color: currentColor;
+}
+
+.fx-btn-outline:hover {
+  background: var(--fx-ink);
+  border-color: var(--fx-ink);
+  color: var(--fx-surface);
+}
+
+.fx-btn-small {
+  min-height: 40px;
+  padding: 8px 20px;
+  font-size: 0.9rem;
+}
+
+.fx-btn-block {
+  width: 100%;
+}
+
+.fx-btn:disabled,
+.fx-btn.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.fx-btn:focus-visible,
+.fx-round:focus-visible,
+.fx-link:focus-visible,
+.fx-text-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.fx-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0 0 3px;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: none;
+  color: inherit;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.fx-link i {
+  font-size: 0.85em;
+  transition: transform 0.2s ease;
+}
+
+.fx-link:hover i {
+  transform: translateX(4px);
+}
+
+html[dir="rtl"] .fx-link:hover i {
+  transform: translateX(-4px);
+}
+
+/* Unauffälliger Text-Knopf (z. B. KI-Kalorien, Zurücksetzen) */
+.fx-text-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--primary-text);
+  font: inherit;
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.fx-round {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  border: var(--fx-hairline);
+  background: var(--fx-surface);
+  color: var(--fx-ink);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.fx-round:hover {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.fx-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-bottom: var(--s-5);
+  color: var(--fx-muted);
+  font-family: var(--fx-cond);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.fx-back:hover {
+  color: var(--fx-ink);
+}
+
+/* ---------- Kopfzeile eines Abschnitts ---------- */
+.fx-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-4);
+  margin-bottom: var(--s-7);
+}
+
+/* ---------- Karten, Preise, Mengen ---------- */
+.fx-card {
+  background: var(--fx-surface);
+  border: var(--fx-hairline);
+  border-radius: var(--fx-radius);
+  padding: var(--s-5);
+}
+
+.fx-price {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: var(--fx-accent-soft);
+  color: var(--fx-ink);
+  font-family: var(--fx-cond);
+  font-weight: 700;
+  font-size: 1.12rem;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.fx-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border: var(--fx-hairline);
+  border-radius: 999px;
+  background: var(--fx-surface);
+}
+
+.fx-stepper button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--fx-ink);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.fx-stepper button:hover {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.fx-stepper span {
+  min-width: 26px;
+  text-align: center;
+  font-family: var(--fx-cond);
+  font-weight: 700;
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Bestellübersicht (Warenkorb und Checkout) */
+.fx-summary .fx-h3 {
+  margin-bottom: var(--s-4);
+}
+
+.fx-summary-lines {
+  margin: 0 0 var(--s-5);
+}
+
+.fx-summary-lines > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding-block: 10px;
+  border-bottom: var(--fx-hairline);
+}
+
+.fx-summary-lines dt {
+  font-weight: 400;
+  color: var(--fx-muted);
+}
+
+.fx-summary-lines dd {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.fx-summary-lines .fx-summary-total {
+  padding-top: var(--s-4);
+  border-bottom: 0;
+}
+
+.fx-summary-total dt {
+  color: var(--fx-ink);
+  font-weight: 600;
+}
+
+.fx-summary-total dd {
+  font-weight: 800;
+  font-size: 1.6rem;
+}
+
+/* Hinweise (Mindestbestellwert usw.) */
+.fx-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 var(--s-4);
+  padding: 12px 14px;
+  border-radius: var(--fx-radius-sm);
+  background: var(--fx-accent-soft);
+  color: var(--fx-ink);
+  font-size: 0.95rem;
+  text-align: start;
+}
+
+.fx-hint i {
+  line-height: 1.5;
+}
+
+.fx-empty {
+  padding: var(--s-8) var(--s-5);
+  border: 1px dashed var(--fx-line);
+  border-radius: var(--fx-radius);
+  text-align: center;
+  color: var(--fx-muted);
+}
+
+.fx-empty .fx-h3 {
+  color: var(--fx-ink);
+  margin-bottom: var(--s-3);
+}
+
+.fx-empty .fx-btn {
+  margin-top: var(--s-5);
+}
+
+/* ---------- Formulare ---------- */
+.fx-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fx-field > label,
+.fx-field > .fx-field-label {
+  font-family: var(--fx-cond);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fx-muted);
+}
+
+html[lang="ar"] .fx-field > label,
+html[lang="ar"] .fx-field > .fx-field-label {
+  letter-spacing: 0;
+}
+
+.form-control,
+.form-select {
+  min-height: 50px;
+  padding: 12px 16px;
+  border: var(--fx-hairline);
+  border-radius: var(--fx-radius-sm);
+  background-color: var(--fx-surface);
+  color: var(--fx-ink);
+  font-size: 1rem;
+}
+
+.form-control::placeholder {
+  color: color-mix(in srgb, var(--fx-muted) 70%, transparent);
+}
+
+/* Bootstrap setzt den Pfeil der Auswahl physisch rechts -> in RTL nach links */
+html[dir="rtl"] .form-select {
+  padding-inline: 16px 40px;
+  background-position: left 16px center;
+}
+
+.fx-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s-4);
+}
+
+/* ---------- Dialog (KI-Kalorien) ---------- */
+.fx-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--fx-gutter);
+  background: rgba(34, 28, 24, 0.5);
+  animation: fx-fade-in 0.2s ease-out;
+}
+
+.fx-modal {
+  width: min(420px, 100%);
+  padding: var(--s-6);
+  border-radius: var(--fx-radius);
+  background: var(--fx-surface);
+  box-shadow: var(--fx-shadow);
+  text-align: start;
+}
+
+.fx-modal .fx-h3 {
+  margin-bottom: var(--s-3);
+}
+
+.fx-modal p {
+  color: var(--fx-muted);
+}
+
+.fx-modal-input {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin: var(--s-5) 0;
+}
+
+.fx-modal-input .form-control {
+  max-width: 140px;
+  font-family: var(--fx-cond);
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.fx-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+
+/* KI-Ergebnis */
+.fx-nutrition {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px var(--s-4);
+  padding: var(--s-4);
+  border-radius: var(--fx-radius-sm);
+  background: var(--fx-accent-soft);
+  font-size: 0.92rem;
+  animation: fx-fade-in 0.35s ease-out;
+}
+
+.fx-nutrition .fx-label {
+  grid-column: 1 / -1;
+  margin-bottom: var(--s-2);
+  color: var(--fx-ink);
+}
+
+.fx-nutrition strong {
+  font-family: var(--fx-cond);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+@keyframes fx-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Statusanzeige mit Punkt (geöffnet/geschlossen, Bestellstatus) */
+.fx-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: var(--fx-cond);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fx-muted);
+}
+
+html[lang="ar"] .fx-status {
+  letter-spacing: 0;
+}
+
+.fx-status::before {
+  content: "";
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.fx-status.is-open {
+  color: var(--fx-ink);
+}
+
+.fx-status.is-open::before {
+  background: var(--fx-ok);
+}
+
+/* Bootstrap-Toasts (Hinzugefügt usw.) im gleichen Stil */
+.Toastify__toast {
+  border-radius: var(--fx-radius-sm);
+  font-family: var(--fx-sans);
+  color: var(--fx-ink);
+}
+
+@media (min-width: 901px) {
+  .fx-head {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--s-6);
+  }
+
+  .fx-form-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .fx-span-2 {
+    grid-column: span 2;
+  }
+
+  .fx-span-3 {
+    grid-column: span 3;
+  }
+
+  .fx-span-6 {
+    grid-column: 1 / -1;
+  }
+
+  .fx-summary {
+    position: sticky;
+    top: calc(var(--fx-nav-h) + var(--s-5));
+  }
+}
+
+@media (max-width: 900px) {
+  .fx-form-grid > * {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

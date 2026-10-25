@@ -1,0 +1,47 @@
+/* Ergebnis der Zahlung (Erfolg, ausstehend, fehlgeschlagen) */
+.fx-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.fx-result .fx-h2 {
+  margin-bottom: var(--s-4);
+}
+
+.fx-result-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  margin-bottom: var(--s-5);
+  border-radius: 50%;
+  background: var(--fx-tile);
+  color: var(--fx-ink);
+  font-size: 1.9rem;
+}
+
+.fx-result-icon.is-success {
+  background: var(--fx-ok);
+  color: var(--fx-surface);
+}
+
+.fx-result-icon.is-error {
+  background: var(--fx-error);
+  color: var(--fx-surface);
+}
+
+.fx-result-text {
+  margin: 0 0 var(--s-3);
+  color: var(--fx-muted);
+}
+
+.fx-result .fx-btn {
+  margin-top: var(--s-5);
+}
+
+.fx-result-link {
+  margin-top: var(--s-5);
+}

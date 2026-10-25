@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import FoodDisplay from "../../components/FoodDisplay/FoodDisplay";
 import "./ExploreFood.css";
-import ScrollReveal from "scrollreveal";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useCategories } from "../../context/categoriesContext";
 import { localized } from "../../util/settings";
 
-
+// Speisekarte: Kategorien als Auswahl-Pillen, Suche nach Namen
 const ExploreFood = () => {
   const [category, setCategory] = useState("All");
   const [searchText, setSearchText] = useState("");
@@ -15,73 +14,58 @@ const ExploreFood = () => {
   const { t, i18n } = useTranslation();
   const { categories } = useCategories();
 
-  
-
-
-
+  // Kategorie aus der Startseite übernehmen (Klick auf eine Kachel)
   useEffect(() => {
     if (location.state && location.state.category) {
       setCategory(location.state.category);
     }
   }, [location.state]);
 
-  useEffect(() => {
-    const sr = ScrollReveal({
-      origin: "top",
-      distance: "60px",
-      duration: 1400,
-      delay: 300,
-    });
-
-    sr.reveal(".explore-container", {
-      origin: "top",
-    });
-  }, []);
+  const filters = [
+    { id: "All", name: t("explorePage.filterAll") },
+    ...categories.map((c) => ({ id: c.id, name: localized(c.name, i18n.language) })),
+  ];
 
   return (
-    <>
-      <div className="explore-container">
-        <div className="explore-header">
-          <Link to="/" className="arrow-btn">
-            <i className="bi bi-arrow-left "></i>
-          </Link>
-        </div>
+    <main className="fx-page">
+      <div className="fx-wrap">
+        <header className="fx-page-head fx-head">
+          <div>
+            <span className="fx-tag">{t("pages.menuTag")}</span>
+            <h1 className="fx-h1">{t("explorePage.title")}</h1>
+          </div>
+          <label className="fx-search">
+            <span className="visually-hidden">{t("explorePage.searchLabel")}</span>
+            <i className="bi bi-search" aria-hidden="true"></i>
+            <input
+              type="search"
+              className="form-control"
+              placeholder={t("explorePage.searchPlaceholder")}
+              onChange={(e) => setSearchText(e.target.value)}
+              value={searchText}
+            />
+          </label>
+        </header>
 
-        <div className="explore-filter-box">
-          <select
-            className="explore-select"
-            onChange={(e) => setCategory(e.target.value)}
-            value={category}
-          >
-            <option value="All">
-              {t("explorePage.filterAll")} {/* "Alles" / "All" */}
-            </option>
-            {/* Kategorien aus der API, Wert = categoryId */}
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>{localized(c.name, i18n.language)}</option>
+        {categories.length > 0 && (
+          <div className="fx-chips" role="group" aria-label={t("home.categoriesTag")}>
+            {filters.map((filter) => (
+              <button
+                key={filter.id}
+                type="button"
+                className="fx-chip"
+                aria-pressed={category === filter.id}
+                onClick={() => setCategory(filter.id)}
+              >
+                {filter.name}
+              </button>
             ))}
-          </select>
+          </div>
+        )}
 
-          <input
-            type="text"
-            className="explore-search"
-            placeholder={t("explorePage.searchPlaceholder")}
-            onChange={(e) => setSearchText(e.target.value)}
-            value={searchText}
-          />
-
-          <button
-            className="explore-btn"
-            type="button"
-            aria-label={t("explorePage.searchPlaceholder")}
-          >
-            <i className="bi bi-search"></i>
-          </button>
-        </div>
+        <FoodDisplay category={category} searchText={searchText} />
       </div>
-
-      <FoodDisplay category={category} searchText={searchText} />
-    </>
+    </main>
   );
 };
 

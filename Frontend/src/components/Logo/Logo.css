@@ -1,31 +1,30 @@
+.fx-logo-img {
+  display: block;
+  height: 46px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+}
+
 /* Text-Logo, wenn kein Logo-Bild hochgeladen ist */
-.text-logo,
-html[lang] body .text-logo {
-  /* spezifischer als die Cairo-Regel für Arabisch in index.css */
-  font-family: "Righteous", sans-serif !important;
-}
-
-.text-logo {
-  display: inline-block;
-  font-size: 1.9rem;
+.fx-logo-text {
+  display: block;
+  overflow: hidden;
+  font-family: var(--fx-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.4rem;
   line-height: 1.1;
-  color: var(--primary);
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-/* In der Menüleiste (Hintergrund = Hauptfarbe) */
-.text-logo.on-primary {
-  color: var(--on-primary);
-}
+@media (min-width: 901px) {
+  .fx-logo-img {
+    height: 56px;
+  }
 
-/* Handy: kleiner und notfalls mit "…" gekürzt, damit Menü und Sprachauswahl in der Leiste bleiben */
-@media (max-width: 800px) {
-  .text-logo {
-    font-size: 1.15rem;
-    /* gleiche Breite wie das Logo-Bild (120px) */
-    max-width: 120px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
+  .fx-logo-text {
+    font-size: 1.65rem;
   }
 }

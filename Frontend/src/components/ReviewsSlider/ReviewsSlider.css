@@ -1,0 +1,102 @@
+.fx-reviews {
+  border-top: var(--fx-hairline);
+  background: var(--fx-surface);
+}
+
+.fx-reviews-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-6);
+  align-items: center;
+}
+
+.fx-reviews-counter {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  margin-top: var(--s-5);
+}
+
+.fx-reviews-swiper.swiper {
+  width: 100%;
+  min-width: 0;
+}
+
+.fx-reviews-swiper .swiper-slide {
+  background: var(--fx-surface);
+}
+
+.fx-quote {
+  margin: 0;
+}
+
+.fx-stars {
+  display: inline-flex;
+  gap: 5px;
+  color: var(--accent);
+  font-size: 0.95rem;
+}
+
+.fx-quote blockquote {
+  margin: var(--s-5) 0 0;
+  font-family: var(--fx-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(1.6rem, 2.7vw, 2.5rem);
+  line-height: 1.32;
+  letter-spacing: -0.01em;
+}
+
+.fx-quote figcaption {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-4);
+  margin-top: var(--s-6);
+}
+
+.fx-quote-name {
+  font-family: var(--fx-cond);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.fx-quote-meta {
+  color: var(--fx-muted);
+  font-size: 0.92rem;
+}
+
+/* Kennzeichnung von Beispiel-Bewertungen */
+.fx-example {
+  display: inline-block;
+  padding: 3px 8px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: var(--fx-muted);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+html[lang="ar"] .fx-quote-name,
+html[lang="ar"] .fx-example {
+  letter-spacing: 0;
+}
+
+@media (min-width: 901px) {
+  .fx-reviews-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+    gap: clamp(32px, 7vw, 110px);
+  }
+
+  .fx-reviews-counter {
+    margin-top: var(--s-7);
+  }
+
+  .fx-quote {
+    padding-inline-start: clamp(24px, 4vw, 56px);
+    border-inline-start: var(--fx-hairline);
+  }
+}
