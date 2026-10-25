@@ -2,8 +2,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import TranslateBar from '../../components/common/TranslateBar';
 import { useWebsite } from './WebsiteContext';
-import { LangField, SiteImage, WebsiteLangTabs } from './WebsiteFields';
-import { LIMITS } from './settingsForm';
+import { LangField, WebsiteLangTabs } from './WebsiteFields';
+import { LIMITS, MAX_ABOUT_IMAGES } from './settingsForm';
+import PhotoList from './PhotoList';
 
 const About = () => {
   const { t } = useTranslation();
@@ -33,10 +34,12 @@ const About = () => {
         </section>
 
         <section className="card-x">
-          <div className="card-x-header"><h2>{t('website.about.image')}</h2></div>
+          <div className="card-x-header">
+            <h2>{t('website.about.photos')}</h2>
+            <span className="badge-x neutral no-dot">{draft.aboutImages.length} / {MAX_ABOUT_IMAGES}</span>
+          </div>
           <div className="card-x-body">
-            <SiteImage fileKey="aboutImageUrl" path="aboutImageUrl" url={draft.aboutImageUrl}
-              onUrlChange={(url) => change((d) => { d.aboutImageUrl = url; })} />
+            <PhotoList />
           </div>
         </section>
       </div>

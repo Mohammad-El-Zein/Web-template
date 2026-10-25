@@ -38,4 +38,24 @@ public class OpenAITranslationService {
                 .content()
                 .trim();
     }
+
+    // Allgemeiner Text (z. B. Bewertungen) mit bekannter Ausgangssprache: inhaltlich treu, nicht kürzen
+    public String translate(String text, String sourceLang, String targetLang) {
+
+        String prompt = """
+            Translate the following text from %s into %s.
+            Keep the meaning, tone and length; do not shorten, summarize or add anything.
+            Answer with the translated text only, without quotes or explanations.
+
+            TEXT:
+            %s
+        """.formatted(sourceLang, targetLang, text);
+
+        return chatClient
+                .prompt()
+                .user(prompt)
+                .call()
+                .content()
+                .trim();
+    }
 }

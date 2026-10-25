@@ -22,7 +22,7 @@ public class AdminImageController {
 
     private final ImageStorage imageStorage;
 
-    // multipart: file, optional folder = foods | categories | site (Standard: site) -> { "url": "..." }
+    // multipart: file, optional folder = foods | categories | site | reviews (Standard: site) -> { "url": "..." }
     @PostMapping
     public Map<String, String> upload(@RequestPart(value = "file", required = false) MultipartFile file,
                                       @RequestParam(value = "folder", required = false) String folder) {

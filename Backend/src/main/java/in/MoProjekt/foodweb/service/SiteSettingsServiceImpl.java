@@ -41,6 +41,7 @@ public class SiteSettingsServiceImpl implements SiteSettingsService {
     private static final int MAX_LONG_TEXT = 5000;
     private static final int MAX_LEGAL_TEXT = 20000;
     private static final int MAX_FEATURES = 8;
+    private static final int MAX_ABOUT_IMAGES = 10;
     private static final int MAX_SLOTS_PER_DAY = 5;
     private static final int MAX_SOCIAL_LINKS = 10;
     private static final double MAX_AMOUNT = 1000;
@@ -56,8 +57,15 @@ public class SiteSettingsServiceImpl implements SiteSettingsService {
     @Override
     public SiteSettingsEntity getSettings() {
         // Fallback, falls das Dokument (noch) fehlt
-        return siteSettingsRepository.findById(SiteSettingsEntity.SINGLETON_ID)
+        SiteSettingsEntity settings = siteSettingsRepository.findById(SiteSettingsEntity.SINGLETON_ID)
                 .orElseGet(this::defaults);
+        // Ältere Dokumente haben nur aboutImageUrl -> als Liste ausliefern (nicht speichern)
+        if (settings.getAboutImages() == null || settings.getAboutImages().isEmpty()) {
+            settings.setAboutImages(notBlank(settings.getAboutImageUrl())
+                    ? new ArrayList<>(List.of(settings.getAboutImageUrl().trim()))
+                    : new ArrayList<>());
+        }
+        return settings;
     }
 
     @Override
@@ -133,6 +141,22 @@ public class SiteSettingsServiceImpl implements SiteSettingsService {
             s.getOpeningHours().setDays(days);
         }
         if (s.getRestaurantName() != null) s.setRestaurantName(s.getRestaurantName().trim());
+        normalizeAboutImages(s);
+    }
+
+    // Leere Einträge entfernen; ohne Liste gilt aboutImageUrl (ältere Clients); aboutImageUrl = erstes Foto
+    private void normalizeAboutImages(SiteSettingsEntity s) {
+        List<String> images = new ArrayList<>();
+        if (s.getAboutImages() != null) {
+            for (String url : s.getAboutImages()) {
+                if (notBlank(url)) images.add(url.trim());
+            }
+        }
+        if (images.isEmpty() && notBlank(s.getAboutImageUrl())) {
+            images.add(s.getAboutImageUrl().trim());
+        }
+        s.setAboutImages(images);
+        s.setAboutImageUrl(images.isEmpty() ? "" : images.get(0));
     }
 
     private void validate(SiteSettingsEntity s) {
@@ -166,6 +190,13 @@ public class SiteSettingsServiceImpl implements SiteSettingsService {
 
         texts("aboutTitle", s.getAboutTitle(), MAX_SHORT_TEXT);
         texts("aboutText", s.getAboutText(), MAX_LONG_TEXT);
+        // Liste zuerst prüfen, aboutImageUrl ist daraus abgeleitet (erstes Foto)
+        if (s.getAboutImages().size() > MAX_ABOUT_IMAGES) {
+            fail("aboutImages", "At most " + MAX_ABOUT_IMAGES + " about images are allowed");
+        }
+        for (int i = 0; i < s.getAboutImages().size(); i++) {
+            url("aboutImages[" + i + "]", s.getAboutImages().get(i));
+        }
         url("aboutImageUrl", s.getAboutImageUrl());
 
         validateContact(s.getContact());

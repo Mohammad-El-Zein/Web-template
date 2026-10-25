@@ -46,7 +46,10 @@ public class SiteSettingsEntity {
     // Über uns
     private Map<String, String> aboutTitle;
     private Map<String, String> aboutText;
+    // Erstes Foto aus aboutImages (für ältere Clients)
     private String aboutImageUrl;
+    // Fotos für "Über uns" (ab 2 Fotos Überblendung auf der Website)
+    private List<String> aboutImages;
 
     private Contact contact;
     private OpeningHours openingHours;

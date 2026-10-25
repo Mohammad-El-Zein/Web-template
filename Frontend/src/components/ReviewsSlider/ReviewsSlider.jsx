@@ -21,8 +21,25 @@ const Stars = ({ rating }) => {
   );
 };
 
+// Initialen aus dem Namen, z. B. "Lena Krüger" -> "LK"
+const initials = (name = "") => {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+};
+
+// Foto der Person, sonst (oder wenn es nicht lädt) die Initialen
+const Avatar = ({ name, photoUrl }) => {
+  const [failed, setFailed] = useState(false);
+  if (photoUrl && !failed) {
+    return <img src={photoUrl} alt="" className="fx-quote-avatar" onError={() => setFailed(true)} />;
+  }
+  return <span className="fx-quote-avatar fx-quote-initials" aria-hidden="true">{initials(name)}</span>;
+};
+
 // Bewertungen: immer ein großes Zitat, Überblendung, alle 7 s weiter. Ohne Bewertungen wird nichts angezeigt.
-// reviews = [{ name, rating (1–5), text ({ de, en, ar } oder Text), source, date (ISO), example }] – später aus dem Admin-Panel
+// reviews aus GET /api/reviews: [{ authorName, rating (1–5), text ({ [lang]: ... } oder Text), photoUrl, source, date (YYYY-MM-DD) }]
 const ReviewsSlider = ({ reviews = [] }) => {
   const { t, i18n } = useTranslation();
   const reduced = useReducedMotion();
@@ -79,21 +96,24 @@ const ReviewsSlider = ({ reviews = [] }) => {
           onSlideChange={(swiper) => setIndex(swiper.realIndex)}
           className="fx-reviews-swiper"
         >
-          {reviews.map((review, i) => (
-            <SwiperSlide key={`${review.name}-${i}`}>
-              <figure className="fx-quote">
-                <Stars rating={review.rating} />
-                <blockquote>{localized(review.text, lang)}</blockquote>
-                <figcaption>
-                  <span className="fx-quote-name">{review.name}</span>
-                  <span className="fx-quote-meta">
-                    {[review.source && `${t("reviews.via")} ${review.source}`, review.date && month(review.date)].filter(Boolean).join(" · ")}
-                  </span>
-                  {review.example && <span className="fx-example">{t("reviews.example")}</span>}
-                </figcaption>
-              </figure>
-            </SwiperSlide>
-          ))}
+          {reviews.map((review, i) => {
+            const meta = [review.source && `${t("reviews.via")} ${review.source}`, review.date && month(review.date)].filter(Boolean).join(" · ");
+            return (
+              <SwiperSlide key={review.id || i}>
+                <figure className="fx-quote">
+                  <Stars rating={review.rating} />
+                  <blockquote>{localized(review.text, lang)}</blockquote>
+                  <figcaption>
+                    <Avatar name={review.authorName} photoUrl={review.photoUrl} />
+                    <span className="fx-quote-who">
+                      <span className="fx-quote-name">{review.authorName}</span>
+                      {meta && <span className="fx-quote-meta">{meta}</span>}
+                    </span>
+                  </figcaption>
+                </figure>
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
       </div>
     </section>

@@ -57,6 +57,7 @@ public final class SiteSettingsDefaults {
                         "Fresh cooking with local ingredients. Every dish is freshly prepared in our kitchen.",
                         "مطبخ طازج بمكونات من المنطقة. نحضّر كل طبق عندنا طازجاً."))
                 .aboutImageUrl("")
+                .aboutImages(new ArrayList<>())
                 .contact(Contact.builder()
                         .address("").phone("").email("").whatsapp("").googleMapsUrl("")
                         .socialLinks(new LinkedHashMap<>())

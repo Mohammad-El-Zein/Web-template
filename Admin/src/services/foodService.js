@@ -37,7 +37,8 @@ export const deleteFood = async (foodId) => {
 }
 
 // Deutscher Text -> { de, en, ar }
-export const translateText = async (text) => {
-  const response = await api.post('/admin/translate', { text });
+// from optional ("de" | "en" | "ar"): allgemeine Übersetzung aus dieser Sprache, sonst Speisekarten-Text aus dem Deutschen
+export const translateText = async (text, from) => {
+  const response = await api.post('/admin/translate', from ? { text, from } : { text });
   return response.data;
 }

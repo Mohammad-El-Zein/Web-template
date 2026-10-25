@@ -187,6 +187,11 @@ public FoodResponse addFood(FoodRequest request, MultipartFile file) {
         return translationHelper.completeTranslations(Map.of("de", germanText));
     }
 
+    @Override
+    public Map<String, String> translate(String text, String sourceLang) {
+        return translationHelper.completeTranslationsFromAny(Map.of(sourceLang, text));
+    }
+
     private void validate(FoodRequest request) {
         String germanName = request.getName().get("de");
         if (germanName == null || germanName.isBlank()) {

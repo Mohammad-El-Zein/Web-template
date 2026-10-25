@@ -9,6 +9,7 @@ export const LIMITS = { name: 100, short: 200, long: 5000, legal: 20000, url: 50
 export const MAX_FEATURES = 8;
 export const MAX_SLOTS = 5;
 export const MAX_SOCIAL_LINKS = 10;
+export const MAX_ABOUT_IMAGES = 10;
 // POST /api/admin/translate nimmt höchstens 2000 Zeichen
 export const TRANSLATE_LIMIT = 2000;
 
@@ -44,7 +45,9 @@ export const normalize = (s = {}) => {
     })),
     aboutTitle: texts(s.aboutTitle),
     aboutText: texts(s.aboutText),
-    aboutImageUrl: s.aboutImageUrl || '',
+    // Fotos als Liste mit stabilen Schlüsseln; ältere Daten haben nur aboutImageUrl
+    aboutImages: (s.aboutImages?.length ? s.aboutImages : [s.aboutImageUrl].filter(Boolean))
+      .map((url) => ({ _key: newKey(), url })),
     contact: {
       address: contact.address || '',
       phone: contact.phone || '',
@@ -85,6 +88,9 @@ export const toPayload = (d) => ({
   ...d,
   // _key nur für die Bearbeitung, nicht speichern
   features: d.features.map((f) => ({ title: f.title, text: f.text, imageUrl: f.imageUrl })),
+  // Noch nicht hochgeladene Fotos (url leer) fehlen hier; aboutImageUrl = erstes Foto für ältere Clients
+  aboutImages: d.aboutImages.map((photo) => photo.url).filter(Boolean),
+  aboutImageUrl: d.aboutImages.find((photo) => photo.url)?.url || '',
   contact: {
     ...d.contact,
     socialLinks: Object.fromEntries(d.contact.socialLinks
@@ -98,11 +104,15 @@ export const toPayload = (d) => ({
   },
 });
 
-// Gespeicherte URL in den Entwurf schreiben; key = Feldname oder "feature:<_key>"
+// Gespeicherte URL in den Entwurf schreiben; key = Feldname, "feature:<_key>" oder "about:<_key>"
 export const withImageUrl = (d, key, url) => {
   if (key.startsWith('feature:')) {
     const featureKey = key.slice('feature:'.length);
     return { ...d, features: d.features.map((f) => (f._key === featureKey ? { ...f, imageUrl: url } : f)) };
+  }
+  if (key.startsWith('about:')) {
+    const photoKey = key.slice('about:'.length);
+    return { ...d, aboutImages: d.aboutImages.map((p) => (p._key === photoKey ? { ...p, url } : p)) };
   }
   return { ...d, [key]: url };
 };
@@ -115,7 +125,7 @@ const PAGE_BY_FIELD = {
   restaurantName: 'general', slogan: 'general', logoUrl: 'general', faviconUrl: 'general',
   primaryColor: 'general', accentColor: 'general', enabledLanguages: 'general', defaultLanguage: 'general',
   heroTitle: 'home', heroSubtitle: 'home', heroImageUrl: 'home', features: 'home',
-  aboutTitle: 'about', aboutText: 'about', aboutImageUrl: 'about',
+  aboutTitle: 'about', aboutText: 'about', aboutImageUrl: 'about', aboutImages: 'about',
   contact: 'contact', openingHours: 'contact', ordering: 'ordering',
   imprint: 'legal', privacyPolicy: 'legal', footerText: 'legal',
 };
@@ -140,6 +150,8 @@ export const settingsErrorText = (t, field = '', message = '') => {
   if (field === 'contact.socialLinks') {
     return /name/i.test(message) ? t('website.errors.socialName') : t('website.errors.tooManySocial', { max: MAX_SOCIAL_LINKS });
   }
+  if (field === 'aboutImages') return t('website.errors.tooManyPhotos', { max: MAX_ABOUT_IMAGES });
+  if (/^aboutImages\[\d+\]$/.test(field)) return t('website.errors.url');
   if (/Url$/i.test(field) || field.startsWith('contact.socialLinks.')) return t('website.errors.url');
   if (field === 'restaurantName') return t('website.errors.nameRequired');
   if (field === 'enabledLanguages' || field === 'defaultLanguage') return t('website.errors.languages');

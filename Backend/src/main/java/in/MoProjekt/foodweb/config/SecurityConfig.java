@@ -57,6 +57,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/settings").permitAll()
                         // Kategorien lesen darf jeder, verwalten nur Admins (/api/admin/categories)
                         .requestMatchers(HttpMethod.GET, "/api/categories", "/api/categories/**").permitAll()
+                        // Bewertungen lesen darf jeder, verwalten nur Admins (/api/admin/reviews)
+                        .requestMatchers(HttpMethod.GET, "/api/reviews").permitAll()
                         // Gerichte anlegen/löschen und Admin-Endpunkte nur für Admins
                         .requestMatchers("/api/foods/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

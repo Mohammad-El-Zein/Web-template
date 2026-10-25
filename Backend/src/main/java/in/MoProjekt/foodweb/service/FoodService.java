@@ -25,4 +25,7 @@ public interface FoodService {
 
     // Deutscher Text -> { de, en, ar }
     Map<String, String> translate(String germanText);
+
+    // Text in der Sprache sourceLang (de, en, ar) -> { de, en, ar }, z. B. für Bewertungen
+    Map<String, String> translate(String text, String sourceLang);
 }

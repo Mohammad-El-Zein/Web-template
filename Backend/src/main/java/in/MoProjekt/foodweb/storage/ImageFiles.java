@@ -12,7 +12,7 @@ import in.MoProjekt.foodweb.exception.ImageException;
 public final class ImageFiles {
 
     public static final long MAX_BYTES = 5L * 1024 * 1024;
-    public static final Set<String> FOLDERS = Set.of("foods", "categories", "site");
+    public static final Set<String> FOLDERS = Set.of("foods", "categories", "site", "reviews");
 
     private ImageFiles() {
     }
@@ -61,7 +61,7 @@ public final class ImageFiles {
             return "site";
         }
         if (!FOLDERS.contains(folder)) {
-            throw ImageException.invalid("folder", "Folder must be one of foods, categories, site");
+            throw ImageException.invalid("folder", "Folder must be one of foods, categories, site, reviews");
         }
         return folder;
     }

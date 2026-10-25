@@ -10,6 +10,8 @@ import Foods from './pages/Foods/Foods';
 import FoodForm from './pages/FoodForm/FoodForm';
 import Categories from './pages/Categories/Categories';
 import CategoryForm from './pages/CategoryForm/CategoryForm';
+import Reviews from './pages/Reviews/Reviews';
+import ReviewForm from './pages/ReviewForm/ReviewForm';
 import WebsiteLayout from './pages/Website/WebsiteLayout';
 import General from './pages/Website/General';
 import Home from './pages/Website/Home';
@@ -34,6 +36,9 @@ const pageTitleKey = (path) => {
   if (path.startsWith('/categories/new')) return 'categoryForm.addTitle';
   if (path.match(/^\/categories\/[^/]+\/edit/)) return 'categoryForm.editTitle';
   if (path.startsWith('/categories')) return 'categories.title';
+  if (path.startsWith('/reviews/new')) return 'reviewForm.addTitle';
+  if (path.match(/^\/reviews\/[^/]+\/edit/)) return 'reviewForm.editTitle';
+  if (path.startsWith('/reviews')) return 'reviews.title';
   if (path.startsWith('/orders')) return 'orders.title';
   if (path.startsWith('/profile')) return 'profile.title';
   return 'nav.dashboard';
@@ -101,6 +106,9 @@ const App = () => {
               <Route path="/categories" element={<Categories />} />
               <Route path="/categories/new" element={<CategoryForm />} />
               <Route path="/categories/:id/edit" element={<CategoryForm />} />
+              <Route path="/reviews" element={<Reviews />} />
+              <Route path="/reviews/new" element={<ReviewForm />} />
+              <Route path="/reviews/:id/edit" element={<ReviewForm />} />
               <Route path="/orders" element={<Orders />} />
               {/* Website-Inhalte: gemeinsamer Zustand im Layout, eine Seite pro Bereich */}
               <Route path="/website" element={<WebsiteLayout />}>

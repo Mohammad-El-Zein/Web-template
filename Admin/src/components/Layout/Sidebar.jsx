@@ -41,6 +41,7 @@ const Sidebar = ({ open, onNavigate }) => {
         {link('/foods', 'bi-egg-fried', t('nav.foods'), true)}
         {link('/foods/new', 'bi-plus-circle', t('nav.addFood'))}
         {link('/categories', 'bi-tags', t('nav.categories'))}
+        {link('/reviews', 'bi-chat-quote', t('nav.reviews'))}
         {link('/profile', 'bi-person-circle', t('nav.profile'))}
       </nav>
 

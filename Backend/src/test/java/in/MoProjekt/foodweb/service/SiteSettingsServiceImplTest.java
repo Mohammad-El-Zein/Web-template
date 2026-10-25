@@ -155,6 +155,63 @@ class SiteSettingsServiceImplTest {
     }
 
     @Test
+    void oldDocumentWithOnlyAboutImageUrlIsReadAsList() {
+        SiteSettingsEntity stored = valid();
+        stored.setAboutImages(null);
+        stored.setAboutImageUrl("https://img.example.com/site/about.webp");
+        when(repository.findById("main")).thenReturn(Optional.of(stored));
+
+        assertEquals(List.of("https://img.example.com/site/about.webp"), service.getSettings().getAboutImages());
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void noAboutImagesGiveEmptyList() {
+        when(repository.findById("main")).thenReturn(Optional.empty());
+        assertTrue(service.getSettings().getAboutImages().isEmpty());
+    }
+
+    @Test
+    void aboutImagesAreCleanedAndFirstOneBecomesAboutImageUrl() {
+        when(repository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        SiteSettingsEntity settings = valid();
+        settings.setAboutImageUrl("https://img.example.com/site/alt.webp");
+        settings.setAboutImages(new ArrayList<>(java.util.Arrays.asList(" /api/foods/images/a ", "", null, "https://img.example.com/site/b.webp")));
+
+        SiteSettingsEntity saved = service.updateSettings(settings);
+
+        assertEquals(List.of("/api/foods/images/a", "https://img.example.com/site/b.webp"), saved.getAboutImages());
+        assertEquals("/api/foods/images/a", saved.getAboutImageUrl());
+    }
+
+    @Test
+    void olderClientsSendingOnlyAboutImageUrlKeepThePhoto() {
+        when(repository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        SiteSettingsEntity settings = valid();
+        settings.setAboutImages(null);
+        settings.setAboutImageUrl("https://img.example.com/site/about.webp");
+
+        assertEquals(List.of("https://img.example.com/site/about.webp"), service.updateSettings(settings).getAboutImages());
+
+        // Alle Fotos entfernt -> beide Felder leer
+        SiteSettingsEntity empty = valid();
+        empty.setAboutImages(new ArrayList<>());
+        empty.setAboutImageUrl("");
+        SiteSettingsEntity saved = service.updateSettings(empty);
+        assertTrue(saved.getAboutImages().isEmpty());
+        assertEquals("", saved.getAboutImageUrl());
+    }
+
+    @Test
+    void aboutImagesAreLimitedAndChecked() {
+        List<String> eleven = new ArrayList<>();
+        for (int i = 0; i < 11; i++) eleven.add("https://img.example.com/site/" + i + ".webp");
+        assertInvalid("aboutImages", s -> s.setAboutImages(eleven));
+        assertInvalid("aboutImages[1]", s -> s.setAboutImages(new ArrayList<>(List.of("https://ok.example.com/a.webp", "javascript:alert(1)"))));
+        assertInvalid("aboutImages[0]", s -> s.setAboutImages(new ArrayList<>(List.of("//fremd.example.com/a.webp"))));
+    }
+
+    @Test
     void isOpenNowUsesStoredOpeningHours() {
         when(repository.findById("main")).thenReturn(Optional.of(valid()));
         assertTrue(service.isOpenNow());

@@ -70,6 +70,14 @@ class R2ImageStorageTest {
     }
 
     @Test
+    void reviewPhotosGoToReviewsFolder() {
+        storage.upload(new MockMultipartFile("file", "a.png", "image/png", PNG), "reviews");
+        ArgumentCaptor<PutObjectRequest> request = ArgumentCaptor.forClass(PutObjectRequest.class);
+        verify(s3Client).putObject(request.capture(), any(RequestBody.class));
+        assertTrue(request.getValue().key().startsWith("pizzeria-roma/reviews/"));
+    }
+
+    @Test
     void failingR2FallsBackToMongo() {
         when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
                 .thenThrow(SdkClientException.create("timeout"));

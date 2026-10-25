@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { StoreContext } from "../../context/StoreContext";
@@ -10,19 +10,29 @@ import AboutSlideshow from "../../components/AboutSlideshow/AboutSlideshow";
 import HoursList from "../../components/HoursList/HoursList";
 import ReviewsSlider from "../../components/ReviewsSlider/ReviewsSlider";
 import FoodImage from "../../components/FoodImage/FoodImage";
+import { fetchReviews } from "../../service/reviewService";
 import "./Home.css";
 
 const POPULAR_COUNT = 8;
 
-// Startseite: Foto oben, beliebte Gerichte, Kategorien, Über uns, Öffnungszeiten & Kontakt, Bewertungen.
-// reviews = Bewertungen für ReviewsSlider; zurzeit leer (ausgeblendet), später aus dem Admin-Panel.
-const Home = ({ reviews = [] }) => {
+// Startseite: Foto oben, beliebte Gerichte, Kategorien, Über uns, Öffnungszeiten & Kontakt, Bewertungen
+const Home = () => {
   const { t } = useTranslation();
   const { foodList } = useContext(StoreContext);
   const { categories } = useCategories();
   const r = useRestaurant();
   const { settings, lang } = r;
   const [heroFailed, setHeroFailed] = useState(false);
+  const [reviews, setReviews] = useState([]);
+
+  // Bewertungen aus dem Admin-Panel in der aktuellen Sprache; bei Fehlern bleibt der Bereich ausgeblendet
+  useEffect(() => {
+    let cancelled = false;
+    fetchReviews(lang)
+      .then((list) => { if (!cancelled) setReviews(Array.isArray(list) ? list : []); })
+      .catch(() => { if (!cancelled) setReviews([]); });
+    return () => { cancelled = true; };
+  }, [lang]);
   const arrow = lang === "ar" ? "bi-arrow-left" : "bi-arrow-right";
 
   const heroTitle = localized(settings.heroTitle, lang) || r.name;
@@ -196,7 +206,7 @@ const Home = ({ reviews = [] }) => {
         </section>
       )}
 
-      {/* ---------- Bewertungen (ohne Einträge ausgeblendet) ---------- */}
+      {/* ---------- Bewertungen (ohne sichtbare Bewertungen ausgeblendet) ---------- */}
       <ReviewsSlider reviews={reviews} />
     </main>
   );

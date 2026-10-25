@@ -28,6 +28,11 @@ import in.MoProjekt.foodweb.exception.ImageException;
 import in.MoProjekt.foodweb.storage.ImageStorage;
 import org.springframework.mock.web.MockMultipartFile;
 import in.MoProjekt.foodweb.controller.CategoryController;
+import in.MoProjekt.foodweb.controller.ReviewController;
+import in.MoProjekt.foodweb.controller.AdminReviewController;
+import in.MoProjekt.foodweb.exception.ReviewException;
+import in.MoProjekt.foodweb.io.ReviewResponse;
+import in.MoProjekt.foodweb.service.ReviewService;
 import in.MoProjekt.foodweb.exception.CategoryException;
 import in.MoProjekt.foodweb.io.CategoryResponse;
 import in.MoProjekt.foodweb.service.CategoryService;
@@ -61,7 +66,8 @@ import in.MoProjekt.foodweb.util.JwtUtil;
 
 @WebMvcTest(controllers = { FoodController.class, AdminOrderController.class, AiController.class, AdminController.class, UserController.class,
         SiteSettingsController.class, AdminSettingsController.class, OrderController.class,
-        CategoryController.class, AdminCategoryController.class, AdminImageController.class })
+        CategoryController.class, AdminCategoryController.class, AdminImageController.class,
+        ReviewController.class, AdminReviewController.class })
 @Import({ SecurityConfig.class, JwtAuthenticationFilter.class, JwtUtil.class, AppUserDetailsService.class, RateLimiter.class })
 @TestPropertySource(properties = {
         "jwt.secret.key=dGVzdFNlY3JldEtleUZvclVuaXRUZXN0c09ubHlOb3RQcm9kdWN0aW9uMTIzNDU2",
@@ -86,6 +92,7 @@ class SecurityConfigTest {
     @MockitoBean private OrderRepository orderRepository;
     @MockitoBean private CategoryService categoryService;
     @MockitoBean private ImageStorage imageStorage;
+    @MockitoBean private ReviewService reviewService;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -271,6 +278,81 @@ class SecurityConfigTest {
         mvc.perform(delete("/api/admin/categories/c8")).andExpect(status().isUnauthorized());
         mvc.perform(delete("/api/admin/categories/c8").header("Authorization", token("user@test.de"))).andExpect(status().isForbidden());
         mvc.perform(delete("/api/admin/categories/c8").header("Authorization", token("admin@test.de"))).andExpect(status().isNoContent());
+    }
+
+    @Test
+    void reviewsAreReadableByEveryone() throws Exception {
+        when(reviewService.readVisibleReviews("ar")).thenReturn(List.of(ReviewResponse.builder()
+                .id("r1").authorName("Lena K.").text(java.util.Map.of("ar", "ممتاز")).rating(5).visible(true).build()));
+        mvc.perform(get("/api/reviews").param("lang", "ar"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].authorName").value("Lena K."))
+                .andExpect(jsonPath("$[0].text.ar").value("ممتاز"));
+        mvc.perform(get("/api/reviews").header("Authorization", "Bearer kaputt")).andExpect(status().isOk());
+        // Schreiben über den öffentlichen Pfad ist nicht erlaubt
+        mvc.perform(post("/api/reviews").contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void onlyAdminsCanManageReviews() throws Exception {
+        String body = "{\"authorName\":\"Lena\",\"text\":{\"en\":\"Great\"},\"rating\":5}";
+        when(reviewService.readAllReviews()).thenReturn(List.of());
+        when(reviewService.addReview(any())).thenReturn(ReviewResponse.builder().id("r1").authorName("Lena").build());
+        when(reviewService.updateReview(eq("r1"), any())).thenReturn(ReviewResponse.builder().id("r1").build());
+        when(reviewService.reorder(any())).thenReturn(List.of());
+
+        mvc.perform(get("/api/admin/reviews")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/admin/reviews").header("Authorization", token("user@test.de"))).andExpect(status().isForbidden());
+        mvc.perform(get("/api/admin/reviews").header("Authorization", token("admin@test.de"))).andExpect(status().isOk());
+
+        mvc.perform(post("/api/admin/reviews").contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isUnauthorized());
+        mvc.perform(post("/api/admin/reviews").header("Authorization", token("user@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isForbidden());
+        mvc.perform(post("/api/admin/reviews").header("Authorization", token("admin@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.authorName").value("Lena"));
+
+        mvc.perform(put("/api/admin/reviews/r1").header("Authorization", token("user@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isForbidden());
+        mvc.perform(put("/api/admin/reviews/r1").header("Authorization", token("admin@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isOk());
+
+        mvc.perform(put("/api/admin/reviews/order").contentType(MediaType.APPLICATION_JSON).content("[\"r1\"]"))
+                .andExpect(status().isUnauthorized());
+        mvc.perform(put("/api/admin/reviews/order").header("Authorization", token("user@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content("[\"r1\"]")).andExpect(status().isForbidden());
+        mvc.perform(put("/api/admin/reviews/order").header("Authorization", token("admin@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content("[\"r2\",\"r1\"]")).andExpect(status().isOk());
+        verify(reviewService).reorder(List.of("r2", "r1"));
+
+        mvc.perform(delete("/api/admin/reviews/r1")).andExpect(status().isUnauthorized());
+        mvc.perform(delete("/api/admin/reviews/r1").header("Authorization", token("user@test.de"))).andExpect(status().isForbidden());
+        mvc.perform(delete("/api/admin/reviews/r1").header("Authorization", token("admin@test.de"))).andExpect(status().isNoContent());
+    }
+
+    @Test
+    void reviewErrorsReturnJsonWithField() throws Exception {
+        when(reviewService.addReview(any())).thenThrow(ReviewException.invalid("rating", "Rating must be between 1 and 5"));
+        mvc.perform(post("/api/admin/reviews").header("Authorization", token("admin@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content("{\"authorName\":\"Lena\",\"rating\":9}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("REVIEW_INVALID"))
+                .andExpect(jsonPath("$.field").value("rating"));
+    }
+
+    @Test
+    void translateCanStartFromAnotherLanguage() throws Exception {
+        when(foodService.translate("Great food", "en")).thenReturn(java.util.Map.of("de", "Tolles Essen", "en", "Great food"));
+        mvc.perform(post("/api/admin/translate").header("Authorization", token("admin@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content("{\"text\":\"Great food\",\"from\":\"en\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.de").value("Tolles Essen"));
+        mvc.perform(post("/api/admin/translate").header("Authorization", token("admin@test.de"))
+                .contentType(MediaType.APPLICATION_JSON).content("{\"text\":\"Bonjour\",\"from\":\"fr\"}"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

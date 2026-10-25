@@ -50,9 +50,36 @@
 .fx-quote figcaption {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: var(--s-2) var(--s-4);
+  gap: var(--s-4);
   margin-top: var(--s-6);
+}
+
+/* Foto oder Initialen */
+.fx-quote-avatar {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--fx-tile);
+}
+
+.fx-quote-initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-family: var(--fx-cond);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.06em;
+}
+
+.fx-quote-who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .fx-quote-name {
@@ -60,6 +87,7 @@
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  overflow-wrap: anywhere;
 }
 
 .fx-quote-meta {
@@ -67,21 +95,7 @@
   font-size: 0.92rem;
 }
 
-/* Kennzeichnung von Beispiel-Bewertungen */
-.fx-example {
-  display: inline-block;
-  padding: 3px 8px;
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  color: var(--fx-muted);
-  font-size: 0.66rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-html[lang="ar"] .fx-quote-name,
-html[lang="ar"] .fx-example {
+html[lang="ar"] .fx-quote-name {
   letter-spacing: 0;
 }
 
